@@ -28,7 +28,8 @@ public with sharing class Helpdesk_Application
 	public static final fflib_Application.DomainFactory helpDeskDomain =
 			new fflib_Application.DomainFactory(
 					Helpdesk_Application.helpDeskSelector,
-					new Map<SObjectType, Type>{Case.SObjectType => Cases.Constructor.class}
+					new Map<SObjectType, Type>{Case.SObjectType => Cases.Constructor.class,
+					Contact.SObjectType => Contacts.Constructor.class}
 			);
 
 }

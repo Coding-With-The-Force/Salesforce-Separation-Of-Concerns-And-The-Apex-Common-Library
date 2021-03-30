@@ -1,0 +1,14 @@
+<!--
+ - Created by gerry on 3/29/2021.
+ -->
+
+<!-- Abstract Task Creator -->
+<template>
+	<lightning-button label="Create Tasks" onclick={createTasks}></lightning-button>
+	<p>{displayMessage}</p>
+	<lightning-datatable
+		key-field="Id"
+		data={taskRows}
+		columns={taskColumns}>
+	</lightning-datatable>
+</template>

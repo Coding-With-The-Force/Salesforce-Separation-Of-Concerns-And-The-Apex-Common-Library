@@ -6,6 +6,7 @@ public with sharing class Helpdesk_CreateTasksForCases_Controller
 {
 	@AuraEnabled
 	public static void createTasksForCaseRecords(){
+		fflib_ISObjectSelector selector = Helpdesk_Application.helpDeskSelector.newInstance(Case.SObjectType);
 		Case_Selector caseSelector = (Case_Selector)Case_Selector.newInstance();
 		caseSelector.enforceFLS();
 		List<Case> newCases = caseSelector.selectNewCases();

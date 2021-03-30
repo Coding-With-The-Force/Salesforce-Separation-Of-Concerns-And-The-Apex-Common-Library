@@ -4,4 +4,5 @@
 
 public interface Cases_Interface extends fflib_ISObjectDomain
 {
+	List<Account> getAccounts();
 }

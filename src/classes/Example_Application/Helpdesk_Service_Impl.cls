@@ -4,7 +4,17 @@
 
 public with sharing class Helpdesk_Service_Impl implements Helpdesk_Service_Interface
 {
+	public interface TaskCreation_Interface{
+		List<Task> createTasks();
+	}
+
 	public void createTasksForCaseRecords(Set<Id> caseIds){
+		fflib_ISObjectDomain casesDomain = Helpdesk_Application.helpDeskDomain.newInstance(caseIds);
+		if(casesDomain instanceof fflib_SObjectDomain){
+			fflib_SObjectDomain caseDomainInterface = (fflib_SObjectDomain)casesDomain;
+			caseDomainInterface.onApplyDefaults();
+			caseDomainInterface.onValidate();
+		}
 		fflib_ISObjectUnitOfWork uow = Helpdesk_Application.helpDeskUOW.newInstance();
 		List<Case> newCases = [SELECT Id, ContactId, OwnerId FROM Case WHERE Id IN: caseIds AND Status = 'New'];
 		List<Task> newTasks = new List<Task>();
