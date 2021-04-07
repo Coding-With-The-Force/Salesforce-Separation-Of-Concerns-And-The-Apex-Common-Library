@@ -19,6 +19,12 @@ public with sharing class Application
 			Task.SObjectType}
 	);
 
+	public static fflib_SObjectUnitOfWork uow = new fflib_SObjectUnitOfWork(new List<SObjectType>{
+			Case.SObjectType,
+			Contact.SObjectType,
+			Account.SObjectType,
+			Task.SObjectType});
+
 	//This allows us to create a factory for instantiating service classes. You send it the interface for your service class
 	//and it will return the correct service layer class
 	//Exmaple initialization: Object objectService = Application.service.newInstance(Task_Service_Interface.class);
