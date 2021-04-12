@@ -10,6 +10,7 @@ public with sharing class Abstract_Task_Creator_Controller
 		Schema.SObjectType objectType = recordId.getSobjectType();
 		try{
 			Task_Service.createTasks(recordIds, objectType);
+
 			Task_Selector taskSelector = (Task_Selector)Application.selector.newInstance(Task.SObjectType);
 			return taskSelector.selectTodaysTasks();
 		}

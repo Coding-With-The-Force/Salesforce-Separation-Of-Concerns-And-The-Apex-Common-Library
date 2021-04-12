@@ -52,7 +52,7 @@ public inherited sharing class Case_Selector extends fflib_SObjectSelector imple
 	//This allows us to select all new cases in the system using the QueryFactory in fflib_SObjectSelector
 	public List<Case> selectNewCases(){
 		return (List<Case>) Database.query(newQueryFactory().
-				setCondition('Status = \'New\'').
+				setCondition('Status = \'New\'').setLimit(1000).subselectQuery(Contact).
 				toSOQL());
 	}
 
@@ -65,5 +65,12 @@ public inherited sharing class Case_Selector extends fflib_SObjectSelector imple
 						selectField(Case.Origin).
 						toSOQL()
 		);
+	}
+
+	public List<Case> innerQueryExample(){
+		fflib_QueryFactory caseQueryFactory = newQueryFactory();
+		fflib_QueryFactory taskSubSelectQuery = new Task_Selector().addQueryFactorySubselect(caseQueryFactory);
+		System.debug('This is the query ::: ' + caseQueryFactory.toSOQL());
+		return (List<Case>) Database.query(caseQueryFactory.toSOQL());
 	}
 }
