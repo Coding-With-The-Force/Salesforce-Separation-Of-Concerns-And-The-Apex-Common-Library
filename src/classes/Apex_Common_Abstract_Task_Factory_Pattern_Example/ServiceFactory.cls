@@ -1,7 +1,7 @@
 /*
    @author: Matt Gerry
    @date: 04/11/2021
-   @description: This method is an override for the prebuilt fflib_Application.ServiceFactory that allows
+   @description: This class is an override for the prebuilt fflib_Application.ServiceFactory that allows
    us to dynamically call service classes based on the running users custom permissions.
  */
 
@@ -26,7 +26,7 @@ public with sharing class ServiceFactory extends fflib_Application.ServiceFactor
 		return super.newInstance(serviceInterfaceType);
 	}
 
-	//Creating our map of overrides by on user custom permissions
+	//Creating our map of overrides by our user custom permissions
 	private Map<String, Service_By_User_Type__mdt> getServicesByUserPermAndInterface(){
 		Map<String, Service_By_User_Type__mdt> servicesByUserType = new Map<String, Service_By_User_Type__mdt>();
 		for(Service_By_User_Type__mdt serviceByUser: Service_By_User_Type__mdt.getAll().values()){

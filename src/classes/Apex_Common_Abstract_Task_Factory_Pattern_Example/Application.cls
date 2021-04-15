@@ -23,7 +23,7 @@ public with sharing class Application
 	//and it will return the correct service layer class
 	//Exmaple initialization: Object objectService = Application.service.newInstance(Task_Service_Interface.class);
 	public static final fflib_Application.ServiceFactory service =
-			new ServiceFactory(
+			new fflib_Application.ServiceFactory(
 					new Map<Type, Type>{
 							Task_Service_Interface.class => Task_Service_Impl.class}
 			);
