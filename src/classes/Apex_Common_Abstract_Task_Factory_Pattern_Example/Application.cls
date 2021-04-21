@@ -13,9 +13,9 @@ public with sharing class Application
 	public static final fflib_Application.UnitOfWorkFactory UOW =
 		new fflib_Application.UnitOfWorkFactory(
 			new List<SObjectType>{
-			Case.SObjectType,
-			Contact.SObjectType,
 			Account.SObjectType,
+			Contact.SObjectType,
+			Case.SObjectType,
 			Task.SObjectType}
 	);
 
