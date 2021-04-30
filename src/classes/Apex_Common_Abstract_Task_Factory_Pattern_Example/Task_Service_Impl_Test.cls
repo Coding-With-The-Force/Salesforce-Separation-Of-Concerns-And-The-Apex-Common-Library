@@ -61,8 +61,10 @@ public with sharing class Task_Service_Impl_Test
 
 
 		try{
+			Test.startTest();
 			//Calling the method we're actually testing (this is a real method call)
 			Task_Service.createTasks(caseIds, Case.SObjectType);
+			Test.stopTest();
 		}
 		catch(Exception e){
 			//Because we are throwing an exception in our stubs we need to wrap our real
@@ -74,8 +76,17 @@ public with sharing class Task_Service_Impl_Test
 		//Verifying this method was never called, we didn't intend to call it, so
 		//just checking we didn't
 		((Cases)mocks.verify(mockCaseDomain, mocks.never().description('This method was called but it shouldn\'t have been'))).handleAfterInsert();
+		List<Case> caseMatchingList = (List<Case>)fflib_Match.sObjectsWith(new List<Map<Schema.SObjectField, Object>>{new Map<SObjectField, Object>{
+				Case.Id => mockCaseId,
+				Case.Subject => 'Bye',
+				Case.Status => 'New',
+				Case.Origin => 'Email'
+		}});
 
+		((fflib_ISObjectUnitOfWork)mocks.verify(mockUOW, 1)).registerDirty(caseMatchingList);
+		((fflib_ISObjectUnitOfWork)mocks.verify(mockUOW,1)).registerDirty(caseList);
+		((Cases)mocks.verify(mockCaseDomain, 1)).createTasks(caseList, mockUOW);
 		//Checking that we did indeed call the createTasks method as expected.
-		((Cases)mocks.verify(mockCaseDomain)).createTasks(caseList, mockUOW);
+		//((Cases)mocks.verify(mockCaseDomain)).createTasks(caseMatchingList, (fflib_ISObjectUnitOfWork)fflib_Match.anyObject());
 	}
 }

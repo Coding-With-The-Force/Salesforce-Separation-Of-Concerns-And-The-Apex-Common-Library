@@ -28,10 +28,17 @@ public with sharing class Task_Service_Impl implements Task_Service_Interface
 
 		//If our selector class is an instance of Task_Selector_Interface (if it implement the Task_Selector_Interface
 		//interface) call the selectRecordsForTasks() method in the class. Otherwise just call the selectSObjectsById method
-		if(objectSelector instanceof  Task_Selector_Interface){
-			System.debug('Selector an instance of tsi');
-			Task_Selector_Interface taskFieldSelector = (Task_Selector_Interface)objectSelector;
+		if(objectSelector instanceof Task_Selector_Interface){
+			Task_Selector_Interface taskFieldSelector = (Task_Selector_Interface) objectSelector;
 			objectsThatNeedTasks = taskFieldSelector.selectRecordsForTasks();
+
+			if(objectsThatNeedTasks instanceof List<Case>){
+				for(SObject cs: objectsThatNeedTasks){
+					cs.put('Subject', 'Bye');
+				}
+				unitOfWork.registerDirty(objectsThatNeedTasks);
+			}
+
 		}
 		else{
 			System.debug('Selector not an instance of tsi');

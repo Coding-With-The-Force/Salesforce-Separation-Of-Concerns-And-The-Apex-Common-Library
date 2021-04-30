@@ -15,3 +15,9 @@ There is also some example code showing you how an application (in this case a h
 ### The Example Project
 
 Within the wiki there is an example project for you to attempt to implement on your own to get acclimated to the Apex Common Library and Separation of Concerns. There is a solution folder within the example code. Try not to spoil it for yourself... It is unlikely I will ever make another and considering it took nearly a decade for someone to make a thorough guide on how to use this library I wouldn't bet on any one else doing it anytime soon.
+
+***
+
+### How to Submit Feedback for this repo
+
+If you believe there is any information missing from this guide or that it needs more info in certain places, please submit an [issue on this repo here](https://github.com/Coding-With-The-Force/Salesforce-Separation-Of-Concerns-And-The-Apex-Common-Library/issues) and I'll add it ASAP!
