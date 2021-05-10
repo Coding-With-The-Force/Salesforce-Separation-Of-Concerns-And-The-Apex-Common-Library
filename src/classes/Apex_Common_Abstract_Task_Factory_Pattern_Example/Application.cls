@@ -28,6 +28,14 @@ public with sharing class Application
 							Task_Service_Interface.class => Task_Service_Impl.class}
 			);
 
+	public static final fflib_Application.ServiceFactory serviceByRecordType =
+			new fflib_Application.ServiceFactory(
+					new Map<String, Type>{
+							'B2B Sales Case' => Help_Desk_B2B_Service_Impl.class,
+							'B2C Sales Case' => Help_Desk_B2C_Service_Impl.class,
+					        'Marketing Case' => Help_Desk_Marketing_Service_Impl.class}
+			);
+
 	//This allows us to create a factory for instantiating selector classes. You send it an object type and it sends
 	//you the corresponding selectory layer class.
 	//Exmaple initialization: fflib_ISObjectSelector objectSelector = Application.selector.newInstance(objectType);
@@ -36,7 +44,8 @@ public with sharing class Application
 					new Map<SObjectType, Type>{
 							Case.SObjectType => Case_Selector.class,
 							Contact.SObjectType => Contact_Selector.class,
-							Task.SObjectType => Task_Selector.class}
+							Task.SObjectType => Task_Selector.class,
+							Account.SObjectType => Account_Selector.class}
 			);
 
 	//This allows you to create a factory for instantiating domain classes. You can send it a set of record ids and
@@ -46,7 +55,8 @@ public with sharing class Application
 			new fflib_Application.DomainFactory(
 					Application.selector,
 					new Map<SObjectType, Type>{Case.SObjectType => Cases.Constructor.class,
-					Contact.SObjectType => Contacts.Constructor.class}
+					Contact.SObjectType => Contacts.Constructor.class,
+					Account.SObjectType => Accounts.Constructor.class}
 			);
 
 

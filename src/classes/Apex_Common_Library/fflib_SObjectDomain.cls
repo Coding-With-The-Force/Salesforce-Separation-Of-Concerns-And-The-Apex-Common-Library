@@ -197,8 +197,8 @@ public virtual with sharing class fflib_SObjectDomain
 	/**
 	 * Base handler for the Apex Trigger event Before Insert, calls the onApplyDefaults method, followed by onBeforeInsert
 	 **/
-    public virtual void handleBeforeInsert() 
-    { 
+    public virtual void handleBeforeInsert()
+{
     	onApplyDefaults(); 
     	onBeforeInsert();
     }

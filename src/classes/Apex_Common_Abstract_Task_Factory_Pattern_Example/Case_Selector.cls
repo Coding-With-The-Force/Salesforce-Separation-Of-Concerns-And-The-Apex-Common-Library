@@ -10,20 +10,13 @@
 //in the Task_Service_Impl class
 public inherited sharing class Case_Selector extends fflib_SObjectSelector implements Task_Selector_Interface
 {
-	public Case_Selector(){
-		//Calling the fflib_SObjectSelector classes constructor. Since the fflib_SObjectSelector
-		//is our "super" class you call its constructor with the keyword super
-		super(false, true, true, false);
-	}
-
 	//This sets the base fields that you will ALWAYS have in your queries when calling this selector class
 	public List<Schema.SObjectField> getSObjectFieldList(){
 		return new List<Schema.SObjectField>{
 			Case.Id,
 			Case.Subject,
 			Case.Status,
-			Case.ContactId,
-			Case.Contact.AccountId
+			Case.ContactId
 		};
 	}
 

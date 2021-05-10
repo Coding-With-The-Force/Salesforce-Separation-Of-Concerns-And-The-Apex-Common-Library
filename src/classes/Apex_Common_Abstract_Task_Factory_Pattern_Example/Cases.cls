@@ -21,7 +21,7 @@ public inherited sharing class Cases extends fflib_SObjectDomain implements Task
 	//This method is called on a beforeInsert transaction to set defaults on a record
 	public override void onApplyDefaults(){
 		//The records variable comes from the super class
-		for(Case newCase: (List<Case>) records){
+		for(Case newCase: (List<Case>) Records){
 			if(newCase.Status == 'New'){
 				newCase.Status = 'Open';
 			}
@@ -36,12 +36,12 @@ public inherited sharing class Cases extends fflib_SObjectDomain implements Task
 		{
 			if(newCase.ContactId == null)
 			{
-				throw new Cases_Exception();
+				//throw new Cases_Exception();
 			}
 		}
 	}
 
-	public fflib_ISObjectUnitOfWork createTasks(List<SObject> recordsToCreateTasksFor, fflib_ISObjectUnitOfWork unitOfWork)
+	public void createTasks(List<SObject> recordsToCreateTasksFor, fflib_ISObjectUnitOfWork unitOfWork)
 	{
 		List<Case> caseList = (List<Case>) recordsToCreateTasksFor;
 		List<Task> taskList = new List<Task>();
@@ -54,6 +54,5 @@ public inherited sharing class Cases extends fflib_SObjectDomain implements Task
 			taskList.add(tsk);
 		}
 		unitOfWork.registerNew(taskList);
-		return unitOfWork;
 	}
 }

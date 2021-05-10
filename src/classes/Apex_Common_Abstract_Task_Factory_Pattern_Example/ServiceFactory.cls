@@ -8,10 +8,23 @@
 public with sharing class ServiceFactory extends fflib_Application.ServiceFactory
 {
 	Map<String, Service_By_User_Type__mdt> servicesByUserPermAndInterface = new Map<String, Service_By_User_Type__mdt>();
+	Map<String, Type> servicesByRecordType = new Map<String, Type>();
 
 	public ServiceFactory(Map<Type, Type> serviceInterfaceByServiceImpl){
 		super(serviceInterfaceByServiceImpl);
 		this.servicesByUserPermAndInterface = getServicesByUserPermAndInterface();
+	}
+
+	public ServiceFactory(Map<String, Type> servicesByRecordType){
+		super(servicesByRecordType);
+		this.servicesByRecordType = servicesByRecordType;
+	}
+
+	public Object newInstanceByRecordType(String RecordType){
+		Type serviceImpl = servicesByRecordType.get(RecordType);
+		if(serviceImpl==null)
+			throw new fflib_Application.DeveloperException('No implementation registered for record type ' + RecordType);
+		return serviceImpl.newInstance();
 	}
 
 	//Overriding the fflib_Application.ServiceFactory newInstance method to allow us to initialize a new service implementation type based on the running

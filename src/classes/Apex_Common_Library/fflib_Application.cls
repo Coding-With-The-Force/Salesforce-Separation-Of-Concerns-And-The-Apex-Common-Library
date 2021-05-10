@@ -123,8 +123,15 @@ public virtual class fflib_Application
 	public virtual class ServiceFactory
 	{
 		protected Map<Type, Type> m_serviceInterfaceTypeByServiceImplType;
-
 		protected Map<Type, Object> m_serviceInterfaceTypeByMockService;
+
+		protected Map<String, Type> serviceClassByRecordType;
+		protected Map<String, Object> m_serviceClassByRecordType;
+
+		public ServiceFactory(Map<String, Type> serviceClassByRecordType){
+			this.serviceClassByRecordType = serviceClassByRecordType;
+			m_serviceClassByRecordType = new Map<String, Object>();
+		}
 
 		/**
 		 * Constructs a simple Service Factory, 
@@ -138,6 +145,19 @@ public virtual class fflib_Application
 		{
 			m_serviceInterfaceTypeByServiceImplType = serviceInterfaceTypeByServiceImplType;
 			m_serviceInterfaceTypeByMockService = new Map<Type, Object>();
+		}
+
+		public Object newInstanceByRecordType(String recordType){
+			System.debug('This is the record type ::: ' + recordType);
+			if(m_serviceClassByRecordType.containsKey(recordType)){
+				return m_serviceClassByRecordType.get(recordType);
+			}
+
+			Type serviceImpl = serviceClassByRecordType.get(recordType);
+			if(serviceImpl == null){
+				throw new fflib_Application.DeveloperException('No implementation registered for record type ' + RecordType);
+			}
+			return serviceImpl.newInstance();
 		}
 
 		/**
@@ -317,6 +337,7 @@ public virtual class fflib_Application
 		 **/
 		public virtual fflib_ISObjectDomain newInstance(List<SObject> records)
 		{
+			System.debug('These are the records ::: ' + records);
 			SObjectType domainSObjectType = records.getSObjectType();
 			if(domainSObjectType==null)
 				throw new DeveloperException('Unable to determine SObjectType');
