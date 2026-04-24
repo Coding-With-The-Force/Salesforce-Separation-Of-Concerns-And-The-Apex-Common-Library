@@ -1,0 +1,35 @@
+title: "Salesforce Separation of Concerns & The Apex Common Library"
+description: "A comprehensive guide to implementing Separation of Concerns in Salesforce using the Apex Common Library."
+
+remote_theme: just-the-docs/just-the-docs
+
+# Optional: Set a URL if you know your GitHub Pages URL
+# url: "https://coding-with-the-force.github.io"
+# baseurl: "/Salesforce-Separation-Of-Concerns-And-The-Apex-Common-Library"
+
+# Aux links in the top-right corner of every page
+aux_links:
+  "View on GitHub":
+    - "https://github.com/Coding-With-The-Force/Salesforce-Separation-Of-Concerns-And-The-Apex-Common-Library"
+  "YouTube Channel":
+    - "https://www.youtube.com/@CodingWithTheForce"
+
+# Footer content
+footer_content: "Made with ❤️ by <a href=\"https://github.com/Coding-With-The-Force\">Coding With The Force</a>. <a href=\"https://www.paypal.com/donate?business=RNHEF8ZWKKLDG&currency_code=USD\">Buy me a coffee ☕</a>"
+
+# Enable search
+search_enabled: true
+
+# Color scheme: "light" or "dark"
+color_scheme: light
+
+# Back to top link
+back_to_top: true
+back_to_top_text: "Back to top"
+
+# Callouts
+callouts_level: quiet
+
+plugins:
+  - jekyll-remote-theme
+  - jekyll-seo-tag
