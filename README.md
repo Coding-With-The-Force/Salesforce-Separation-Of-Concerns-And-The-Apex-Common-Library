@@ -2,9 +2,11 @@
 
 ### The Separation of Concerns Wiki and GitHub Pages Site 
 
-You can view the new and improved version of this wiki as a GitHub Pages Site here:  <a href="https://coding-with-the-force.github.io/Salesforce-Separation-Of-Concerns-And-The-Apex-Common-Library/" target="_blank">Apex Common GitHub Pages Site</a>
+**You can view the new and improved version of this wiki as a GitHub Pages Site here:  <a href="https://coding-with-the-force.github.io/Salesforce-Separation-Of-Concerns-And-The-Apex-Common-Library/" target="_blank">Apex Common GitHub Pages Site</a>**. Within the GitHub Pages site you can easily search for anything you are interested in, and you can play the tutorial videos directly on the page if you are interested in watching video walkthroughs.
 
-Housed in this repo is a <a href="https://github.com/Coding-With-The-Force/Salesforce_Separation_Of_Concerns/wiki" target="_blank">wiki</a> that goes over how to implement Separation of Concerns in Salesforce. It explains the three layers in Salesforce that you should separate your concerns into (Service, Domain and Selector) and how to leverage the Apex Common Library to make implementing Separation of Concerns in your org considerably easier.
+
+
+Housed in this repo is also an older version of the <a href="https://github.com/Coding-With-The-Force/Salesforce_Separation_Of_Concerns/wiki" target="_blank">wiki</a> that goes over how to implement Separation of Concerns in Salesforce. It explains the three layers in Salesforce that you should separate your concerns into (Service, Domain and Selector) and how to leverage the Apex Common Library to make implementing Separation of Concerns in your org considerably easier. This version of the wiki will continue to be maintained, but the GitHub Pages Site is much easier to use.
 
 ***
 
