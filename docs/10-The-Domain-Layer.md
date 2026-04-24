@@ -6,8 +6,6 @@ nav_order: 11
 
 # The Domain Layer
 
-### Video Tutorial 
-
 <iframe width="100%" height="400" src="https://www.youtube.com/embed/ZUDwBW2PftA" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
 ---

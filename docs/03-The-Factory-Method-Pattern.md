@@ -6,8 +6,6 @@ nav_order: 4
 
 # The Factory Method Pattern
 
-### Video Tutorial 
-
 <iframe width="100%" height="400" src="https://www.youtube.com/embed/TAegJdt_z7c" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
 ---

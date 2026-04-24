@@ -6,8 +6,6 @@ nav_order: 7
 
 # The fflib_SObjectUnitOfWork Class
 
-### Video Tutorial 
-
 <iframe width="100%" height="400" src="https://www.youtube.com/embed/T14iEOcy_Kg" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
 ---

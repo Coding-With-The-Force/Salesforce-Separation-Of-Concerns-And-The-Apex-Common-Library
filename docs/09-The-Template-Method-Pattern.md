@@ -6,8 +6,6 @@ nav_order: 10
 
 # The Template Method Pattern
 
-### Video Tutorial 
-
 <iframe width="100%" height="400" src="https://www.youtube.com/embed/czTH_cGNNvI" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
 ---

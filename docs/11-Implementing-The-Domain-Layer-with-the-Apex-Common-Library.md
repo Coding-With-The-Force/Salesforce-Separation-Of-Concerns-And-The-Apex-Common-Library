@@ -6,8 +6,6 @@ nav_order: 12
 
 # Implementing The Domain Layer with the Apex Common Library
 
-### Video Tutorial 
-
 <iframe width="100%" height="400" src="https://www.youtube.com/embed/9kbUvY1uMIE" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
 ---

@@ -6,8 +6,6 @@ nav_order: 17
 
 # Unit Test Mocks with Separation of Concerns
 
-### Video Tutorial 
-
 <iframe width="100%" height="400" src="https://www.youtube.com/embed/TzRohBbp8dw" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
 ---
