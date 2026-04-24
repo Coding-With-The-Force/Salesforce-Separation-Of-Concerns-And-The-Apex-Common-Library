@@ -9,6 +9,8 @@ permalink: /
 # The Complete Guide to the Apex Common Library
 {: .no_toc }
 
+![Patterns Turning]({{ "/assets/images/patternsturning.png" | relative_url }})
+
 ### What Is This Wiki?
 
 This wiki hopes to simplify the concept of [Separation of Concerns](https://en.wikipedia.org/wiki/Separation_of_concerns#:~:text=In%20computer%20science%2C%20separation%20of,code%20of%20a%20computer%20program.) in Salesforce and leveraging the [Apex Common Library](https://github.com/apex-enterprise-patterns/fflib-apex-common) to implement it. While this wiki hopes to make this easier, if you finish everything here and want even more information about this topic I would suggest reading [Andy Fawcett's Salesforce Lightning Platform Enterprise Architecture Book](https://amzn.to/2R0D4BQ). Specifically pages 159-268 for Separation of Concerns and how to use Apex Commons to implement it and pages 477-520 for information on Unit Testing and Apex Mocks. It's a lot harder to consume (in my opinion) than the wiki below, but it is loaded with valuable information. It's how I learned most of what I'm presenting to you in the repo.
