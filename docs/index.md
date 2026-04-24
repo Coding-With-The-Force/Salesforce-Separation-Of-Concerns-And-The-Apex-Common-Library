@@ -6,7 +6,7 @@ description: "A comprehensive guide to implementing Separation of Concerns in Sa
 permalink: /
 ---
 
-# Salesforce Separation of Concerns & The Apex Common Library
+# The Complete Guide to the Apex Common Library
 {: .no_toc }
 
 ### What Is This Wiki?
