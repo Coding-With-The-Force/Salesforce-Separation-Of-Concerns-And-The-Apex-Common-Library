@@ -8,7 +8,7 @@ nav_order: 15
 
 ### Video Tutorial 
 
-[![Implementing the Selector Layer with the Apex Common Library](https://img.youtube.com/vi/-ZZbRA2-Gew/hqdefault.jpg)](https://youtu.be/-ZZbRA2-Gew "Implementing the Selector Layer with the Apex Common Library")
+<iframe width="100%" height="400" src="https://www.youtube.com/embed/-ZZbRA2-Gew" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
 --- 
 

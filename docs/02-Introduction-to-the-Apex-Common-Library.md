@@ -8,7 +8,7 @@ nav_order: 3
 
 ### Video Tutorial 
 
-[![Introduction to the Apex Common Library](https://img.youtube.com/vi/3JmWECi77zU/hqdefault.jpg)](https://www.youtube.com/watch?v=3JmWECi77zU "Introduction to the Apex Common Library")
+<iframe width="100%" height="400" src="https://www.youtube.com/embed/3JmWECi77zU" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
 ---
 

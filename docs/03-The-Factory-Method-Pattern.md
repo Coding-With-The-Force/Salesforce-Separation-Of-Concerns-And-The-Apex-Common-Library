@@ -8,7 +8,7 @@ nav_order: 4
 
 ### Video Tutorial 
 
-[![The Factory Pattern](https://img.youtube.com/vi/TAegJdt_z7c/hqdefault.jpg)](https://youtu.be/TAegJdt_z7c "The Factory Pattern")
+<iframe width="100%" height="400" src="https://www.youtube.com/embed/TAegJdt_z7c" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
 ---
 

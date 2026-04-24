@@ -8,7 +8,7 @@ nav_order: 14
 
 ### Video Tutorial 
 
-[![The Selector Layer](https://img.youtube.com/vi/cPU6D-TpLvs/hqdefault.jpg)](https://youtu.be/cPU6D-TpLvs "The Selector Layer")
+<iframe width="100%" height="400" src="https://www.youtube.com/embed/cPU6D-TpLvs" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
 ---
 

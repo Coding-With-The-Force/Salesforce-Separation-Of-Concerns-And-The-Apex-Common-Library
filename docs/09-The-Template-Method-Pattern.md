@@ -8,7 +8,7 @@ nav_order: 10
 
 ### Video Tutorial 
 
-[![The Template Method Pattern](https://img.youtube.com/vi/czTH_cGNNvI/hqdefault.jpg)](https://youtu.be/czTH_cGNNvI "The Template Method Pattern")
+<iframe width="100%" height="400" src="https://www.youtube.com/embed/czTH_cGNNvI" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
 ---
 
