@@ -8,7 +8,7 @@ nav_order: 18
 
 ### Video Tutorial 
 
-[![Implementing Unit Testing with Apex Mocks](https://yt-embed.herokuapp.com/embed?v=PLSrLc6jjwQ)](https://youtu.be/PLSrLc6jjwQ "Implementing Unit Testing with Apex Mocks")
+[![Implementing Unit Testing with Apex Mocks](https://img.youtube.com/vi/PLSrLc6jjwQ/hqdefault.jpg)](https://youtu.be/PLSrLc6jjwQ "Implementing Unit Testing with Apex Mocks")
 
 ---
 

@@ -8,7 +8,7 @@ nav_order: 16
 
 ### Video Tutorial 
 
-[![The Difference between Unit Tests and Integration Tests](https://yt-embed.herokuapp.com/embed?v=SSJ1E31F6ek)](https://youtu.be/SSJ1E31F6ek "The Difference between Unit Tests and Integration Tests")
+[![The Difference between Unit Tests and Integration Tests](https://img.youtube.com/vi/SSJ1E31F6ek/hqdefault.jpg)](https://youtu.be/SSJ1E31F6ek "The Difference between Unit Tests and Integration Tests")
 
 ---
 

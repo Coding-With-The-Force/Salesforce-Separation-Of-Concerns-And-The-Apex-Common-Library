@@ -8,7 +8,7 @@ nav_order: 6
 
 ### Video Tutorial 
 
-[![The Unit of Work Pattern](https://yt-embed.herokuapp.com/embed?v=ugr7OCZ3ZOM)](https://youtu.be/ugr7OCZ3ZOM "The Unit of Work Pattern")
+[![The Unit of Work Pattern](https://img.youtube.com/vi/ugr7OCZ3ZOM/hqdefault.jpg)](https://youtu.be/ugr7OCZ3ZOM "The Unit of Work Pattern")
 
 ---
 

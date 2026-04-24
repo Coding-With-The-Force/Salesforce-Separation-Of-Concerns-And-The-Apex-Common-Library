@@ -8,7 +8,7 @@ nav_order: 7
 
 ### Video Tutorial 
 
-[![The fflib_SObjectUnitOfWork Class](https://yt-embed.herokuapp.com/embed?v=T14iEOcy_Kg)](https://youtu.be/T14iEOcy_Kg "The fflib_SObjectUnitOfWork Class")
+[![The fflib_SObjectUnitOfWork Class](https://img.youtube.com/vi/T14iEOcy_Kg/hqdefault.jpg)](https://youtu.be/T14iEOcy_Kg "The fflib_SObjectUnitOfWork Class")
 
 ---
 

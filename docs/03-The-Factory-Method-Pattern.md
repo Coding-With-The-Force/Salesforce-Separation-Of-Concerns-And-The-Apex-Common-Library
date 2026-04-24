@@ -8,7 +8,7 @@ nav_order: 4
 
 ### Video Tutorial 
 
-[![The Factory Pattern](https://yt-embed.herokuapp.com/embed?v=TAegJdt_z7c)](https://youtu.be/TAegJdt_z7c "The Factory Pattern")
+[![The Factory Pattern](https://img.youtube.com/vi/TAegJdt_z7c/hqdefault.jpg)](https://youtu.be/TAegJdt_z7c "The Factory Pattern")
 
 ---
 

@@ -9,7 +9,7 @@ nav_order: 2
 
 ### Video Tutorial 
 
-[![Introduction to the Separation of Concerns Design Principle](https://yt-embed.herokuapp.com/embed?v=nU4TKRFzdx4)](http://www.youtube.com/watch?v=nU4TKRFzdx4 "Introduction to the Separation of Concerns Design Principle")
+[![Introduction to the Separation of Concerns Design Principle](https://img.youtube.com/vi/nU4TKRFzdx4/hqdefault.jpg)](http://www.youtube.com/watch?v=nU4TKRFzdx4 "Introduction to the Separation of Concerns Design Principle")
 
 ---
 

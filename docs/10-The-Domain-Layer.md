@@ -8,7 +8,7 @@ nav_order: 11
 
 ### Video Tutorial 
 
-[![The Domain Layer](https://yt-embed.herokuapp.com/embed?v=ZUDwBW2PftA)](https://youtu.be/ZUDwBW2PftA "The Domain Layer")
+[![The Domain Layer](https://img.youtube.com/vi/ZUDwBW2PftA/hqdefault.jpg)](https://youtu.be/ZUDwBW2PftA "The Domain Layer")
 
 ---
 

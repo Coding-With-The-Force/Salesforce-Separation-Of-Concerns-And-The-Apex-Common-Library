@@ -8,7 +8,7 @@ nav_order: 3
 
 ### Video Tutorial 
 
-[![Introduction to the Apex Common Library](https://yt-embed.herokuapp.com/embed?v=3JmWECi77zU)](https://www.youtube.com/watch?v=3JmWECi77zU "Introduction to the Apex Common Library")
+[![Introduction to the Apex Common Library](https://img.youtube.com/vi/3JmWECi77zU/hqdefault.jpg)](https://www.youtube.com/watch?v=3JmWECi77zU "Introduction to the Apex Common Library")
 
 ---
 

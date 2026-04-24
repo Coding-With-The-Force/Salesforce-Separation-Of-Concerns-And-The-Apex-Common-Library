@@ -8,7 +8,7 @@ nav_order: 8
 
 ### Video Tutorial 
 
-[![The Service Layer](https://yt-embed.herokuapp.com/embed?v=5tM_MHV1ypY)](https://youtu.be/5tM_MHV1ypY "The Service Layer")
+[![The Service Layer](https://img.youtube.com/vi/5tM_MHV1ypY/hqdefault.jpg)](https://youtu.be/5tM_MHV1ypY "The Service Layer")
 
 ---
 

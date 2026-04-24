@@ -8,7 +8,7 @@ nav_order: 12
 
 ### Video Tutorial 
 
-[![Implementing the Domain Layer with The Apex Common Library](https://yt-embed.herokuapp.com/embed?v=9kbUvY1uMIE)](https://youtu.be/9kbUvY1uMIE "Implementing the Domain Layer with The Apex Common Library")
+[![Implementing the Domain Layer with The Apex Common Library](https://img.youtube.com/vi/9kbUvY1uMIE/hqdefault.jpg)](https://youtu.be/9kbUvY1uMIE "Implementing the Domain Layer with The Apex Common Library")
 
 ---
 

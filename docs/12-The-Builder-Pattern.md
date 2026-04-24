@@ -8,7 +8,7 @@ nav_order: 13
 
 ### Video Tutorial 
 
-[![The Builder Pattern](https://yt-embed.herokuapp.com/embed?v=frke3NN0F90)](https://youtu.be/frke3NN0F90 "The Builder Pattern")
+[![The Builder Pattern](https://img.youtube.com/vi/frke3NN0F90/hqdefault.jpg)](https://youtu.be/frke3NN0F90 "The Builder Pattern")
 
 ---
 

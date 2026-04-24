@@ -8,7 +8,7 @@ nav_order: 14
 
 ### Video Tutorial 
 
-[![The Selector Layer](https://yt-embed.herokuapp.com/embed?v=cPU6D-TpLvs)](https://youtu.be/cPU6D-TpLvs "The Selector Layer")
+[![The Selector Layer](https://img.youtube.com/vi/cPU6D-TpLvs/hqdefault.jpg)](https://youtu.be/cPU6D-TpLvs "The Selector Layer")
 
 ---
 

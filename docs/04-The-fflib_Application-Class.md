@@ -8,7 +8,7 @@ nav_order: 5
 
 ### Video Tutorial 
 
-[![The fflib_Application Class](https://yt-embed.herokuapp.com/embed?v=pUvDyNXNFNs)](https://youtu.be/pUvDyNXNFNs "The fflib_Application Class")
+[![The fflib_Application Class](https://img.youtube.com/vi/pUvDyNXNFNs/hqdefault.jpg)](https://youtu.be/pUvDyNXNFNs "The fflib_Application Class")
 
 ---
 ### What is the fflib_Application class?

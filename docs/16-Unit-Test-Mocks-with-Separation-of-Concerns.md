@@ -8,7 +8,7 @@ nav_order: 17
 
 ### Video Tutorial 
 
-[![Unit Test Mocks and Separation of Concerns](https://yt-embed.herokuapp.com/embed?v=TzRohBbp8dw)](https://youtu.be/TzRohBbp8dw "Unit Test Mocks and Separation of Concerns")
+[![Unit Test Mocks and Separation of Concerns](https://img.youtube.com/vi/TzRohBbp8dw/hqdefault.jpg)](https://youtu.be/TzRohBbp8dw "Unit Test Mocks and Separation of Concerns")
 
 ---
 

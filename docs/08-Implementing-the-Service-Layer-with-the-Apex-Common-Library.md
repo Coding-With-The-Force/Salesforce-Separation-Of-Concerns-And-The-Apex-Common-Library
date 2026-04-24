@@ -8,7 +8,7 @@ nav_order: 9
 
 ### Video Tutorial 
 
-[![Implementing the Service Layer with the Apex Common Library](https://yt-embed.herokuapp.com/embed?v=nj9O-qWEeXg)](https://youtu.be/nj9O-qWEeXg "Implementing the Service Layer with the Apex Common Library")
+[![Implementing the Service Layer with the Apex Common Library](https://img.youtube.com/vi/nj9O-qWEeXg/hqdefault.jpg)](https://youtu.be/nj9O-qWEeXg "Implementing the Service Layer with the Apex Common Library")
 
 ---
 

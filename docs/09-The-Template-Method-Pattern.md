@@ -8,7 +8,7 @@ nav_order: 10
 
 ### Video Tutorial 
 
-[![The Template Method Pattern](https://yt-embed.herokuapp.com/embed?v=czTH_cGNNvI)](https://youtu.be/czTH_cGNNvI "The Template Method Pattern")
+[![The Template Method Pattern](https://img.youtube.com/vi/czTH_cGNNvI/hqdefault.jpg)](https://youtu.be/czTH_cGNNvI "The Template Method Pattern")
 
 ---
 
