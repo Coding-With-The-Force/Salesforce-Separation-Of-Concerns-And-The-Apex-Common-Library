@@ -1,7 +1,5 @@
 ---
-layout: default
 title: "16) Unit Test Mocks with Separation of Concerns"
-nav_order: 17
 ---
 
 # Unit Test Mocks with Separation of Concerns
@@ -170,4 +168,4 @@ If the above didn't make how to implement mocking via separation of concerns any
 
 ### Next Section
 
-[Part 17: Implementing Mock Unit Testing with Apex Mocks](./17-Implementing-Mock-Unit-Tests-with-the-Apex-Mocks-Library) 
+[Part 17: Implementing Mock Unit Testing with Apex Mocks](./17-Implementing-Mock-Unit-Tests-with-the-Apex-Mocks-Library.md) 

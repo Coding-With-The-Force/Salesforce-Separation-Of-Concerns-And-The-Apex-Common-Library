@@ -1,7 +1,5 @@
 ---
-layout: default
 title: "11) Implementing The Domain Layer with the Apex Common Library"
-nav_order: 12
 ---
 
 # Implementing The Domain Layer with the Apex Common Library
@@ -211,4 +209,4 @@ The following is a list of trigger event methods a what they do:
 
 ### Next Section
 
-[Part 12: The Builder Pattern](./12-The-Builder-Pattern)
+[Part 12: The Builder Pattern](./12-The-Builder-Pattern.md)

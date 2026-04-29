@@ -1,15 +1,11 @@
 ---
-layout: default
 title: Home
-nav_order: 1
 description: "A comprehensive guide to implementing Separation of Concerns in Salesforce using the Apex Common Library."
-permalink: /
 ---
 
 # The Complete Guide to the Apex Common Library
-{: .no_toc }
 
-![Patterns Turning]({{ "/assets/images/patternsturning.png" | relative_url }})
+![Patterns Turning](assets/images/patternsturning.png)
 
 ### What Is This Wiki?
 
@@ -21,23 +17,23 @@ If you enjoy this wiki and would like to say thank you, feel free to [send a don
 
 ### Table of Contents
 
-1. [Introduction to the Separation of Concerns Design Principle](./01-Introduction-to-the-Separation-of-Concerns-Design-Principle)
-2. [Introduction to the Apex Common Library](./02-Introduction-to-the-Apex-Common-Library)
-3. [The Factory Pattern](./03-The-Factory-Method-Pattern)
-4. [The fflib\_Application Class](./04-The-fflib_Application-Class)
-5. [The Unit of Work Pattern](./05-The-Unit-of-Work-Pattern)
-6. [The fflib\_SObjectUnitOfWork Class](./06-The-fflib_SObjectUnitOfWork-Class)
-7. [The Service Layer](./07-The-Service-Layer)
-8. [Implementing the Service Layer with the Apex Common Library](./08-Implementing-the-Service-Layer-with-the-Apex-Common-Library)
-9. [The Template Method Pattern](./09-The-Template-Method-Pattern)
-10. [The Domain Layer](./10-The-Domain-Layer)
-11. [Implementing the Domain Layer with the Apex Common Library](./11-Implementing-The-Domain-Layer-with-the-Apex-Common-Library)
-12. [The Builder Pattern](./12-The-Builder-Pattern)
-13. [The Selector Layer](./13-The-Selector-Layer)
-14. [Implementing the Selector Layer with the Apex Common Library](./14-Implementing-the-Selector-Layer-with-the-Apex-Common-Library)
-15. [The Difference Between Unit Tests and Integration Tests](./15-The-Difference-Between-Unit-Tests-and-Integration-Tests)
-16. [Unit Test Mocks with Separation of Concerns](./16-Unit-Test-Mocks-with-Separation-of-Concerns)
-17. [Implementing Mock Unit Tests with the Apex Mocks Library](./17-Implementing-Mock-Unit-Tests-with-the-Apex-Mocks-Library)
+1. [Introduction to the Separation of Concerns Design Principle](./01-Introduction-to-the-Separation-of-Concerns-Design-Principle.md)
+2. [Introduction to the Apex Common Library](./02-Introduction-to-the-Apex-Common-Library.md)
+3. [The Factory Pattern](./03-The-Factory-Method-Pattern.md)
+4. [The fflib\_Application Class](./04-The-fflib_Application-Class.md)
+5. [The Unit of Work Pattern](./05-The-Unit-of-Work-Pattern.md)
+6. [The fflib\_SObjectUnitOfWork Class](./06-The-fflib_SObjectUnitOfWork-Class.md)
+7. [The Service Layer](./07-The-Service-Layer.md)
+8. [Implementing the Service Layer with the Apex Common Library](./08-Implementing-the-Service-Layer-with-the-Apex-Common-Library.md)
+9. [The Template Method Pattern](./09-The-Template-Method-Pattern.md)
+10. [The Domain Layer](./10-The-Domain-Layer.md)
+11. [Implementing the Domain Layer with the Apex Common Library](./11-Implementing-The-Domain-Layer-with-the-Apex-Common-Library.md)
+12. [The Builder Pattern](./12-The-Builder-Pattern.md)
+13. [The Selector Layer](./13-The-Selector-Layer.md)
+14. [Implementing the Selector Layer with the Apex Common Library](./14-Implementing-the-Selector-Layer-with-the-Apex-Common-Library.md)
+15. [The Difference Between Unit Tests and Integration Tests](./15-The-Difference-Between-Unit-Tests-and-Integration-Tests.md)
+16. [Unit Test Mocks with Separation of Concerns](./16-Unit-Test-Mocks-with-Separation-of-Concerns.md)
+17. [Implementing Mock Unit Tests with the Apex Mocks Library](./17-Implementing-Mock-Unit-Tests-with-the-Apex-Mocks-Library.md)
 
 ---
 

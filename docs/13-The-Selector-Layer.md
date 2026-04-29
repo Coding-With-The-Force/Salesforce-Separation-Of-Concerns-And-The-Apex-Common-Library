@@ -1,7 +1,5 @@
 ---
-layout: default
 title: "13) The Selector Layer"
-nav_order: 14
 ---
 
 # The Selector Layer
@@ -80,7 +78,7 @@ public inherited sharing class Account_Selector
 
 ### Implementing the Selector Layer
 
-To find out how to implement the Selector Layer using Apex Commons, continue reading here: [Implementing the Selector Layer with the Apex Common Library](./14-Implementing-the-Selector-Layer-with-the-Apex-Common-Library). If you're not interested in utilizing the Apex Common library for this layer there are pretty sparing options out there that are pre-built, the only other option I'm aware of at this time is Query.apex. Outside of that, you could certainly roll your own selector layer, but it is no small feat if done right.
+To find out how to implement the Selector Layer using Apex Commons, continue reading here: [Implementing the Selector Layer with the Apex Common Library](./14-Implementing-the-Selector-Layer-with-the-Apex-Common-Library.md). If you're not interested in utilizing the Apex Common library for this layer there are pretty sparing options out there that are pre-built, the only other option I'm aware of at this time is Query.apex. Outside of that, you could certainly roll your own selector layer, but it is no small feat if done right.
 
 **_Libraries That Could Be Used for the Domain Layer_**
 
@@ -109,4 +107,4 @@ To find out how to implement the Selector Layer using Apex Commons, continue rea
 
 ### Next Section
 
-[Part 14: Implementing the Selector Layer with the Apex Common Library](./14-Implementing-the-Selector-Layer-with-the-Apex-Common-Library)
+[Part 14: Implementing the Selector Layer with the Apex Common Library](./14-Implementing-the-Selector-Layer-with-the-Apex-Common-Library.md)

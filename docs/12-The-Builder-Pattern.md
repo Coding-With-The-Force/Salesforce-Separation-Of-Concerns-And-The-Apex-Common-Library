@@ -1,7 +1,5 @@
 ---
-layout: default
 title: "12) The Builder Pattern"
-nav_order: 13
 ---
 
 # The Builder Pattern
@@ -151,4 +149,4 @@ The [Case_Selector](https://github.com/Coding-With-The-Force/Salesforce-Separati
 
 ### Next Section
 
-[Part 13: The Selector Layer](./13-The-Selector-Layer)
+[Part 13: The Selector Layer](./13-The-Selector-Layer.md)

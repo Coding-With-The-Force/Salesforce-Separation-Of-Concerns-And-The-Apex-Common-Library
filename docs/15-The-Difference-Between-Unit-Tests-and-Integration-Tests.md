@@ -1,7 +1,5 @@
 ---
-layout: default
 title: "15) The Difference Between Unit Tests and Integration Tests"
-nav_order: 16
 ---
 
 # The Difference Between Unit Tests and Integration Tests
@@ -46,4 +44,4 @@ All apex classes should have some level of integration testing. I like to write 
 
 ### Next Section
 
-[Part 16: Unit Test Mocks with Separation of Concerns](./16-Unit-Test-Mocks-with-Separation-of-Concerns)  
+[Part 16: Unit Test Mocks with Separation of Concerns](./16-Unit-Test-Mocks-with-Separation-of-Concerns.md)  

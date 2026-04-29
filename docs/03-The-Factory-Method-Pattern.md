@@ -1,7 +1,5 @@
 ---
-layout: default
 title: "3) The Factory Method Pattern"
-nav_order: 4
 ---
 
 # The Factory Method Pattern
@@ -74,7 +72,7 @@ public with sharing class Task_Service_Impl implements Task_Service_Interface
 }
 ```
 
-Right now you might be kinda shook... at least I know I was the first time I implemented it, lol. How on Earth is this possible?? How can so much code be reduced to so little? The first thing we do is instantiate a new [domain class](./10-The-Domain-Layer) (domain classes are basically just kinda fancy trigger handlers, but more on that later) using our Application class (our factory class) simply by sending it record ids. The Application factory class generates the object specific Domain class by determining the set of recordIds object type using the Id.getSObjectType() method that Salesforce makes available in Apex. Then by implementing the `Task_Creator_Interface` interface on each of the objects domain classes I'm guaranteeing that if something is an instance of the `Task_Creator_Interface` they will have a method called createTasks! Depending on the use case this can take hundreds of lines of code and reduce it to almost nothing. It also helps in the Separation of Concerns area by making our services much more abstract. It delegates logic more to their respective services or domains instead of somewhere the logic probably doesn't belong.    
+Right now you might be kinda shook... at least I know I was the first time I implemented it, lol. How on Earth is this possible?? How can so much code be reduced to so little? The first thing we do is instantiate a new [domain class](./10-The-Domain-Layer.md) (domain classes are basically just kinda fancy trigger handlers, but more on that later) using our Application class (our factory class) simply by sending it record ids. The Application factory class generates the object specific Domain class by determining the set of recordIds object type using the Id.getSObjectType() method that Salesforce makes available in Apex. Then by implementing the `Task_Creator_Interface` interface on each of the objects domain classes I'm guaranteeing that if something is an instance of the `Task_Creator_Interface` they will have a method called createTasks! Depending on the use case this can take hundreds of lines of code and reduce it to almost nothing. It also helps in the Separation of Concerns area by making our services much more abstract. It delegates logic more to their respective services or domains instead of somewhere the logic probably doesn't belong.    
 
 ---
 
@@ -86,7 +84,7 @@ Basically it reduces your need to declare concreate class/object types in your c
 
 ### Where is it used in the Apex Common Library
 
-It's leveraged heavily by the fflib_Application class, which you can [find out more about here.](./04-The-fflib_Application-Class)
+It's leveraged heavily by the fflib_Application class, which you can [find out more about here.](./04-The-fflib_Application-Class.md)
 
 ---
 
@@ -100,4 +98,4 @@ The following code example in the repo is an example of how the factory pattern 
 
 ### Next Section
 
-[Part 4: The fflib\_Application Class](./04-The-fflib_Application-Class)
+[Part 4: The fflib\_Application Class](./04-The-fflib_Application-Class.md)

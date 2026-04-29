@@ -1,7 +1,5 @@
 ---
-layout: default
 title: "14) Implementing the Selector Layer with the Apex Common Library"
-nav_order: 15
 ---
 
 # Implementing the Selector Layer with the Apex Common Library
@@ -266,4 +264,4 @@ While there are many other methods within the [fflib_QueryFactory class](https:/
 
 ### Next Section
 
-[Part 15: The Difference Between Unit Tests and Integration Tests](./15-The-Difference-Between-Unit-Tests-and-Integration-Tests)
+[Part 15: The Difference Between Unit Tests and Integration Tests](./15-The-Difference-Between-Unit-Tests-and-Integration-Tests.md)

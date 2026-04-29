@@ -1,7 +1,5 @@
 ---
-layout: default
 title: "6) The fflib_SObjectUnitOfWork Class"
-nav_order: 7
 ---
 
 # The fflib_SObjectUnitOfWork Class
@@ -136,4 +134,4 @@ This does not encompass all methods in the [fflib_SObjectUnitOfWork class](https
 
 ### Next Section
 
-[Part 7: The Service Layer](./07-The-Service-Layer) 
+[Part 7: The Service Layer](./07-The-Service-Layer.md) 

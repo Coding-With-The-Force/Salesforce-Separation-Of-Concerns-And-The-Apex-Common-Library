@@ -1,7 +1,5 @@
 ---
-layout: default
 title: "9) The Template Method Pattern"
-nav_order: 10
 ---
 
 # The Template Method Pattern
@@ -43,4 +41,4 @@ This design pattern is leveraged heavily by the [fflib_SObjectDomain](https://gi
 
 ### Next Section
 
-[Part 10: The Domain Layer](./10-The-Domain-Layer)
+[Part 10: The Domain Layer](./10-The-Domain-Layer.md)

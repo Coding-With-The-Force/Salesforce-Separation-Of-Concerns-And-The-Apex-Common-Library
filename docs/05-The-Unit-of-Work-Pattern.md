@@ -1,7 +1,5 @@
 ---
-layout: default
 title: "5) The Unit of Work Pattern"
-nav_order: 6
 ---
 
 # The Unit of Work Pattern
@@ -36,10 +34,10 @@ The unit of work pattern also helps a great deal with code bulkification. It enc
 
 **_DML Mocking for Unit Tests_**
 
-If you're not sure what mocking and unit test are, then definitely check out [my section on that in the wiki here](./15-The-Difference-Between-Unit-Tests-and-Integration-Tests). Basically, in an ideal scenario you would like to do unit testing, but unit testing depends on you having the ability to mock classes for you tests (basically creating fake versions of your class you have complete control over in your tests). Creating this layer that handles your dml transactions allows you to mock that layer in your classes when doing unit tests... If this is confusing, no worries, we'll discuss it a bunch more later in the last three sections of this wiki.
+If you're not sure what mocking and unit test are, then definitely check out [my section on that in the wiki here](./15-The-Difference-Between-Unit-Tests-and-Integration-Tests.md). Basically, in an ideal scenario you would like to do unit testing, but unit testing depends on you having the ability to mock classes for you tests (basically creating fake versions of your class you have complete control over in your tests). Creating this layer that handles your dml transactions allows you to mock that layer in your classes when doing unit tests... If this is confusing, no worries, we'll discuss it a bunch more later in the last three sections of this wiki.
 
 ---
 
 ### Next Section
 
-[Part 6: The fflib\_SObjectUnitOfWork Class](./06-The-fflib_SObjectUnitOfWork-Class)
+[Part 6: The fflib\_SObjectUnitOfWork Class](./06-The-fflib_SObjectUnitOfWork-Class.md)

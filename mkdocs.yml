@@ -1,0 +1,98 @@
+site_name: "The Complete Guide to the Apex Common Library"
+site_description: "A comprehensive guide to implementing Separation of Concerns in Salesforce using the Apex Common Library."
+site_url: "https://coding-with-the-force.github.io/Salesforce-Separation-Of-Concerns-And-The-Apex-Common-Library/"
+repo_url: "https://github.com/Coding-With-The-Force/Salesforce-Separation-Of-Concerns-And-The-Apex-Common-Library"
+repo_name: "Coding-With-The-Force/Apex-Common-Library-Wiki"
+edit_uri: ""
+
+docs_dir: docs
+
+theme:
+  name: material
+  palette:
+    # Dark mode (default)
+    - scheme: slate
+      primary: custom
+      accent: custom
+      toggle:
+        icon: material/brightness-7
+        name: Switch to light mode
+    # Light mode
+    - scheme: default
+      primary: custom
+      accent: custom
+      toggle:
+        icon: material/brightness-4
+        name: Switch to dark mode
+  font:
+    text: Roboto
+    code: Roboto Mono
+  features:
+    - navigation.instant
+    - navigation.tracking
+    - navigation.top
+    - navigation.footer
+    - search.suggest
+    - search.highlight
+    - content.code.copy
+    - content.code.annotate
+    
+extra_css:
+  - assets/stylesheets/extra.css
+
+plugins:
+  - search
+
+markdown_extensions:
+  - tables
+  - fenced_code
+  - codehilite
+  - attr_list
+  - md_in_html
+  - toc:
+      permalink: true
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/Coding-With-The-Force/Salesforce-Separation-Of-Concerns-And-The-Apex-Common-Library
+      name: View on GitHub
+    - icon: fontawesome/brands/youtube
+      link: https://www.youtube.com/@CodingWithTheForce
+      name: YouTube Channel
+
+copyright: "Made with 🦖 by <a href='https://github.com/Coding-With-The-Force'>Coding With The Force</a> &nbsp;|&nbsp; <a href='https://www.paypal.com/donate?business=RNHEF8ZWKKLDG&currency_code=USD'>Buy me some Taco Bell? 🌮</a>"
+
+nav:
+  - Home: index.md
+
+  - Introduction: 
+    - The Separation of Concerns Design Principle: 01-Introduction-to-the-Separation-of-Concerns-Design-Principle.md
+    - The Apex Common Library: 02-Introduction-to-the-Apex-Common-Library.md
+
+  - The Application Class:  
+    - "3) The Factory Method Pattern": 03-The-Factory-Method-Pattern.md
+    - "4) The fflib_Application Class": 04-The-fflib_Application-Class.md
+
+  - The Unit of Work:  
+    - "5) The Unit of Work Pattern": 05-The-Unit-of-Work-Pattern.md
+    - "6) The fflib_SObjectUnitOfWork Class": 06-The-fflib_SObjectUnitOfWork-Class.md
+  
+  - The Service Layer: 
+    - "7) The Service Layer": 07-The-Service-Layer.md
+    - "8) Implementing the Service Layer": 08-Implementing-the-Service-Layer-with-the-Apex-Common-Library.md
+
+  - The Domain Layer:
+    - "9) The Template Method Pattern": 09-The-Template-Method-Pattern.md
+    - "10) The Domain Layer": 10-The-Domain-Layer.md
+    - "11) Implementing the Domain Layer": 11-Implementing-The-Domain-Layer-with-the-Apex-Common-Library.md
+
+  - The Selector Layer:  
+    - "12) The Builder Pattern": 12-The-Builder-Pattern.md
+    - "13) The Selector Layer": 13-The-Selector-Layer.md
+    - "14) Implementing the Selector Layer": 14-Implementing-the-Selector-Layer-with-the-Apex-Common-Library.md
+
+  - The Apex Mocks Library:
+    - "15) Unit Tests vs Integration Tests": 15-The-Difference-Between-Unit-Tests-and-Integration-Tests.md
+    - "16) Unit Test Mocks with SoC": 16-Unit-Test-Mocks-with-Separation-of-Concerns.md
+    - "17) Implementing Mock Unit Tests": 17-Implementing-Mock-Unit-Tests-with-the-Apex-Mocks-Library.md

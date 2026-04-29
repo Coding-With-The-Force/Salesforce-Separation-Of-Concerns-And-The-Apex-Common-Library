@@ -1,7 +1,5 @@
 ---
-layout: default
 title: "4) The fflib_Application Class"
-nav_order: 5
 ---
 
 # The fflib_Application Class
@@ -11,7 +9,7 @@ nav_order: 5
 ---
 ### What is the fflib_Application class?
 
-Quality question... I mean honestly wtf is this thing? Lol, sorry, let's figure it out together. The fflib_Application class is around for two primary purposes. The first is to allow you an extremely abstract way of creating new instances of your [unit of work](./05-The-Unit-of-Work-Pattern), [service layer](./08-Implementing-the-Service-Layer-with-the-Apex-Common-Library), [domain layer](./11-Implementing-The-Domain-Layer-with-the-Apex-Common-Library) and [selector layer](./14-Implementing-the-Selector-Layer-with-the-Apex-Common-Library) in the [Apex Common Library](./02-Introduction-to-the-Apex-Common-Library) through the use of [the factory pattern](./03-The-Factory-Method-Pattern). The second is that implementing this application class is imperative if you want to leverage the Apex Mocks unit testing library. It depends on this Application Factory being implemented.
+Quality question... I mean honestly wtf is this thing? Lol, sorry, let's figure it out together. The fflib_Application class is around for two primary purposes. The first is to allow you an extremely abstract way of creating new instances of your [unit of work](./05-The-Unit-of-Work-Pattern.md), [service layer](./08-Implementing-the-Service-Layer-with-the-Apex-Common-Library.md), [domain layer](./11-Implementing-The-Domain-Layer-with-the-Apex-Common-Library.md) and [selector layer](./14-Implementing-the-Selector-Layer-with-the-Apex-Common-Library.md) in the [Apex Common Library](./02-Introduction-to-the-Apex-Common-Library.md) through the use of [the factory pattern](./03-The-Factory-Method-Pattern.md). The second is that implementing this application class is imperative if you want to leverage the Apex Mocks unit testing library. It depends on this Application Factory being implemented.
 
 Most importantly though, if you understand how interfaces, inheritance and polymorphism work implementing this class allows you to write extremely abstract Salesforce implementations, which we'll discuss more in sections below
 
@@ -151,7 +149,7 @@ public with sharing class SomeClass{
 }
 ```
 ---
-2) [newInstance(fflib_SObjectUnitOfWork.IDML dml)](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_Application.cls#L71) - This creates a new instance of the unit of work using the SObjectType list passed in the constructor and a new IDML implementation to do custom DML work not inherently supported by the [fflib_SObjectUnitOfWork class](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_SObjectUnitOfWork.cls). More info on the [IDML interface here](./06-The-fflib_SObjectUnitOfWork-Class)
+2) [newInstance(fflib_SObjectUnitOfWork.IDML dml)](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_Application.cls#L71) - This creates a new instance of the unit of work using the SObjectType list passed in the constructor and a new IDML implementation to do custom DML work not inherently supported by the [fflib_SObjectUnitOfWork class](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_SObjectUnitOfWork.cls). More info on the [IDML interface here](./06-The-fflib_SObjectUnitOfWork-Class.md)
 
 _**newInstance(fflib_SObjectUnitOfWork.IDML dml) Example Method Call**_
 ```
@@ -222,7 +220,7 @@ public with sharing class SomeClass{
 }
 ```
 ---
-4) **_[newInstance(List &lt;SObjectType> objectTypes, fflib_SObjectUnitOfWork.IDML dml)](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_Application.cls#L104)_** - This creates a new instance of the unit of work and overwrites the SObject type list passed in the constructor so you can have a custom order if you need it and a new IDML implementation to do custom DML work not inherently supported by the [fflib_SObjectUnitOfWork class](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_SObjectUnitOfWork.cls). More info on the [IDML interface here](./06-The-fflib_SObjectUnitOfWork-Class)
+4) **_[newInstance(List &lt;SObjectType> objectTypes, fflib_SObjectUnitOfWork.IDML dml)](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_Application.cls#L104)_** - This creates a new instance of the unit of work and overwrites the SObject type list passed in the constructor so you can have a custom order if you need it and a new IDML implementation to do custom DML work not inherently supported by the [fflib_SObjectUnitOfWork class](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_SObjectUnitOfWork.cls). More info on the [IDML interface here](./06-The-fflib_SObjectUnitOfWork-Class.md)
 
 _**newInstance(List&lt;SObjectType> objectTypes, fflib_SObjectUnitOfWork.IDML dml) Example Method Call**_
 ```
@@ -405,10 +403,10 @@ Application.domain.newInstance(accountList, Account.SObjectType);
 
 ### The setMock Methods
 
-In every factory class inside the fflib_Application class there is a [setMock method](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_Application.cls#L114). These methods are used to pass in mock/fake versions of your classes for [unit testing purposes](./15-The-Difference-Between-Unit-Tests-and-Integration-Tests). Make sure to leverage this method if you are planning to do unit testing. Leveraging this method eliminates the need to use [dependency injection](https://en.wikipedia.org/wiki/Dependency_injection) in your classes to allow for mocking. There are examples of how to leverage this method in the [Implementing Mock Unit Testing with Apex Mocks](./17-Implementing-Mock-Unit-Tests-with-the-Apex-Mocks-Library) section of this wiki.
+In every factory class inside the fflib_Application class there is a [setMock method](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_Application.cls#L114). These methods are used to pass in mock/fake versions of your classes for [unit testing purposes](./15-The-Difference-Between-Unit-Tests-and-Integration-Tests.md). Make sure to leverage this method if you are planning to do unit testing. Leveraging this method eliminates the need to use [dependency injection](https://en.wikipedia.org/wiki/Dependency_injection) in your classes to allow for mocking. There are examples of how to leverage this method in the [Implementing Mock Unit Testing with Apex Mocks](./17-Implementing-Mock-Unit-Tests-with-the-Apex-Mocks-Library.md) section of this wiki.
 
 ---
 
 ### Next Section
 
-[Part 5: The Unit of Work Pattern](./05-The-Unit-of-Work-Pattern)
+[Part 5: The Unit of Work Pattern](./05-The-Unit-of-Work-Pattern.md)

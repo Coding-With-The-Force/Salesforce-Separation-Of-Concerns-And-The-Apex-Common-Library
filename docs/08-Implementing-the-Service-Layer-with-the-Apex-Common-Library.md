@@ -1,7 +1,5 @@
 ---
-layout: default
 title: "8) Implementing the Service Layer with the Apex Common Library"
-nav_order: 9
 ---
 
 # Implementing the Service Layer with the Apex Common Library
@@ -120,7 +118,7 @@ public with sharing class Task_Service_Impl implements Task_Service_Interface
 
 ### The fflib_Application.ServiceFactory class
 
-The fflib_Application.ServiceFactory class... what is it and how does it fit in here. Well, if you read through all of [Part 4: The fflib\_Application Class](./04-The-fflib_Application-Class) then you hopefully have some solid background on what it's used for and why, but it's a little trickier to conceptualize for the service class so let's go over it a bit again. Basically it leverages [The Factory Pattern](./03-The-Factory-Method-Pattern) to dynamically generate the correct code implementations at run time (when your code is actually running).  
+The fflib_Application.ServiceFactory class... what is it and how does it fit in here. Well, if you read through all of [Part 4: The fflib\_Application Class](./04-The-fflib_Application-Class.md) then you hopefully have some solid background on what it's used for and why, but it's a little trickier to conceptualize for the service class so let's go over it a bit again. Basically it leverages [The Factory Pattern](./03-The-Factory-Method-Pattern.md) to dynamically generate the correct code implementations at run time (when your code is actually running).  
 
 This is awesome for tons of stuff, but it's especially awesome for the service layer. Why? You'll notice as your Salesforce instance grows so do the amount of interested parties. All of the sudden you've gone from one or two business units to 25 different business units and what happens when those businesses need the same type of functionality with differing logic? You could make tons of if else statements determining what the user type is and then calling different methods based on that users type... but maybe there's an easier way. If you are an ISV (a managed package provider) what I'm about to show you is likely 1000 times more important for you. If your product grows and people start adopting it, you absolutely need a way to allow flexibility in your applications business logic, maybe even allow them to write their own logic and have a way for your code to execute it??
 
@@ -228,4 +226,4 @@ If you're still shook by all this, please, watch the video where we build all th
 
 ### Next Section
 
-[Part 9: The Template Method Pattern](./09-The-Template-Method-Pattern) 
+[Part 9: The Template Method Pattern](./09-The-Template-Method-Pattern.md) 

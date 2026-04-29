@@ -1,7 +1,5 @@
 ---
-layout: default
 title: "7) The Service Layer"
-nav_order: 8
 ---
 
 # The Service Layer
@@ -132,7 +130,7 @@ catch(Exception e){
 
 ### Implementing the Service Layer
 
-To find out how to implement the Service Layer using the Apex Common Library, continue reading here: [Implementing the Service Layer with the Apex Common Library](./08-Implementing-the-Service-Layer-with-the-Apex-Common-Library). If you're not interested in utilizing the Apex Common Library, no worries, there are really no frameworks to implement a Service Layer (to my knowledge) because this is literally just a business logic layer so every single orgs service layer will be different. The only thing Apex Common assists with here is abstracting the service layer to assist with Unit Test mocking and to make your service class instantiations more dynamic.
+To find out how to implement the Service Layer using the Apex Common Library, continue reading here: [Implementing the Service Layer with the Apex Common Library](./08-Implementing-the-Service-Layer-with-the-Apex-Common-Library.md). If you're not interested in utilizing the Apex Common Library, no worries, there are really no frameworks to implement a Service Layer (to my knowledge) because this is literally just a business logic layer so every single orgs service layer will be different. The only thing Apex Common assists with here is abstracting the service layer to assist with Unit Test mocking and to make your service class instantiations more dynamic.
 
 **_Libraries That Could Be Used for the Service Layer_**
 
@@ -156,4 +154,4 @@ All three of the below classes are tied together. We'll go over how this works i
 
 ### Next Section
 
-[Part 8: Implementing the Service Layer with the Apex Common Library](./08-Implementing-the-Service-Layer-with-the-Apex-Common-Library)
+[Part 8: Implementing the Service Layer with the Apex Common Library](./08-Implementing-the-Service-Layer-with-the-Apex-Common-Library.md)

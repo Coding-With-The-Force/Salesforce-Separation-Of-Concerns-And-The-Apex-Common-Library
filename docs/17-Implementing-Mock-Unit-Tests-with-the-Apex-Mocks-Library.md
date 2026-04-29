@@ -1,7 +1,5 @@
 ---
-layout: default
 title: "17) Implementing Mock Unit Tests with the Apex Mocks Library"
-nav_order: 18
 ---
 
 # Implementing Mock Unit Testing with Apex Mocks
@@ -20,7 +18,7 @@ To make this super simple, Apex Mocks is an excellent framework that allows you 
 
 ### Do you have to use the Apex Common Library to use Apex Mocks?
 
-While you don't have to use the Apex Common Library to use Apex Mocks, they are built to work extremely well together. Without the use of the Apex Common Library you will need to ensure that all of your classes utilize [dependency injection](https://en.wikipedia.org/wiki/Dependency_injection). While this isn't a massive feat, it's something you have to be cognizant of. If you decide to use the Apex Common library and leverage [the fflib\_Application class factory](./04-The-fflib_Application-Class) you can leverage the [setMock methods](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_Application.cls#L114) to avoid needing to setup all your classes using dependency injection. It's pretty convenient and makes the whole situation a bit easier. We'll take a look at both methods below: 
+While you don't have to use the Apex Common Library to use Apex Mocks, they are built to work extremely well together. Without the use of the Apex Common Library you will need to ensure that all of your classes utilize [dependency injection](https://en.wikipedia.org/wiki/Dependency_injection). While this isn't a massive feat, it's something you have to be cognizant of. If you decide to use the Apex Common library and leverage [the fflib\_Application class factory](./04-The-fflib_Application-Class.md) you can leverage the [setMock methods](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_Application.cls#L114) to avoid needing to setup all your classes using dependency injection. It's pretty convenient and makes the whole situation a bit easier. We'll take a look at both methods below: 
 
 _**Using Apex Mocks without Apex Common Example**_
 
@@ -215,7 +213,7 @@ public with sharing class Task_Service_Impl_Test
 	}
 }
 ```
-As you can see, in this example we no longer leverage dependency injection to get our mock unit tests up and running. Instead we use the setMock method available on all of the inner factory classes in [the fflib\_Application class](./04-The-fflib_Application-Class) to setup our mock class for our unit test. It makes things a bit easier in the long run.
+As you can see, in this example we no longer leverage dependency injection to get our mock unit tests up and running. Instead we use the setMock method available on all of the inner factory classes in [the fflib\_Application class](./04-The-fflib_Application-Class.md) to setup our mock class for our unit test. It makes things a bit easier in the long run.
 
 Now that we've seen how to setup a mock class with or without Apex Common, let's figure out all the cool things Apex Mocks has to allow you to assert your logic operated in the way you anticipated it would! We'll start with a section on what stubbing is below!
 
@@ -540,4 +538,4 @@ acc = (Account)fflib_ApexMocksUtils.setReadOnlyFields(
 
 ### You've reached the end!
 
-That's it! You're done! Thank god... I'm tired of writing this thing. You can go back to the [home page here.](./index)
+That's it! You're done! Thank god... I'm tired of writing this thing. You can go back to the [home page here.](./index.md)

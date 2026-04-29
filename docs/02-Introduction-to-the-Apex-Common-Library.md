@@ -1,7 +1,5 @@
 ---
-layout: default
 title: "2) Introduction to the Apex Common Library"
-nav_order: 3
 ---
 
 # Introduction to the Apex Common Library
@@ -27,9 +25,9 @@ Unfortunately it's not that simple. This library doesn't just automatically do t
 
 ###  The Four Major Classes
 1) **[fflib_Application.cls](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_Application.cls) -** This Application class acts as a way to easily implement the Factory pattern for building the different layers when running your respective applications within your org (or managed package). When I say "Application" for an org based implementation this could mean a lot of things, but think of it as a grouping of code that represents a specific section of your org. Maybe you have a service desk in your org, that service desk could be represented as an "Application". This class and the factory pattern are also what makes the Apex Mocks Library work, without implementing it, Apex Mocks will not work.  
-2) **[fflib_SObjectDomain.cls](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_SObjectDomain.cls) -** This houses the base class that all Domain classes you create will extend. The many methods within this class serve to make your life considerably easier when building your domain classes, for each object that requires a trigger, out. You can check out my [Apex Common Domain Layer Implementation Guide](./11-Implementing-The-Domain-Layer-with-the-Apex-Common-Library) for more details.  
-3) **[fflib_SObjectSelector.cls](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_SObjectSelector.cls) -** This houses the base class that all Selector classes you create will extend. The many methods within this class will serve to make your life a ton easier when implementing a selector classes for your various objects in your org. You can check out my [Apex Common Selector Layer Implementation Guide](./14-Implementing-the-Selector-Layer-with-the-Apex-Common-Library).  
-4) **[fflib_SObjectUnitOfWork.cls](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_SObjectUnitOfWork.cls) -** This houses the logic to implement the [Unit of Work design pattern](https://www.codeproject.com/Articles/581487/Unit-of-Work-Design-Pattern) in your code. There a ton of useful methods within it that will make your life developing on the platform quite a bit simpler. For more information on the fflib_SObjectUnitOfWork class and the concept itself, please refer to my [guide on how to use the Unit of Work Pattern in Salesforce](./05-The-Unit-of-Work-Pattern).
+2) **[fflib_SObjectDomain.cls](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_SObjectDomain.cls) -** This houses the base class that all Domain classes you create will extend. The many methods within this class serve to make your life considerably easier when building your domain classes, for each object that requires a trigger, out. You can check out my [Apex Common Domain Layer Implementation Guide](./11-Implementing-The-Domain-Layer-with-the-Apex-Common-Library.md) for more details.  
+3) **[fflib_SObjectSelector.cls](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_SObjectSelector.cls) -** This houses the base class that all Selector classes you create will extend. The many methods within this class will serve to make your life a ton easier when implementing a selector classes for your various objects in your org. You can check out my [Apex Common Selector Layer Implementation Guide](./14-Implementing-the-Selector-Layer-with-the-Apex-Common-Library.md).  
+4) **[fflib_SObjectUnitOfWork.cls](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_SObjectUnitOfWork.cls) -** This houses the logic to implement the [Unit of Work design pattern](https://www.codeproject.com/Articles/581487/Unit-of-Work-Design-Pattern) in your code. There a ton of useful methods within it that will make your life developing on the platform quite a bit simpler. For more information on the fflib_SObjectUnitOfWork class and the concept itself, please refer to my [guide on how to use the Unit of Work Pattern in Salesforce](./05-The-Unit-of-Work-Pattern.md).
 
 ---
 
@@ -54,4 +52,4 @@ Unfortunately it's not that simple. This library doesn't just automatically do t
 ---
 
 ### Next Section 
-[Part 3: The Factory Pattern](./03-The-Factory-Method-Pattern)
+[Part 3: The Factory Pattern](./03-The-Factory-Method-Pattern.md)

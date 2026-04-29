@@ -1,7 +1,5 @@
 ---
-layout: default
 title: "10) The Domain Layer"
-nav_order: 11
 ---
 
 # The Domain Layer
@@ -54,14 +52,14 @@ You should only ever call to the domain layer code from service class methods or
 
 **_Trasnaction Management_**  
 
-In the event you are actually performing DML operations in your Domain class, you should either create a [Unit of Work](./05-The-Unit-of-Work-Pattern) or have one passed into the method doing the DML to appropriately manage your transaction. In the event you are not wanting to leverage the unit of work pattern you should make sure to at the very least set your `System.Savepoint savePoint = Database.setSavePoint();` prior to doing your DML statement and use a try catch block to rollback if the DML fails.  
+In the event you are actually performing DML operations in your Domain class, you should either create a [Unit of Work](./05-The-Unit-of-Work-Pattern.md) or have one passed into the method doing the DML to appropriately manage your transaction. In the event you are not wanting to leverage the unit of work pattern you should make sure to at the very least set your `System.Savepoint savePoint = Database.setSavePoint();` prior to doing your DML statement and use a try catch block to rollback if the DML fails.  
 
 
 ---
 
 ### Implementing the Domain Layer
 
-To find out how to implement the Domain Layer using Apex Common, continue reading here: [Implementing the Domain Layer with the Apex Common Library](./11-Implementing-The-Domain-Layer-with-the-Apex-Common-Library). If you're not interested in utilizing the Apex Common library for this layer you can implement really any trigger framework and the core of the domain layer will be covered.
+To find out how to implement the Domain Layer using Apex Common, continue reading here: [Implementing the Domain Layer with the Apex Common Library](./11-Implementing-The-Domain-Layer-with-the-Apex-Common-Library.md). If you're not interested in utilizing the Apex Common library for this layer you can implement really any trigger framework and the core of the domain layer will be covered.
 
 **_Libraries That Could Be Used for the Domain Layer_**
 
@@ -91,4 +89,4 @@ To find out how to implement the Domain Layer using Apex Common, continue readin
 
 ### Next Section
 
-[Part 11: Implementing the Domain Layer with the Apex Common Library](./11-Implementing-The-Domain-Layer-with-the-Apex-Common-Library)     
+[Part 11: Implementing the Domain Layer with the Apex Common Library](./11-Implementing-The-Domain-Layer-with-the-Apex-Common-Library.md)     
