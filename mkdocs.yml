@@ -32,7 +32,6 @@ theme:
     - navigation.tracking
     - navigation.top
     - navigation.footer
-    - navigation.expand
     - search.suggest
     - search.highlight
     - content.code.copy
