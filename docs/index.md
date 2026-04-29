@@ -5,7 +5,10 @@ description: "A comprehensive guide to implementing Separation of Concerns in Sa
 
 # The Complete Guide to the Apex Common Library
 
-![Patterns Turning](assets/images/patternsturning.png)
+<p align="center">
+  <img src="assets/images/patternsturning.png" alt="Patterns Turning" />
+</p>
+
 
 ### What Is This Wiki?
 
