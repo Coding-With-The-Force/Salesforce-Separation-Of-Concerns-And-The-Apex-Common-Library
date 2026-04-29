@@ -9,7 +9,7 @@ title: "1) Introduction to the Separation of Concerns Design Principle"
 
 ---
 
-### What is the Separation of Concerns Design Principle?
+### What is the Separation of Concerns Design Principle? 
 
 Basically separation of concerns is the practice of putting logical boundaries on your code. Putting these logical boundaries on your code helps make your code easier to understand, easier to maintain and much more flexible when it needs to be altered (and every code base ever has to be altered all the time). 
 
