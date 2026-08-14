@@ -8,7 +8,10 @@
   position: relative;
   aspect-ratio: 16 / 9;
   width: 100%;
-  max-width: 52rem;
+  /* Matches .theme-doc-markdown exactly. It used a fixed 52rem, which left
+     the video ~200px narrower than the article once the column widened. The
+     min() keeps it honest anywhere it is used outside the markdown wrapper. */
+  max-width: min(100%, var(--cw-read));
   border: 1px solid var(--cw-line);
   background: var(--cw-fill);
   margin: 0 0 var(--cw-sp-gap);
