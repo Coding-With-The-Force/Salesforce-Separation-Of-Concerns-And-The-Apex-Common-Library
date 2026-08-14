@@ -1,22 +1,49 @@
-# ── Docusaurus site ──────────────────────────────────────────────
-website/node_modules/
+# ── Node / Docusaurus ────────────────────────────────────────────
+# Unanchored, so a second package directory is covered without an edit.
+# node_modules is ~32,000 files; npm ci rebuilds it exactly from the
+# committed package-lock.json, which is why the lockfile IS tracked.
+node_modules/
+.docusaurus/
+.cache-loader/
+
+# Build output. Anchored, because "build" is a generic enough name that an
+# unanchored rule could swallow something under src/ later.
 website/build/
-website/.docusaurus/
-website/.cache-loader/
+
+# package manager noise
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
+.pnpm-store/
+.yarn/*
+!.yarn/patches
+!.yarn/releases
+!.yarn/plugins
+!.yarn/sdks
+!.yarn/versions
+.pnp.*
 
-# ── MkDocs (the site this replaces) ──────────────────────────────
-site/
-.cache/
+# TypeScript incremental build cache
+*.tsbuildinfo
+
+# ── Secrets ──────────────────────────────────────────────────────
+# Nothing here today, but a Salesforce repo is exactly where an auth
+# file or a scratch-org key eventually gets dropped by accident.
+.env
+.env.*
+!.env.example
+*.pem
+*.p12
+server.key
+jwt/
 
 # ── Salesforce ───────────────────────────────────────────────────
 .sfdx/
 .sf/
 .localdevserver/
 deploy-options.json
+.apexcodecoverage/
 *.log
 
 # ── Editors ──────────────────────────────────────────────────────
@@ -27,8 +54,14 @@ deploy-options.json
 .vscode/
 !.vscode/extensions.json
 !.vscode/settings.json
+!.vscode/launch.json
 
 # ── OS ───────────────────────────────────────────────────────────
 .DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
 Thumbs.db
+ehthumbs.db
 desktop.ini
