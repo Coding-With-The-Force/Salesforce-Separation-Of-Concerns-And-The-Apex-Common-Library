@@ -25,11 +25,41 @@ aside.theme-doc-sidebar-container {
 .cw-rulerwrap__in {
   width: var(--cw-shell);
   margin-inline: auto;
+  /* the positioning context for the hover bubble, which lives out here so
+     the track's overflow can't clip it */
+  position: relative;
 }
 .cw-ruler {
-  padding-block: 1.3rem 0.35rem;
+  /* the top padding is the strip the bubble occupies */
+  padding-block: 2.45rem 0.35rem;
   overflow-x: auto;
   scrollbar-width: thin;
+}
+
+.cw-ruler__tip {
+  position: absolute;
+  top: 0.45rem;
+  transform: translateX(-50%);
+  z-index: 6;
+  white-space: nowrap;
+  max-width: calc(100% - 1rem);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  background: var(--cw-ink);
+  border: 1px solid var(--cw-acc);
+  color: var(--cw-acc);
+  font-family: var(--cw-f-mono);
+  font-size: var(--cw-fs-xs);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 0.25em 0.7em;
+  pointer-events: none;
+  box-shadow: 0 0 22px -8px var(--cw-glow-strong);
+}
+.cw-ruler__tip b {
+  color: var(--cw-acc);
+  font-weight: 400;
+  opacity: 0.7;
 }
 .cw-ruler__track {
   display: flex;
@@ -111,12 +141,6 @@ aside.theme-doc-sidebar-container {
   text-overflow: ellipsis;
   white-space: nowrap;
   transition: color 0.2s var(--cw-ease);
-}
-.cw-rulercap__read--hot {
-  color: var(--cw-acc);
-}
-.cw-rulercap__read--hot b {
-  color: var(--cw-acc);
 }
 .cw-rulercap a {
   color: var(--cw-faint);
