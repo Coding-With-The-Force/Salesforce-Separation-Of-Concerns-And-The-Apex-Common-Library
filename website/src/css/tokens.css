@@ -46,30 +46,33 @@
   color-scheme: dark;
 }
 
+/* Derived, not brand — CWTF is dark-only. A drafting-paper tone rather than
+   a white one: the teal is darkened until it clears 4.5:1 on this ground,
+   and the grid is strengthened so it still reads. */
 [data-theme='light'] {
-  --cw-ink: #f7faf9;
-  --cw-fg: #0e1413;
-  --cw-body: #333d3b;
-  --cw-muted: #4f5b59;
-  --cw-faint: #6b7674;
+  --cw-ink: #e6eae7;
+  --cw-fg: #0d1211;
+  --cw-body: #2e3835;
+  --cw-muted: #495451;
+  --cw-faint: #66716e;
 
-  --cw-acc: #1f6b60;
-  --cw-acc-deep: #2a8074;
-  --cw-warm: #8a6414;
-  --cw-bad: #b03a2b;
+  --cw-acc: #1b5e54;
+  --cw-acc-deep: #24756a;
+  --cw-warm: #7d5a10;
+  --cw-bad: #a23324;
 
-  --cw-line: rgba(94, 144, 137, 0.36);
-  --cw-line-soft: rgba(94, 144, 137, 0.28);
-  --cw-line-hard: rgba(94, 144, 137, 0.55);
+  --cw-line: rgba(94, 144, 137, 0.42);
+  --cw-line-soft: rgba(94, 144, 137, 0.32);
+  --cw-line-hard: rgba(94, 144, 137, 0.62);
 
-  --cw-fill: rgba(94, 144, 137, 0.045);
-  --cw-fill-2: rgba(94, 144, 137, 0.09);
-  --cw-fill-3: rgba(94, 144, 137, 0.15);
+  --cw-fill: rgba(94, 144, 137, 0.06);
+  --cw-fill-2: rgba(94, 144, 137, 0.11);
+  --cw-fill-3: rgba(94, 144, 137, 0.18);
 
-  --cw-glow: rgba(94, 144, 137, 0.3);
-  --cw-glow-strong: rgba(94, 144, 137, 0.45);
+  --cw-glow: rgba(94, 144, 137, 0.32);
+  --cw-glow-strong: rgba(94, 144, 137, 0.5);
 
-  --cw-grid-line: rgba(94, 144, 137, 0.07);
+  --cw-grid-line: rgba(94, 144, 137, 0.11);
 
   color-scheme: light;
 }

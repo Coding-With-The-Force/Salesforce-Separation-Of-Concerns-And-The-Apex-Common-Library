@@ -8,9 +8,31 @@
 
 html {
   -webkit-text-size-adjust: 100%;
+  /* the base colour, so there is never a flash of anything else */
+  background-color: var(--cw-ink);
 }
 
 body {
+  /* No background here. The grid is painted by the fixed layer below, so it
+     covers the viewport on every page whatever the content height — a
+     background-attachment:fixed on body stops at the body box and left a
+     dead band under short pages. */
+  background: transparent;
+  color: var(--cw-body);
+  font-family: var(--cw-f-body);
+  font-weight: 400;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── the blueprint ground ─────────────────────────────────────
+   Fixed to the viewport and pinned behind everything. Negative z-index
+   keeps it above html's background but below all content. */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
   background-color: var(--cw-ink);
   background-image:
     repeating-linear-gradient(
@@ -23,11 +45,14 @@ body {
       var(--cw-grid-line) 0 1px,
       transparent 1px var(--cw-grid-size)
     );
-  background-attachment: fixed;
-  color: var(--cw-body);
-  font-family: var(--cw-f-body);
-  font-weight: 400;
-  -webkit-font-smoothing: antialiased;
+}
+
+/* Nothing between the grid and the content may paint an opaque ground. */
+#__docusaurus,
+.main-wrapper,
+.cw-docroot,
+main {
+  background: transparent;
 }
 
 :focus-visible {
@@ -389,9 +414,20 @@ body {
   color: var(--cw-acc);
 }
 
-.footer {
-  border-top: 1px solid var(--cw-line);
+/* Infima's .footer--dark hardcodes #303846, which is not in the palette and
+   beat the :root override. Pin every footer variable here, and leave the
+   background transparent so the blueprint grid runs to the bottom of the
+   page — which is what the source theme does with .cwtf-foot. */
+.footer,
+.footer--dark {
+  --ifm-footer-background-color: transparent;
+  --ifm-footer-color: var(--cw-muted);
+  --ifm-footer-link-color: var(--cw-muted);
+  --ifm-footer-link-hover-color: var(--cw-acc);
+  --ifm-footer-title-color: var(--cw-faint);
   --ifm-footer-padding-vertical: clamp(1.75rem, 3vw, 3rem);
+  background: transparent;
+  border-top: 1px solid var(--cw-line);
 }
 .footer__title {
   font-family: var(--cw-f-mono);

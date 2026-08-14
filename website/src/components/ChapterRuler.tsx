@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import Link from '@docusaurus/Link';
 import {useLocation} from '@docusaurus/router';
 import {CHAPTERS, chapterBySlug} from '@site/src/data/chapters';
@@ -8,11 +8,18 @@ import {CHAPTERS, chapterBySlug} from '@site/src/data/chapters';
  * blueprint motif available, and the thing that let the sidebar go away.
  *
  * Chapters run horizontally here; sections run vertically on the left rail.
- * Two axes, no overlap.
+ *
+ * The tick label is a readout under the ruler rather than a popup above it.
+ * A popup can't work: the track needs overflow-x for narrow viewports, and
+ * overflow clips any child that tries to escape it, so titles were being cut
+ * off. The readout sits outside the scroller and has the full width to use.
  */
-export default function ChapterRuler(): JSX.Element | null {
+export default function ChapterRuler(): JSX.Element {
   const {pathname} = useLocation();
   const current = chapterBySlug(pathname);
+  const [hovered, setHovered] = useState<number | null>(null);
+
+  const shown = hovered != null ? CHAPTERS.find((c) => c.n === hovered) : current;
 
   return (
     <div className="cw-rulerwrap">
@@ -27,6 +34,7 @@ export default function ChapterRuler(): JSX.Element | null {
                 <Link
                   key={c.n}
                   to={c.slug}
+                  title={`${String(c.n).padStart(2, '0')} · ${c.short}`}
                   className={[
                     'cw-tickmark',
                     major && 'cw-tickmark--major',
@@ -35,10 +43,11 @@ export default function ChapterRuler(): JSX.Element | null {
                   ]
                     .filter(Boolean)
                     .join(' ')}
-                  aria-current={on ? 'page' : undefined}>
-                  <span className="cw-tickmark__tip">
-                    {String(c.n).padStart(2, '0')} · {c.short}
-                  </span>
+                  aria-current={on ? 'page' : undefined}
+                  onMouseEnter={() => setHovered(c.n)}
+                  onMouseLeave={() => setHovered(null)}
+                  onFocus={() => setHovered(c.n)}
+                  onBlur={() => setHovered(null)}>
                   <span className="cw-tickmark__lbl">
                     {major ? String(c.n).padStart(2, '0') : ' '}
                   </span>
@@ -48,20 +57,25 @@ export default function ChapterRuler(): JSX.Element | null {
             })}
           </div>
         </div>
+
         <div className="cw-rulercap">
-          <span>
+          <span className="cw-rulercap__end">
             <b>01</b> Separation of Concerns
           </span>
-          <span>
-            {current ? (
+
+          <span
+            className={`cw-rulercap__read${hovered != null ? ' cw-rulercap__read--hot' : ''}`}
+            aria-live="polite">
+            {shown ? (
               <>
-                Chapter <b>{String(current.n).padStart(2, '0')}</b> of 17
+                <b>{String(shown.n).padStart(2, '0')}</b> {shown.short}
               </>
             ) : (
               <Link to="/">All seventeen chapters</Link>
             )}
           </span>
-          <span>
+
+          <span className="cw-rulercap__end">
             <b>17</b> Apex Mocks
           </span>
         </div>

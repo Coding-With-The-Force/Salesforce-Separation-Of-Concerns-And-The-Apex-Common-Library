@@ -86,39 +86,37 @@ aside.theme-doc-sidebar-container {
 .cw-tickmark--done .cw-tickmark__bar {
   background: var(--cw-acc-deep);
 }
-.cw-tickmark__tip {
-  position: absolute;
-  bottom: 100%;
-  left: 50%;
-  transform: translateX(-50%);
-  margin-bottom: 0.45rem;
-  white-space: nowrap;
-  background: var(--cw-ink);
-  border: 1px solid var(--cw-acc);
-  color: var(--cw-acc);
-  font-family: var(--cw-f-mono);
-  font-size: var(--cw-fs-xs);
-  letter-spacing: 0.06em;
-  padding: 0.25em 0.6em;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.2s var(--cw-ease);
-  z-index: 5;
-}
-.cw-tickmark:hover .cw-tickmark__tip,
-.cw-tickmark:focus-visible .cw-tickmark__tip {
-  opacity: 1;
-}
+/* The readout. Lives outside the overflow-x scroller, so nothing can clip it. */
 .cw-rulercap {
   display: flex;
-  justify-content: space-between;
-  gap: 1rem;
+  align-items: baseline;
+  gap: 1.5rem;
   font-family: var(--cw-f-mono);
   font-size: var(--cw-fs-xs);
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--cw-faint);
   padding-bottom: 0.55rem;
+}
+.cw-rulercap__end {
+  flex: none;
+  white-space: nowrap;
+}
+.cw-rulercap__read {
+  flex: 1;
+  min-width: 0;
+  text-align: center;
+  color: var(--cw-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  transition: color 0.2s var(--cw-ease);
+}
+.cw-rulercap__read--hot {
+  color: var(--cw-acc);
+}
+.cw-rulercap__read--hot b {
+  color: var(--cw-acc);
 }
 .cw-rulercap a {
   color: var(--cw-faint);
@@ -323,8 +321,12 @@ aside.theme-doc-sidebar-container {
     margin-left: 0;
   }
 }
-@media (max-width: 40rem) {
-  .cw-rulercap span:nth-child(2) {
+@media (max-width: 46rem) {
+  /* the endpoints go, the readout stays — it's the one that carries meaning */
+  .cw-rulercap__end {
     display: none;
+  }
+  .cw-rulercap__read {
+    text-align: left;
   }
 }

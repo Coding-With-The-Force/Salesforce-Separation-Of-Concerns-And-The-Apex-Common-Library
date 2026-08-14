@@ -115,7 +115,8 @@ const config: Config = {
       ],
     },
     footer: {
-      style: 'dark',
+      // deliberately not style:'dark' — that Infima variant hardcodes
+      // #303846, which is not in the CWTF palette. See src/css/base.css.
       links: [
         {
           title: 'The guide',

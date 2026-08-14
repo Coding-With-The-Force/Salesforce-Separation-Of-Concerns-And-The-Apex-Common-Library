@@ -105,10 +105,20 @@ export default function Videos(): JSX.Element {
                     target="_blank"
                     rel="noopener noreferrer"
                     aria-label={`Watch ${c.title} on YouTube`}>
+                    <img
+                      className={styles.thumbImg}
+                      src={`https://i.ytimg.com/vi/${c.video}/hqdefault.jpg`}
+                      alt=""
+                      loading="lazy"
+                      decoding="async"
+                    />
+                    <span className={styles.scrim} aria-hidden="true" />
                     <span className={styles.big}>
                       {String(c.n).padStart(2, '0')}
                     </span>
-                    <span className={styles.play} aria-hidden="true" />
+                    <span className={styles.btn} aria-hidden="true">
+                      <span className={styles.play} />
+                    </span>
                     <span className={styles.dur}>{c.duration}</span>
                   </a>
                   <div className={styles.body}>
