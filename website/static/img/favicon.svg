@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <rect width="32" height="32" fill="#0b0d0d"/>
+  <!-- the corner registration tick, the CWTF logo mark -->
+  <path d="M8 8h16M8 8v16" stroke="#81ccc2" stroke-width="2.4" fill="none" stroke-linecap="square"/>
+  <rect x="19" y="19" width="5" height="5" fill="none" stroke="#5e9089" stroke-width="1.6" transform="rotate(45 21.5 21.5)"/>
+</svg>

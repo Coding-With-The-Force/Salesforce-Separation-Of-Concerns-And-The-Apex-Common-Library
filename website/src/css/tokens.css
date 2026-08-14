@@ -1,0 +1,199 @@
+/* ═══════════════════════════════════════════════════════════════════════
+   THE CWTF WIRE DESIGN SYSTEM
+   Lifted from codingwiththeforce.com — wp-content/themes/cwtf/assets/css/
+   cwtf-theme.css, the blog (.cwtf-wire) system rather than the rounded
+   landing-page one.
+
+   Dark is the brand and the default. Light is DERIVED: the teal is darkened
+   to #1f6b60 so links clear 4.5:1 on a light ground, since #81ccc2 does not.
+
+   Code panels stay dark in both themes so the CWTF syntax palette survives
+   untouched — see src/theme/prismTheme.ts.
+   ═══════════════════════════════════════════════════════════════════════ */
+
+:root,
+[data-theme='dark'] {
+  /* ── surfaces & ink ─────────────────────────────────────────── */
+  --cw-ink: #0b0d0d;
+  --cw-fg: #f4f4f4;
+  --cw-body: rgba(244, 244, 244, 0.82);
+  --cw-muted: rgba(244, 244, 244, 0.66);
+  --cw-faint: rgba(244, 244, 244, 0.56);
+
+  /* ── the teal pair ──────────────────────────────────────────── */
+  --cw-acc: #81ccc2;
+  --cw-acc-deep: #5e9089;
+  --cw-warm: #e2b04a;
+  --cw-bad: #ffb4a8;
+
+  /* ── boundaries. These carry the whole affordance on inputs,
+        buttons, pagination and chips, so they answer to 1.4.11. ── */
+  --cw-line: rgba(129, 204, 194, 0.52);
+  --cw-line-soft: rgba(129, 204, 194, 0.48);
+  --cw-line-hard: rgba(129, 204, 194, 0.7);
+
+  --cw-fill: rgba(129, 204, 194, 0.035);
+  --cw-fill-2: rgba(129, 204, 194, 0.1);
+  --cw-fill-3: rgba(129, 204, 194, 0.18);
+
+  --cw-glow: rgba(129, 204, 194, 0.35);
+  --cw-glow-strong: rgba(129, 204, 194, 0.6);
+
+  /* ── the blueprint ground ───────────────────────────────────── */
+  --cw-grid-line: rgba(129, 204, 194, 0.045);
+  --cw-grid-size: 34px;
+
+  color-scheme: dark;
+}
+
+[data-theme='light'] {
+  --cw-ink: #f7faf9;
+  --cw-fg: #0e1413;
+  --cw-body: #333d3b;
+  --cw-muted: #4f5b59;
+  --cw-faint: #6b7674;
+
+  --cw-acc: #1f6b60;
+  --cw-acc-deep: #2a8074;
+  --cw-warm: #8a6414;
+  --cw-bad: #b03a2b;
+
+  --cw-line: rgba(94, 144, 137, 0.36);
+  --cw-line-soft: rgba(94, 144, 137, 0.28);
+  --cw-line-hard: rgba(94, 144, 137, 0.55);
+
+  --cw-fill: rgba(94, 144, 137, 0.045);
+  --cw-fill-2: rgba(94, 144, 137, 0.09);
+  --cw-fill-3: rgba(94, 144, 137, 0.15);
+
+  --cw-glow: rgba(94, 144, 137, 0.3);
+  --cw-glow-strong: rgba(94, 144, 137, 0.45);
+
+  --cw-grid-line: rgba(94, 144, 137, 0.07);
+
+  color-scheme: light;
+}
+
+/* ── theme-independent ────────────────────────────────────────── */
+:root {
+  /* the code panel is dark in both themes, on purpose */
+  --cw-code-bg: #080b0b;
+  --cw-code-fg: #d8dedc;
+  --cw-code-line: rgba(129, 204, 194, 0.28);
+  --cw-code-muted: rgba(216, 222, 220, 0.62);
+  --cw-code-btn: rgba(129, 204, 194, 0.34);
+
+  --cw-f-display: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI',
+    system-ui, sans-serif;
+  --cw-f-body: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI',
+    system-ui, sans-serif;
+  --cw-f-mono: ui-monospace, 'Cascadia Code', 'Cascadia Mono', 'SF Mono', Menlo,
+    Consolas, 'DejaVu Sans Mono', monospace;
+
+  /* Fluid type. rem bases stay fixed so every clamp is predictable;
+     the vw term does all the scaling. */
+  --cw-fs-xs: clamp(0.66rem, 0.62rem + 0.12vw, 0.78rem);
+  --cw-fs-sm: clamp(0.8rem, 0.77rem + 0.12vw, 0.92rem);
+  --cw-fs-md: clamp(1rem, 0.97rem + 0.14vw, 1.14rem);
+  --cw-fs-lg: clamp(1.15rem, 1.05rem + 0.4vw, 1.5rem);
+  --cw-fs-xl: clamp(1.45rem, 1.2rem + 0.95vw, 2.25rem);
+  --cw-fs-2xl: clamp(1.9rem, 1.45rem + 1.9vw, 3.4rem);
+
+  --cw-sp-section: clamp(2.25rem, 1.4rem + 3.4vw, 5.5rem);
+  --cw-sp-gap: clamp(1.5rem, 1rem + 2vw, 3.25rem);
+  --cw-sp-pad: clamp(1.1rem, 0.7rem + 1.6vw, 2.5rem);
+
+  --cw-shell: min(94vw, 1400px);
+  --cw-read: 74ch;
+  --cw-ease: cubic-bezier(0.22, 1, 0.36, 1);
+
+  --cw-navbar-h: 3.4rem;
+  --cw-ruler-h: 4.9rem;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   INFIMA OVERRIDES
+   Docusaurus ships Infima. Rather than fight it component by component,
+   the variables it reads are repointed at the tokens above.
+   ═══════════════════════════════════════════════════════════════════════ */
+
+:root,
+[data-theme='dark'],
+[data-theme='light'] {
+  --ifm-color-primary: var(--cw-acc);
+  --ifm-color-primary-dark: var(--cw-acc-deep);
+  --ifm-color-primary-darker: var(--cw-acc-deep);
+  --ifm-color-primary-darkest: var(--cw-acc-deep);
+  --ifm-color-primary-light: var(--cw-acc);
+  --ifm-color-primary-lighter: var(--cw-acc);
+  --ifm-color-primary-lightest: var(--cw-acc);
+
+  --ifm-background-color: var(--cw-ink);
+  --ifm-background-surface-color: var(--cw-ink);
+  --ifm-font-color-base: var(--cw-body);
+  --ifm-heading-color: var(--cw-fg);
+  --ifm-link-color: var(--cw-acc);
+  --ifm-link-hover-color: var(--cw-acc);
+
+  --ifm-font-family-base: var(--cw-f-body);
+  --ifm-font-family-monospace: var(--cw-f-mono);
+  --ifm-font-size-base: clamp(1rem, 0.96rem + 0.12vw, 1.19rem);
+  --ifm-line-height-base: 1.75;
+  --ifm-heading-font-family: var(--cw-f-display);
+  --ifm-heading-font-weight: 350;
+  --ifm-h1-font-size: var(--cw-fs-2xl);
+  --ifm-h2-font-size: var(--cw-fs-xl);
+  --ifm-h3-font-size: var(--cw-fs-lg);
+
+  /* Nothing in this system is rounded. The property appears zero times
+     in the source theme; keep it that way. */
+  --ifm-global-radius: 0;
+  --ifm-button-border-radius: 0;
+  --ifm-code-border-radius: 0;
+  --ifm-alert-border-radius: 0;
+  --ifm-card-border-radius: 0;
+  --ifm-pagination-nav-border-radius: 0;
+
+  --ifm-global-border-width: 1px;
+  --ifm-toc-border-color: var(--cw-line);
+  --ifm-hr-border-color: var(--cw-line-soft);
+  --ifm-table-border-color: var(--cw-line-soft);
+  --ifm-blockquote-border-color: var(--cw-line-hard);
+  --ifm-blockquote-color: var(--cw-muted);
+
+  --ifm-navbar-height: var(--cw-navbar-h);
+  --ifm-navbar-background-color: var(--cw-ink);
+  --ifm-navbar-link-color: var(--cw-muted);
+  --ifm-navbar-link-hover-color: var(--cw-acc);
+  --ifm-navbar-shadow: none;
+  --ifm-navbar-padding-vertical: 0.55rem;
+
+  --ifm-footer-background-color: var(--cw-ink);
+  --ifm-footer-color: var(--cw-muted);
+  --ifm-footer-link-color: var(--cw-muted);
+  --ifm-footer-link-hover-color: var(--cw-acc);
+  --ifm-footer-title-color: var(--cw-faint);
+
+  --ifm-code-background: var(--cw-fill-2);
+  --ifm-code-color: var(--cw-acc);
+  --ifm-code-font-size: 0.9em;
+  --ifm-code-padding-horizontal: 0.4em;
+  --ifm-code-padding-vertical: 0.12em;
+  --ifm-pre-background: var(--cw-code-bg);
+  --ifm-pre-color: var(--cw-code-fg);
+
+  --ifm-menu-color: var(--cw-muted);
+  --ifm-menu-color-active: var(--cw-acc);
+  --ifm-menu-color-background-active: var(--cw-fill-2);
+  --ifm-menu-color-background-hover: var(--cw-fill);
+
+  --ifm-breadcrumb-color-active: var(--cw-acc);
+  --ifm-toc-link-color: var(--cw-muted);
+
+  --ifm-alert-border-left-width: 3px;
+  --ifm-alert-padding-horizontal: var(--cw-sp-pad);
+  --ifm-alert-padding-vertical: var(--cw-sp-pad);
+
+  --docusaurus-highlighted-code-line-bg: rgba(129, 204, 194, 0.12);
+  --docsearch-primary-color: var(--cw-acc);
+}

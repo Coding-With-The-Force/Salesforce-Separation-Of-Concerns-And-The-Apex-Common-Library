@@ -1,0 +1,255 @@
+---
+title: "The Domain Layer"
+slug: /domain-layer/
+sidebar_position: 10
+hide_title: true
+---
+
+<YouTube id="ZUDwBW2PftA" title="The Domain Layer" duration="21:04" />
+
+---
+
+## What is the Domain Layer?
+
+The Domain Layer is, ["An object model of the domain that incorporates both behavior and data"](https://martinfowler.com/eaaCatalog/domainModel.html). - Martin Fowler  
+
+In most coding languages you need to connect to the database, query for the data and then you create wrapper classes to represent each underlying table in your database(s) to allow you to define how that particular table (object) should behave. Salesforce, however, already does a lot of this for you, for instance there is no need to connect to a Database, declarative behavior for you tables (objects) are already represented and your tables (objects) already have wrapper classes pre-defined for them (Ex: `Contact cont = new Contact()`).  
+
+However the logic represented in a trigger is an exception to this rule. Apex triggers represent a unique scenario on the Salesforce platform, they are necessary for complex logic, but inherently they do not abide by any object oriented principles. You can't create public methods in them, you can't unit test them, you can't re-use logic placed directly in a trigger anywhere else in your system, etc. Which is a massive detriment we need to overcome. That's where the domain layer comes in to play.
+
+The Domain Layer will allow you on an object by object basis have an object oriented approach to centralize your logic. Basically, logic specific to a single object will be located in one place and only one place by using the domain layer. This ensures your logic specific to a single object isn't split into a ton of different places across your org.
+
+<Figure caption={<><b>Only the Selector and the Unit of Work touch the database.</b> The Domain never does — which is exactly why a domain class can be unit tested without a single line of DML or SOQL.</>}>
+  <LayerDiagram highlight="domain" />
+</Figure>
+
+---
+
+## The one comparison that justifies the library
+
+Below is a real trigger of the kind that shows up in almost every org that has
+been live for more than two years. It works. It passed code review. It also
+queries inside a loop, mixes validation with side effects, and cannot be unit
+tested without inserting records.
+
+<BeforeAfter label="Summarise contacts, then flag rating changes">
+
+<Without lines="418" files="1" testable="0%">
+
+<CodeFile name="AccountTrigger.trigger" lines="418">
+
+```apex
+trigger AccountTrigger on Account (before insert, after update) {
+
+    if (Trigger.isBefore && Trigger.isInsert) {
+        for (Account a : Trigger.new) {
+
+            // validation, buried in a loop
+            if (a.AnnualRevenue == null) {
+                a.addError('Revenue is required');
+            }
+
+            // SOQL inside a loop — governor limits are one release away
+            List<Contact> cons = [
+                SELECT Id, Email FROM Contact WHERE AccountId = :a.Id
+            ];
+
+            if (!cons.isEmpty()) {
+                a.Description = 'Has ' + cons.size() + ' contacts';
+            }
+        }
+    }
+
+    if (Trigger.isAfter && Trigger.isUpdate) {
+        List<Task> tasks = new List<Task>();
+        for (Account a : Trigger.new) {
+            if (a.Rating != Trigger.oldMap.get(a.Id).Rating) {
+                tasks.add(new Task(WhatId = a.Id, Subject = 'Rating changed'));
+            }
+        }
+        insert tasks;  // DML with no transaction owner
+
+        // ... 340 more lines of the same, five developers deep
+    }
+}
+```
+
+</CodeFile>
+
+<Takeaway bad title="SOQL in a loop">Fails the moment someone loads 200 accounts.</Takeaway>
+<Takeaway bad title="Untestable">Every test has to insert real records and run the whole trigger.</Takeaway>
+<Takeaway bad title="No transaction owner">Two DML statements, no rollback story between them.</Takeaway>
+
+</Without>
+
+<With lines="78" files="4" testable="100%">
+
+<CodeFile name="AccountsServiceImpl.cls" lines="24">
+
+```apex
+public with sharing class AccountsServiceImpl implements IAccountsService
+{
+    public void summariseContacts(Set<Id> accountIds)
+    {
+        fflib_ISObjectUnitOfWork uow = Application.UnitOfWork.newInstance();
+
+        // The factory returns the domain. No domain interface needed —
+        // fflib_SObjectDomain is already the abstraction.
+        Accounts accounts =
+            (Accounts) Application.Domain.newInstance(accountIds);
+
+        accounts.summariseContacts(uow);
+
+        uow.commitWork();   // one transaction, one owner
+    }
+}
+```
+
+</CodeFile>
+
+<CodeFile name="Accounts.cls" lines="31">
+
+```apex
+public with sharing class Accounts extends fflib_SObjectDomain
+{
+    public override void onValidate()
+    {
+        for (Account record : (List<Account>) Records)
+        {
+            if (record.AnnualRevenue == null)
+            {
+                record.AnnualRevenue.addError('Revenue is required');
+            }
+        }
+    }
+
+    public void summariseContacts(fflib_ISObjectUnitOfWork uow)
+    {
+        // the rule lives with the object it belongs to
+        Map<Id, Integer> counts = ContactsSelector.countByAccount(getRecordIds());
+
+        for (Account record : (List<Account>) Records)
+        {
+            record.Description = 'Has ' + counts.get(record.Id) + ' contacts';
+            uow.registerDirty(record);
+        }
+    }
+}
+```
+
+</CodeFile>
+
+<CodeFile name="ContactsSelector.cls" lines="19">
+
+```apex
+public with sharing class ContactsSelector extends fflib_SObjectSelector
+{
+    public Schema.SObjectType getSObjectType()
+    {
+        return Contact.SObjectType;
+    }
+
+    // One bulk query. Called once, never in a loop.
+    public List<Contact> selectByAccountId(Set<Id> accountIds)
+    {
+        return (List<Contact>) Database.query(
+            newQueryFactory().setCondition('AccountId IN :accountIds').toSOQL()
+        );
+    }
+}
+```
+
+</CodeFile>
+
+<CodeFile name="AccountTrigger.trigger" lines="4">
+
+```apex
+trigger AccountTrigger on Account (before insert, after update)
+{
+    fflib_SObjectDomain.triggerHandler(Accounts.class);
+}
+
+// That's the whole trigger. It will never change again.
+```
+
+</CodeFile>
+
+<Takeaway title="One bulk query">The selector is called once, with a set of ids.</Takeaway>
+<Takeaway title="Mockable">Swap the selector for a mock and the test runs with zero DML.</Takeaway>
+<Takeaway title="One commit">The Unit of Work owns the transaction end to end.</Takeaway>
+
+</With>
+
+</BeforeAfter>
+
+The right-hand version is four files instead of one, which feels like more work
+until the second requirement arrives. At that point the trigger never changes,
+the service gains a method, and the test suite runs in milliseconds because
+nothing touches the database.
+
+---
+
+## When to make a new Domain Layer Class
+
+Basically, at the very least, anytime you need to make a trigger on an object you should implement a Domain Class. However this is a bit generalized, sometimes you don't actually need a trigger on an object, but you have object specific behavior that should be implemented in a Domain class. For instance, if you have an object that doesn't need a trigger, but it has a very specific way it should have its tasks created, you should probably create a Domain Layer class for that object and put that task creation behavior there. 
+
+A domain layer class is essentially a mixture of a trigger handler class and a class that represents object specific behaviors. 
+
+--- 
+
+
+## Where should you leverage the domain layer in your code?
+
+You should only ever call to the domain layer code from service class methods or from other domain class methods. Controller, Batch Classes, etc should never call out to the domain directly.
+
+---
+
+
+## Domain Class Naming Conventions
+
+**_Class Names -_** Domain classes should be named as the plural of whatever object you are creating a domain layer for. For instance if you were creating a domain layer class for the Case object, the class would be declared as follows: `public inherited sharing class Cases`. This indicates that the class should be bulkified and handles multiple records, not a single object record.
+
+**_Class Constructor -_** The constructor of these classes should always accept a list of records. This list of records will be leveraged by all of the methods within the domain class. This will be further explained below.
+
+**_Method Names -_** Method names for database transaction should use the onTransactionName naming convention (Example: `onAfterInsert`). If the method is not related to a database transaction it should descriptive to indicate what domain logic is being executed within it (Example: `determineCaseStatus`).  
+
+**_Parameter Names and Types -_** You do not typically need to pass anything into your domain layer methods. They should primarily operate on the list of records passed in the constructor in the majority of situations. However some behavior based (non-trigger invoked) methods may need other domain objects and/or units of work passed to them. This will be further explained in the sections below.  
+
+---
+
+## Domain Layer Best Practices
+
+**_Trasnaction Management_**  
+
+In the event you are actually performing DML operations in your Domain class, you should either create a [Unit of Work](/unit-of-work/pattern/) or have one passed into the method doing the DML to appropriately manage your transaction. In the event you are not wanting to leverage the unit of work pattern you should make sure to at the very least set your `System.Savepoint savePoint = Database.setSavePoint();` prior to doing your DML statement and use a try catch block to rollback if the DML fails.  
+
+
+---
+
+## Implementing the Domain Layer
+
+To find out how to implement the Domain Layer using Apex Common, continue reading here: [Implementing the Domain Layer with the Apex Common Library](/domain-layer/implementing/). If you're not interested in utilizing the Apex Common library for this layer you can implement really any trigger framework and the core of the domain layer will be covered.
+
+**_Libraries That Could Be Used for the Domain Layer_**
+
+[Apex Common (Contains a framework for all layers)](https://github.com/apex-enterprise-patterns/fflib-apex-common)  
+
+[Apex Trigger Actions Framework](https://github.com/mitchspano/apex-trigger-actions-framework)
+
+[SFDC Trigger Framework](https://github.com/kevinohara80/sfdc-trigger-framework)
+
+[MyTriggers](https://github.com/appero-com/MyTriggers)
+
+---
+
+## Domain Layer Examples
+
+**_Apex Common Examples (Suggested)_**
+
+[Case Object Domain Layer Example](https://github.com/Coding-With-The-Force/Salesforce-Separation-Of-Concerns-And-The-Apex-Common-Library/blob/main/src/classes/Apex_Common_Abstract_Task_Factory_Pattern_Example/Cases.cls)
+
+[Contact Object Domain Layer Example](https://github.com/Coding-With-The-Force/Salesforce-Separation-Of-Concerns-And-The-Apex-Common-Library/blob/main/src/classes/Apex_Common_Abstract_Task_Factory_Pattern_Example/Contacts.cls)
+
+**_SFDC Trigger Framework Example_**
+
+[Case Object Domain Layer Example](https://github.com/Coding-With-The-Force/Salesforce-Separation-Of-Concerns-And-The-Apex-Common-Library/blob/main/src/classes/Simple_SoC_Layer_Examples/Case_Trigger_Handler.cls)

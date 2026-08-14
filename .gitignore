@@ -1,8 +1,34 @@
-# Default ignored files
-/shelf/
-/.idea/workspace.xml
-# Datasource local storage ignored files
-/dataSources/
-/dataSources.local.xml
-# Editor-based HTTP Client requests
-/httpRequests/
+# ── Docusaurus site ──────────────────────────────────────────────
+website/node_modules/
+website/build/
+website/.docusaurus/
+website/.cache-loader/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# ── MkDocs (the site this replaces) ──────────────────────────────
+site/
+.cache/
+
+# ── Salesforce ───────────────────────────────────────────────────
+.sfdx/
+.sf/
+.localdevserver/
+deploy-options.json
+*.log
+
+# ── Editors ──────────────────────────────────────────────────────
+.idea/
+*.iml
+*.ipr
+*.iws
+.vscode/
+!.vscode/extensions.json
+!.vscode/settings.json
+
+# ── OS ───────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+desktop.ini
