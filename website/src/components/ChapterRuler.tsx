@@ -43,6 +43,22 @@ export default function ChapterRuler(): JSX.Element {
     setTip({chapter, x: t.left + t.width / 2 - w.left});
   };
 
+  /**
+   * Delegated, not per-tick.
+   *
+   * Docusaurus's <Link> spreads your props and then sets its own
+   * onMouseEnter for route prefetching, so a handler passed to it is
+   * silently dropped — which is why this only used to fire on focus.
+   * mouseover bubbles, so catching it on the track sidesteps that
+   * entirely and costs one listener instead of seventeen.
+   */
+  const onOver = (e: React.MouseEvent<HTMLDivElement>) => {
+    const el = (e.target as HTMLElement).closest<HTMLElement>('.cw-tickmark');
+    if (!el) return;
+    const chapter = CHAPTERS.find((c) => c.n === Number(el.dataset.n));
+    if (chapter) point(chapter, el);
+  };
+
   return (
     <div className="cw-rulerwrap">
       <div className="cw-rulerwrap__in" ref={wrapRef}>
@@ -57,7 +73,10 @@ export default function ChapterRuler(): JSX.Element {
         )}
 
         <div className="cw-ruler">
-          <div className="cw-ruler__track">
+          <div
+            className="cw-ruler__track"
+            onMouseOver={onOver}
+            onMouseLeave={() => setTip(null)}>
             {CHAPTERS.map((c) => {
               const major = c.n % 5 === 0 || c.n === 1;
               const on = current?.n === c.n;
@@ -66,7 +85,10 @@ export default function ChapterRuler(): JSX.Element {
                 <Link
                   key={c.n}
                   to={c.slug}
-                  title={`${String(c.n).padStart(2, '0')} · ${c.short}`}
+                  data-n={c.n}
+                  // aria-label rather than title: the bubble already says
+                  // this, and title would stack a native tooltip on top.
+                  aria-label={`Chapter ${String(c.n).padStart(2, '0')} — ${c.short}`}
                   className={[
                     'cw-tickmark',
                     major && 'cw-tickmark--major',
@@ -76,9 +98,7 @@ export default function ChapterRuler(): JSX.Element {
                     .filter(Boolean)
                     .join(' ')}
                   aria-current={on ? 'page' : undefined}
-                  onMouseEnter={(e) => point(c, e.currentTarget)}
                   onFocus={(e) => point(c, e.currentTarget)}
-                  onMouseLeave={() => setTip(null)}
                   onBlur={() => setTip(null)}>
                   <span className="cw-tickmark__lbl">
                     {major ? String(c.n).padStart(2, '0') : ' '}
