@@ -146,7 +146,7 @@ const config: Config = {
             },
             {
               label: 'Buy me some Taco Bell 🌮',
-              href: 'https://www.paypal.com/donate?business=RNHEF8ZWKKLDG&currency_code=USD',
+              href: 'https://checkout.codingwiththeforce.com/b/5kQ28raL44rQ96vfH54ko03',
             },
           ],
         },

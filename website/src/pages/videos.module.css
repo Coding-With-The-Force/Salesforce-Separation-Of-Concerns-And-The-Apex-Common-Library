@@ -4,9 +4,10 @@
   padding-bottom: var(--cw-sp-section);
 }
 
+/* matches the homepage masthead — grows with the viewport, each line capped */
 .mast {
   padding-block: var(--cw-sp-section) var(--cw-sp-gap);
-  max-width: 62ch;
+  max-width: none;
 }
 .mast h1 {
   margin: 1rem 0 0.5em;
@@ -16,6 +17,8 @@
   line-height: 1.12;
   letter-spacing: -0.015em;
   color: var(--cw-fg);
+  text-wrap: balance;
+  max-width: clamp(22ch, 46vw, 40ch);
 }
 .mast p {
   margin: 0;
@@ -23,6 +26,8 @@
   line-height: 1.55;
   font-weight: 300;
   color: var(--cw-muted);
+  max-width: clamp(46ch, 56vw, 88ch);
+  text-wrap: pretty;
 }
 
 .resume {

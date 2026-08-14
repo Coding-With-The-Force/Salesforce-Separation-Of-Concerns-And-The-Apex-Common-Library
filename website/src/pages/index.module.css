@@ -10,9 +10,13 @@
   margin-inline: auto;
 }
 
+/* The masthead fills the shell and lets its own lines set the measure, so it
+   grows with the viewport instead of sitting in a fixed 64ch column with the
+   rest of the page stretching past it. Each line still has a cap, because a
+   headline running the full width of a 4K monitor is unreadable. */
 .mast {
   padding-block: var(--cw-sp-section) var(--cw-sp-gap);
-  max-width: 64ch;
+  max-width: none;
 }
 .mast h1 {
   margin: 1rem 0 0.5em;
@@ -23,7 +27,7 @@
   letter-spacing: -0.015em;
   color: var(--cw-fg);
   text-wrap: balance;
-  max-width: 22ch;
+  max-width: clamp(22ch, 46vw, 40ch);
 }
 .mast p {
   margin: 0;
@@ -31,6 +35,8 @@
   line-height: 1.55;
   font-weight: 300;
   color: var(--cw-muted);
+  max-width: clamp(46ch, 56vw, 88ch);
+  text-wrap: pretty;
 }
 .mast p strong {
   color: var(--cw-fg);
@@ -265,9 +271,10 @@
 }
 
 /* ── the index ────────────────────────────────────────────────── */
+/* same treatment, so the two blocks don't disagree about how wide the page is */
 .idxHead {
   padding-bottom: var(--cw-sp-gap);
-  max-width: 66ch;
+  max-width: clamp(50ch, 60vw, 92ch);
 }
 .idxHead h2 {
   margin: 0.8rem 0 0.5em;

@@ -126,7 +126,7 @@
   border: 1px solid var(--cw-line);
   margin: 0 0 1.6em;
   background: var(--cw-ink);
-  max-width: min(100%, 82ch);
+  max-width: min(100%, var(--cw-wide));
 }
 .cw-cmp::after {
   content: '';
@@ -325,7 +325,7 @@
   border: 1px solid var(--cw-line);
   position: relative;
   margin-bottom: var(--cw-sp-gap);
-  max-width: min(100%, 82ch);
+  max-width: min(100%, var(--cw-wide));
 }
 .cw-manifest {
   background: var(--cw-ink);
@@ -391,7 +391,7 @@
   gap: 1rem;
   flex-wrap: wrap;
   margin-bottom: var(--cw-sp-gap);
-  max-width: min(100%, 82ch);
+  max-width: min(100%, var(--cw-wide));
 }
 .cw-stepbar__lab {
   font-family: var(--cw-f-mono);
@@ -544,7 +544,7 @@
 }
 .cw-step__b {
   padding-left: 3rem;
-  max-width: min(100%, 82ch);
+  max-width: min(100%, var(--cw-wide));
 }
 .cw-step__b > :last-child {
   margin-bottom: 0;
@@ -559,7 +559,7 @@
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr));
   gap: 1px;
   background: var(--cw-line-soft);
-  max-width: min(100%, 82ch);
+  max-width: min(100%, var(--cw-wide));
 }
 .cw-pcell {
   background: var(--cw-ink);
@@ -619,7 +619,7 @@
   background: var(--cw-fill);
   padding: var(--cw-sp-pad);
   overflow-x: auto;
-  max-width: min(100%, 82ch);
+  max-width: min(100%, var(--cw-wide));
 }
 .cw-figure svg {
   display: block;
@@ -859,7 +859,7 @@
   padding: 0.65rem 0.85rem;
   margin: 0 0 1.6em;
   position: relative;
-  max-width: min(100%, 82ch);
+  max-width: min(100%, var(--cw-wide));
 }
 .cw-deploy::after {
   content: '';

@@ -228,13 +228,27 @@ aside.theme-doc-sidebar-container {
 .cw-masthead .cw-eyebrow {
   margin-bottom: 1rem;
 }
+/* The chapter title, matching the hairline weight the source theme uses on
+   .cwtf-post__title. Capped by its own measure so it grows with the column
+   without running the full width of it. */
+.cw-masthead h1 {
+  font-family: var(--cw-f-display);
+  font-weight: 300;
+  line-height: 1.14;
+  letter-spacing: -0.015em;
+  color: var(--cw-fg);
+  text-wrap: balance;
+  max-width: clamp(20ch, 44vw, 34ch);
+  margin-bottom: 0.5em;
+}
 .cw-standfirst {
   font-size: var(--cw-fs-lg);
   line-height: 1.55;
   color: var(--cw-muted);
   margin: 0 0 1.3rem;
-  max-width: 56ch;
+  max-width: clamp(48ch, 56vw, 80ch);
   font-weight: 300;
+  text-wrap: pretty;
 }
 .cw-metaline {
   display: flex;
@@ -258,7 +272,7 @@ aside.theme-doc-sidebar-container {
   background: var(--cw-line-soft);
   border: 1px solid var(--cw-line-soft);
   margin-top: var(--cw-sp-gap);
-  max-width: 82ch;
+  max-width: var(--cw-wide);
 }
 .cw-pager a {
   background: var(--cw-ink);

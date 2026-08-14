@@ -107,7 +107,14 @@
   --cw-sp-pad: clamp(1.1rem, 0.7rem + 1.6vw, 2.5rem);
 
   --cw-shell: min(94vw, 1400px);
-  --cw-read: 74ch;
+
+  /* Two content measures, both ~40% wider than the original 74ch/82ch so the
+     article uses the column the shell actually gives it instead of leaving a
+     third of it empty. --cw-read is prose; --cw-wide is anything with its own
+     internal structure — code, comparisons, figures, the pager. */
+  --cw-read: 104ch;
+  --cw-wide: 115ch;
+
   --cw-ease: cubic-bezier(0.22, 1, 0.36, 1);
 
   --cw-navbar-h: 3.4rem;

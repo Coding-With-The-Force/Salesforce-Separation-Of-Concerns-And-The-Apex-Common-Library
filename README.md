@@ -56,4 +56,4 @@ If you believe there is any information missing from this guide or that it needs
 
 ### How to Say Thanks
 
-If you enjoy this repo and would like to say thank you, feel free to [send a donation here](https://www.paypal.com/donate?business=RNHEF8ZWKKLDG&currency_code=USD)! But no pressure, I really just do this for fun!
+If you enjoy this repo and would like to say thank you, feel free to [send a donation here](https://checkout.codingwiththeforce.com/b/5kQ28raL44rQ96vfH54ko03)! But no pressure, I really just do this for fun!

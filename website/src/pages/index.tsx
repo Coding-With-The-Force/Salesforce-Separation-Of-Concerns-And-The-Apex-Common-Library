@@ -53,16 +53,15 @@ export default function Home(): JSX.Element {
           <span className="cw-eyebrow">
             Separation of Concerns on the Salesforce platform
           </span>
-          <h1>This is the architecture. Click a box to read about it.</h1>
+          <h1>The library that will allow your Salesforce org to scale however you need it to.</h1>
           <p>
-            Seventeen chapters on splitting a Salesforce org into layers with{' '}
-            <strong>fflib-apex-common</strong>. Every chapter has a video.
+            Seventeen chapters on how to implement the {' '}
+            <strong>The Apex Common Library</strong> in your Salesforce org. 
+            Every chapter has a video.
             Nothing here costs anything.
           </p>
           <ul className={styles.facts}>
             <li>Written for Apex developers and architects</li>
-            <li>Assumes you can already write a trigger</li>
-            <li>No signup</li>
             <li>{totalVideoTime()} of video</li>
           </ul>
         </div>
@@ -130,10 +129,9 @@ export default function Home(): JSX.Element {
         {/* ── the index ── */}
         <div className={styles.idxHead}>
           <span className="cw-eyebrow">All seventeen</span>
-          <h2>Read it in order, or jump to the layer you're fighting with</h2>
+          <h2>Read it in order, or jump to the layer you're interested in.</h2>
           <p>
-            Each pattern chapter is followed by the chapter where you implement
-            it. The template column shows which page design each chapter uses.
+            Find out exactly what you need to implement the apex common library fast.
           </p>
         </div>
 

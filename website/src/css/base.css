@@ -272,7 +272,7 @@ main {
   border: 1px solid var(--cw-line);
   box-shadow: none !important;
   margin-bottom: 1.6em !important;
-  max-width: min(100%, 82ch);
+  max-width: min(100%, var(--cw-wide));
 }
 .theme-code-block::after {
   content: '';
