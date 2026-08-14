@@ -14,42 +14,6 @@ There is also some example code showing you how an application (in this case a h
 
 ***
 
-### Working on the site
-
-The chapters are Markdown. They live in `docs/`, one `.mdx` file each, and
-that is where you edit them — the site is built from those files by
-[Docusaurus](https://docusaurus.io/), which lives in `website/`.
-
-```bash
-cd website
-npm install
-npm start          # local dev server with hot reload
-npm run build      # production build into website/build
-npm run serve      # preview the production build
-```
-
-Pushing to `main` builds and deploys automatically — see
-`.github/workflows/deploy.yml`.
-
-**Writing a chapter.** Ordinary Markdown, plus a handful of components you can
-drop in when the content calls for them. None of them need an import:
-
-| Component | What it's for |
-| --- | --- |
-| `<YouTube id="…" />` | The companion video, in a responsive 16:9 wrapper |
-| `<BeforeAfter>` | The with/without-the-library comparison |
-| `<PatternCard>` | The catalogue entry on a pattern chapter |
-| `<Steps>` / `<Manifest>` | Build-along steps on an implementation chapter |
-| `<Figure>` / `<LayerDiagram>` | The architecture diagram |
-| `<AnnotatedSource>` | Notes beside a pinned source file |
-| `:::note` / `:::warning` | Callouts |
-
-Chapter metadata — title, URL, video id, duration, which page template it
-uses — lives in one place: `website/src/data/chapters.ts`. Adding or reordering
-a chapter means editing that file and the chapter's `sidebar_position`.
-
-***
-
 ### How to Submit Feedback for this repo
 
 If you believe there is any information missing from this guide or that it needs more info in certain places, please submit an [issue on this repo here](https://github.com/Coding-With-The-Force/Salesforce-Separation-Of-Concerns-And-The-Apex-Common-Library/issues) and I'll add it ASAP!
