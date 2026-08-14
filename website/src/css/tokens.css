@@ -118,7 +118,8 @@
   --cw-ease: cubic-bezier(0.22, 1, 0.36, 1);
 
   --cw-navbar-h: 3.4rem;
-  --cw-ruler-h: 4.9rem;
+  /* includes the top strip the ruler's hover bubble sits in */
+  --cw-ruler-h: 6.05rem;
 }
 
 /* ═══════════════════════════════════════════════════════════════════════
