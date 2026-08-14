@@ -31,6 +31,35 @@ const config: Config = {
 
   i18n: {defaultLocale: 'en', locales: ['en']},
 
+  /**
+   * Poppins, at the same three weights the WordPress theme enqueues
+   * (wp-content/themes/cwtf/functions.php). Without this the font stack
+   * names Poppins and then silently falls back to system-ui, which is the
+   * single most visible way this site could drift from
+   * codingwiththeforce.com.
+   */
+  headTags: [
+    {
+      tagName: 'link',
+      attributes: {rel: 'preconnect', href: 'https://fonts.googleapis.com'},
+    },
+    {
+      tagName: 'link',
+      attributes: {
+        rel: 'preconnect',
+        href: 'https://fonts.gstatic.com',
+        crossorigin: 'anonymous',
+      },
+    },
+    {
+      tagName: 'link',
+      attributes: {
+        rel: 'stylesheet',
+        href: 'https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500&display=swap',
+      },
+    },
+  ],
+
   markdown: {
     format: 'detect', // .md stays CommonMark, .mdx gets the full pipeline
     hooks: {onBrokenMarkdownLinks: 'throw'},
