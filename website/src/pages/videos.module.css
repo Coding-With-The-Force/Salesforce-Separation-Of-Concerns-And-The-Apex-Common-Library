@@ -1,0 +1,320 @@
+.shell {
+  width: var(--cw-shell);
+  margin-inline: auto;
+  padding-bottom: var(--cw-sp-section);
+}
+
+/* matches the homepage masthead — grows with the viewport, each line capped */
+.mast {
+  padding-block: var(--cw-sp-section) var(--cw-sp-gap);
+  max-width: none;
+}
+.mast h1 {
+  margin: 1rem 0 0.5em;
+  font-family: var(--cw-f-display);
+  font-weight: 300;
+  font-size: var(--cw-fs-2xl);
+  line-height: 1.12;
+  letter-spacing: -0.015em;
+  color: var(--cw-fg);
+  text-wrap: balance;
+  max-width: clamp(22ch, 46vw, 40ch);
+}
+.mast p {
+  margin: 0;
+  font-size: var(--cw-fs-lg);
+  line-height: 1.55;
+  font-weight: 300;
+  color: var(--cw-muted);
+  max-width: clamp(46ch, 56vw, 88ch);
+  text-wrap: pretty;
+}
+
+.resume {
+  border: 1px solid var(--cw-line);
+  margin-bottom: var(--cw-sp-gap);
+}
+.resumeBody {
+  padding: var(--cw-sp-pad);
+}
+.resumeLab {
+  font-family: var(--cw-f-mono);
+  font-size: var(--cw-fs-xs);
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--cw-acc);
+  margin-bottom: 0.7rem;
+}
+.resume h2 {
+  margin: 0 0 0.4rem;
+  font-family: var(--cw-f-display);
+  font-weight: 300;
+  font-size: var(--cw-fs-xl);
+  line-height: 1.2;
+  color: var(--cw-fg);
+}
+.resume p {
+  margin: 0 0 1rem;
+  font-family: var(--cw-f-mono);
+  font-size: var(--cw-fs-xs);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--cw-faint);
+}
+.bar {
+  height: 3px;
+  background: var(--cw-line-soft);
+  margin-bottom: 1.2rem;
+  max-width: 22rem;
+  overflow: hidden;
+}
+.bar i {
+  display: block;
+  height: 3px;
+  background: var(--cw-acc);
+  transition: width 0.35s var(--cw-ease);
+}
+.resumeActs {
+  display: flex;
+  gap: 0.7rem;
+  flex-wrap: wrap;
+}
+
+.part {
+  padding-top: var(--cw-sp-gap);
+}
+.partHead {
+  display: flex;
+  align-items: baseline;
+  gap: 0.75rem;
+  padding-bottom: 0.7rem;
+  border-bottom: 1px solid var(--cw-line-soft);
+  margin-bottom: 1.2rem;
+}
+.partHead i {
+  width: 3px;
+  height: 13px;
+  background: var(--cw-acc-deep);
+  flex: none;
+  align-self: center;
+}
+.partHead h3 {
+  margin: 0;
+  font-family: var(--cw-f-mono);
+  font-size: var(--cw-fs-xs);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--cw-muted);
+  font-weight: 400;
+}
+.partHead span {
+  margin-left: auto;
+  font-family: var(--cw-f-mono);
+  font-size: var(--cw-fs-xs);
+  color: var(--cw-faint);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 17rem), 1fr));
+  gap: 1.2rem;
+}
+.card {
+  border: 1px solid var(--cw-line);
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  transition:
+    border-color 0.25s var(--cw-ease),
+    box-shadow 0.25s var(--cw-ease);
+}
+.card:hover {
+  border-color: var(--cw-acc);
+  box-shadow: 0 0 30px -8px var(--cw-glow);
+}
+.card::after {
+  content: '';
+  position: absolute;
+  top: -1px;
+  left: -1px;
+  width: 12px;
+  height: 12px;
+  border-top: 1px solid var(--cw-acc);
+  border-left: 1px solid var(--cw-acc);
+  pointer-events: none;
+}
+.cardDone .thumb {
+  opacity: 0.5;
+}
+
+.thumb {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  display: grid;
+  place-items: center;
+  border-bottom: 1px solid var(--cw-line-soft);
+  background: var(--cw-fill);
+  overflow: hidden;
+  text-decoration: none;
+}
+.thumbImg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  border: 0;
+  filter: saturate(0.85);
+  transition:
+    filter 0.3s var(--cw-ease),
+    transform 0.5s var(--cw-ease);
+}
+.thumb:hover .thumbImg {
+  filter: saturate(1);
+  transform: scale(1.03);
+}
+.scrim {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to top,
+    rgba(8, 11, 11, 0.82) 0%,
+    rgba(8, 11, 11, 0.22) 40%,
+    rgba(8, 11, 11, 0.34) 100%
+  );
+}
+.big {
+  position: absolute;
+  left: 0.7rem;
+  top: 0.3rem;
+  font-family: var(--cw-f-display);
+  font-weight: 300;
+  font-size: 2.4rem;
+  line-height: 1;
+  color: rgba(244, 244, 244, 0.6);
+}
+.btn {
+  position: relative;
+  width: 3rem;
+  height: 3rem;
+  display: grid;
+  place-items: center;
+  background: rgba(8, 11, 11, 0.72);
+  border: 1px solid var(--cw-acc);
+  transition:
+    background 0.25s var(--cw-ease),
+    transform 0.25s var(--cw-ease),
+    box-shadow 0.25s var(--cw-ease);
+}
+.thumb:hover .btn {
+  background: rgba(129, 204, 194, 0.18);
+  transform: scale(1.08);
+  box-shadow: 0 0 26px -6px var(--cw-glow-strong);
+}
+.play {
+  width: 0;
+  height: 0;
+  border-left: 15px solid var(--cw-acc);
+  border-top: 9.5px solid transparent;
+  border-bottom: 9.5px solid transparent;
+  margin-left: 3px;
+}
+.dur {
+  position: absolute;
+  right: 0.7rem;
+  bottom: 0.6rem;
+  font-family: var(--cw-f-mono);
+  font-size: var(--cw-fs-xs);
+  color: rgba(244, 244, 244, 0.72);
+}
+
+.body {
+  padding: var(--cw-sp-pad);
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  flex: 1;
+}
+.meta {
+  font-family: var(--cw-f-mono);
+  font-size: var(--cw-fs-xs);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--cw-faint);
+}
+.title {
+  font-family: var(--cw-f-display);
+  font-weight: 400;
+  font-size: var(--cw-fs-md);
+  line-height: 1.35;
+  color: var(--cw-fg);
+  text-decoration: none;
+}
+.title:hover {
+  color: var(--cw-acc);
+  text-decoration: none;
+}
+.blurb {
+  font-size: var(--cw-fs-sm);
+  color: var(--cw-faint);
+  line-height: 1.5;
+  flex: 1;
+}
+.acts {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  padding-top: 0.7rem;
+  border-top: 1px solid var(--cw-line-soft);
+  font-family: var(--cw-f-mono);
+  font-size: var(--cw-fs-xs);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.mark {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: none;
+  border: 0;
+  color: var(--cw-muted);
+  font: inherit;
+  cursor: pointer;
+  padding: 0;
+}
+.mark:hover {
+  color: var(--cw-acc);
+}
+.box {
+  width: 14px;
+  height: 14px;
+  border: 1px solid var(--cw-line-soft);
+  display: grid;
+  place-items: center;
+  transition: all 0.2s var(--cw-ease);
+}
+.box svg {
+  width: 8px;
+  height: 8px;
+  stroke: var(--cw-ink);
+  stroke-width: 3.6;
+  fill: none;
+  opacity: 0;
+}
+.cardDone .box {
+  background: var(--cw-acc);
+  border-color: var(--cw-acc);
+}
+.cardDone .box svg {
+  opacity: 1;
+}
+.read {
+  margin-left: auto;
+  color: var(--cw-faint);
+  text-decoration: none;
+}
+.read:hover {
+  color: var(--cw-acc);
+  text-decoration: none;
+}

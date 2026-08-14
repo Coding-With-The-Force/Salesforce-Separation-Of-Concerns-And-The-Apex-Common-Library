@@ -1,9 +1,13 @@
-name: Deploy MkDocs to GitHub Pages
+name: Deploy to GitHub Pages
+
+# The permissions, concurrency and two-job upload/deploy shape are unchanged
+# from the MkDocs workflow — only the build step is different.
 
 on:
   push:
     branches:
       - main
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -14,6 +18,10 @@ concurrency:
   group: "pages"
   cancel-in-progress: false
 
+defaults:
+  run:
+    working-directory: website
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -21,21 +29,31 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
+      - name: Set up Node
+        uses: actions/setup-node@v4
         with:
-          python-version: "3.x"
+          node-version: 20
+          cache: npm
+          cache-dependency-path: website/package-lock.json
 
-      - name: Install MkDocs Material
-        run: pip install mkdocs-material
+      # ci, not install — the lockfile is the source of truth, so a build
+      # is reproducible and a transitive bump can't change the output
+      # without a commit.
+      - name: Install dependencies
+        run: npm ci
 
-      - name: Build MkDocs site
-        run: mkdocs build
+      - name: Type-check
+        run: npm run typecheck
+
+      # onBrokenLinks is 'throw', so a dead cross-link fails here rather
+      # than shipping.
+      - name: Build site
+        run: npm run build
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: site/
+          path: website/build
 
   deploy:
     environment:

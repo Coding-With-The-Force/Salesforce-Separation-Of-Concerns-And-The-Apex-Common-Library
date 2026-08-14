@@ -1,0 +1,346 @@
+/* ═══════════════════════════════════════════════════════════════════════
+   THE SHELL — "Left Rail" and "Full Bleed", merged.
+
+   Two navigation axes, split so they stop competing:
+     · chapters go HORIZONTAL, on the ruler strip under the navbar
+     · sections go VERTICAL, on the sticky TOC rail down the left
+
+   Docusaurus's own doc sidebar is removed entirely — the ruler replaced it.
+   ═══════════════════════════════════════════════════════════════════════ */
+
+/* the sidebar the ruler replaced */
+.theme-doc-sidebar-container,
+aside.theme-doc-sidebar-container {
+  display: none !important;
+}
+
+/* ── the ruler ────────────────────────────────────────────────── */
+.cw-rulerwrap {
+  position: sticky;
+  top: var(--cw-navbar-h);
+  z-index: 190;
+  background: var(--cw-ink);
+  border-bottom: 1px solid var(--cw-line-soft);
+}
+.cw-rulerwrap__in {
+  width: var(--cw-shell);
+  margin-inline: auto;
+}
+.cw-ruler {
+  padding-block: 1.3rem 0.35rem;
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
+.cw-ruler__track {
+  display: flex;
+  align-items: flex-end;
+  min-width: 46rem;
+}
+.cw-tickmark {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+  padding-bottom: 0.25rem;
+  position: relative;
+  text-decoration: none;
+  transition: color 0.25s var(--cw-ease);
+}
+.cw-tickmark:hover {
+  text-decoration: none;
+}
+.cw-tickmark__lbl {
+  font-family: var(--cw-f-mono);
+  font-size: var(--cw-fs-xs);
+  color: var(--cw-faint);
+  font-variant-numeric: tabular-nums;
+  transition: color 0.25s var(--cw-ease);
+}
+.cw-tickmark__bar {
+  width: 1px;
+  height: 10px;
+  background: var(--cw-line-soft);
+  transition:
+    background 0.25s var(--cw-ease),
+    height 0.25s var(--cw-ease);
+}
+.cw-tickmark--major .cw-tickmark__bar {
+  height: 16px;
+}
+.cw-tickmark:hover .cw-tickmark__lbl {
+  color: var(--cw-acc);
+}
+.cw-tickmark:hover .cw-tickmark__bar {
+  background: var(--cw-acc);
+  height: 20px;
+}
+.cw-tickmark--on .cw-tickmark__lbl {
+  color: var(--cw-acc);
+}
+.cw-tickmark--on .cw-tickmark__bar {
+  background: var(--cw-acc);
+  height: 26px;
+  width: 2px;
+}
+.cw-tickmark--done .cw-tickmark__bar {
+  background: var(--cw-acc-deep);
+}
+/* The readout. Lives outside the overflow-x scroller, so nothing can clip it. */
+.cw-rulercap {
+  display: flex;
+  align-items: baseline;
+  gap: 1.5rem;
+  font-family: var(--cw-f-mono);
+  font-size: var(--cw-fs-xs);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--cw-faint);
+  padding-bottom: 0.55rem;
+}
+.cw-rulercap__end {
+  flex: none;
+  white-space: nowrap;
+}
+.cw-rulercap__read {
+  flex: 1;
+  min-width: 0;
+  text-align: center;
+  color: var(--cw-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  transition: color 0.2s var(--cw-ease);
+}
+.cw-rulercap__read--hot {
+  color: var(--cw-acc);
+}
+.cw-rulercap__read--hot b {
+  color: var(--cw-acc);
+}
+.cw-rulercap a {
+  color: var(--cw-faint);
+  text-decoration: none;
+}
+.cw-rulercap a:hover {
+  color: var(--cw-acc);
+}
+.cw-rulercap b {
+  color: var(--cw-muted);
+  font-weight: 400;
+}
+
+/* ── the two-column page ──────────────────────────────────────── */
+.cw-docpage {
+  width: var(--cw-shell);
+  margin-inline: auto;
+  display: grid;
+  grid-template-columns: minmax(11rem, 14rem) minmax(0, 1fr);
+  gap: clamp(1.5rem, 3vw, 3.5rem);
+  align-items: start;
+  padding-block: var(--cw-sp-gap) var(--cw-sp-section);
+}
+.cw-docmain {
+  min-width: 0;
+}
+
+/* the left rail, mirroring the source theme's own .cwtf-toc__sticky */
+.cw-rail {
+  position: sticky;
+  top: calc(var(--cw-navbar-h) + var(--cw-ruler-h) + 1rem);
+  max-height: calc(100dvh - var(--cw-navbar-h) - var(--cw-ruler-h) - 2.5rem);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  border-left: 1px solid var(--cw-line);
+  padding-left: clamp(0.9rem, 1.5vw, 1.4rem);
+  scrollbar-width: thin;
+}
+.cw-rail__title {
+  font-family: var(--cw-f-mono);
+  font-size: var(--cw-fs-xs);
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--cw-faint);
+  margin: 0 0 0.9rem;
+}
+
+/* Docusaurus's TOC, restyled for the rail */
+.cw-rail .table-of-contents {
+  border-left: 0;
+  padding-left: 0;
+  font-size: var(--cw-fs-sm);
+}
+.cw-rail .table-of-contents__link {
+  color: var(--cw-muted);
+  line-height: 1.4;
+  display: block;
+  transition: color 0.2s var(--cw-ease);
+}
+.cw-rail .table-of-contents__link:hover {
+  color: var(--cw-acc);
+  text-decoration: none;
+}
+.cw-rail .table-of-contents__link--active {
+  color: var(--cw-acc);
+  font-weight: 500;
+  box-shadow: inset 2px 0 0 var(--cw-acc);
+  padding-left: 0.55rem;
+  margin-left: -0.55rem;
+}
+.cw-rail .table-of-contents li {
+  margin: 0.55rem 0;
+}
+
+.cw-railnav {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+  padding-top: 1.1rem;
+  border-top: 1px solid var(--cw-line-soft);
+}
+.cw-railnav a {
+  display: block;
+  font-size: var(--cw-fs-sm);
+  color: var(--cw-muted);
+  line-height: 1.35;
+  text-decoration: none;
+  transition: color 0.2s var(--cw-ease);
+}
+.cw-railnav a:hover {
+  color: var(--cw-acc);
+  text-decoration: none;
+}
+.cw-railnav__d {
+  display: block;
+  font-family: var(--cw-f-mono);
+  font-size: var(--cw-fs-xs);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--cw-faint);
+  margin-bottom: 0.15rem;
+}
+
+/* ── the chapter masthead ─────────────────────────────────────── */
+.cw-masthead {
+  margin-bottom: var(--cw-sp-gap);
+}
+.cw-masthead .cw-eyebrow {
+  margin-bottom: 1rem;
+}
+/* The chapter title, matching the hairline weight the source theme uses on
+   .cwtf-post__title. Capped by its own measure so it grows with the column
+   without running the full width of it. */
+.cw-masthead h1 {
+  font-family: var(--cw-f-display);
+  font-weight: 300;
+  line-height: 1.14;
+  letter-spacing: -0.015em;
+  color: var(--cw-fg);
+  text-wrap: balance;
+  max-width: clamp(20ch, 44vw, 34ch);
+  margin-bottom: 0.5em;
+}
+.cw-standfirst {
+  font-size: var(--cw-fs-lg);
+  line-height: 1.55;
+  color: var(--cw-muted);
+  margin: 0 0 1.3rem;
+  max-width: clamp(48ch, 56vw, 80ch);
+  font-weight: 300;
+  text-wrap: pretty;
+}
+.cw-metaline {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  flex-wrap: wrap;
+  font-family: var(--cw-f-mono);
+  font-size: var(--cw-fs-xs);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--cw-faint);
+  padding-bottom: 1.3rem;
+  border-bottom: 1px solid var(--cw-line);
+}
+
+/* ── prev / next ──────────────────────────────────────────────── */
+.cw-pager {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 17rem), 1fr));
+  gap: 1px;
+  background: var(--cw-line-soft);
+  border: 1px solid var(--cw-line-soft);
+  margin-top: var(--cw-sp-gap);
+  max-width: var(--cw-wide);
+}
+.cw-pager a {
+  background: var(--cw-ink);
+  padding: var(--cw-sp-pad);
+  display: block;
+  position: relative;
+  text-decoration: none;
+  transition: background 0.25s var(--cw-ease);
+}
+.cw-pager a:hover {
+  background: var(--cw-fill-2);
+  text-decoration: none;
+}
+.cw-pager a:hover::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 12px;
+  height: 12px;
+  border-top: 1px solid var(--cw-acc);
+  border-left: 1px solid var(--cw-acc);
+}
+.cw-pager__d {
+  font-family: var(--cw-f-mono);
+  font-size: var(--cw-fs-xs);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--cw-faint);
+  margin-bottom: 0.4rem;
+}
+.cw-pager__t {
+  font-family: var(--cw-f-display);
+  font-weight: 350;
+  font-size: var(--cw-fs-md);
+  color: var(--cw-fg);
+  line-height: 1.35;
+}
+.cw-pager a:hover .cw-pager__t {
+  color: var(--cw-acc);
+}
+.cw-pager--next {
+  text-align: right;
+}
+
+/* ── responsive ───────────────────────────────────────────────── */
+@media (max-width: 62rem) {
+  .cw-docpage {
+    grid-template-columns: 1fr;
+  }
+  .cw-rail {
+    position: static;
+    max-height: none;
+    border-left: 0;
+    border: 1px solid var(--cw-line);
+    padding: var(--cw-sp-pad);
+    margin-bottom: var(--cw-sp-gap);
+  }
+  .cw-rail .table-of-contents__link--active {
+    margin-left: 0;
+  }
+}
+@media (max-width: 46rem) {
+  /* the endpoints go, the readout stays — it's the one that carries meaning */
+  .cw-rulercap__end {
+    display: none;
+  }
+  .cw-rulercap__read {
+    text-align: left;
+  }
+}

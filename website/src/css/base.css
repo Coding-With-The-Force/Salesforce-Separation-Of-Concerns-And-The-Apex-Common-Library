@@ -1,0 +1,484 @@
+/* ═══════════════════════════════════════════════════════════════════════
+   BASE — the ground, the type, and the four motifs that carry the identity
+     1. a 34px teal graph-paper grid, fixed-attachment, at 4.5%
+     2. a 12px corner registration tick on every panel
+     3. a 45°-rotated diamond as separator, bullet and meta divider
+     4. glow on hover — never a drop shadow
+   ═══════════════════════════════════════════════════════════════════════ */
+
+html {
+  -webkit-text-size-adjust: 100%;
+  /* the base colour, so there is never a flash of anything else */
+  background-color: var(--cw-ink);
+}
+
+body {
+  /* No background here. The grid is painted by the fixed layer below, so it
+     covers the viewport on every page whatever the content height — a
+     background-attachment:fixed on body stops at the body box and left a
+     dead band under short pages. */
+  background: transparent;
+  color: var(--cw-body);
+  font-family: var(--cw-f-body);
+  font-weight: 400;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── the blueprint ground ─────────────────────────────────────
+   Fixed to the viewport and pinned behind everything. Negative z-index
+   keeps it above html's background but below all content. */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-color: var(--cw-ink);
+  background-image:
+    repeating-linear-gradient(
+      90deg,
+      var(--cw-grid-line) 0 1px,
+      transparent 1px var(--cw-grid-size)
+    ),
+    repeating-linear-gradient(
+      0deg,
+      var(--cw-grid-line) 0 1px,
+      transparent 1px var(--cw-grid-size)
+    );
+}
+
+/* Nothing between the grid and the content may paint an opaque ground. */
+#__docusaurus,
+.main-wrapper,
+.cw-docroot,
+main {
+  background: transparent;
+}
+
+:focus-visible {
+  outline: 2px solid var(--cw-acc);
+  outline-offset: 3px;
+}
+
+/* ── motif 1 · the corner registration tick ───────────────────── */
+.cw-tick {
+  position: relative;
+}
+.cw-tick::after {
+  content: '';
+  position: absolute;
+  top: -1px;
+  left: -1px;
+  width: 12px;
+  height: 12px;
+  border-top: 1px solid var(--cw-acc);
+  border-left: 1px solid var(--cw-acc);
+  pointer-events: none;
+  z-index: 2;
+}
+.cw-tick--warm::after {
+  border-color: var(--cw-warm);
+}
+
+/* ── motif 2 · the diamond ────────────────────────────────────── */
+.cw-diamond {
+  width: 4px;
+  height: 4px;
+  flex: none;
+  transform: rotate(45deg);
+  border: 1px solid var(--cw-line-hard);
+  display: inline-block;
+}
+
+/* ── motif 3 · the eyebrow ────────────────────────────────────── */
+.cw-eyebrow {
+  display: inline-block;
+  font-family: var(--cw-f-mono);
+  font-size: var(--cw-fs-xs);
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--cw-acc);
+  text-decoration: none;
+}
+
+/* ── motif 4 · the outlined pill. There are no filled buttons. ── */
+.cw-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--cw-f-mono);
+  font-size: var(--cw-fs-xs);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--cw-acc);
+  padding: 0.6em 1.1em;
+  border: 1px solid var(--cw-line);
+  text-decoration: none;
+  white-space: nowrap;
+  background: none;
+  cursor: pointer;
+  transition:
+    border-color 0.25s var(--cw-ease),
+    box-shadow 0.25s var(--cw-ease),
+    color 0.2s var(--cw-ease);
+}
+.cw-pill:hover,
+.cw-pill:focus-visible {
+  border-color: var(--cw-acc);
+  color: var(--cw-acc);
+  text-decoration: none;
+  box-shadow: 0 0 22px -6px var(--cw-glow-strong);
+}
+.cw-pill--ghost {
+  color: var(--cw-muted);
+  border-color: var(--cw-line-soft);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   PROSE
+   ═══════════════════════════════════════════════════════════════════════ */
+
+.markdown {
+  --ifm-h1-vertical-rhythm-bottom: 0.5;
+  --ifm-heading-vertical-rhythm-top: 2.2;
+  --ifm-heading-vertical-rhythm-bottom: 0.7;
+  max-width: var(--cw-read);
+}
+
+.markdown > h1 {
+  font-family: var(--cw-f-display);
+  font-weight: 300;
+  font-size: var(--cw-fs-2xl);
+  line-height: 1.14;
+  letter-spacing: -0.015em;
+  color: var(--cw-fg);
+  text-wrap: balance;
+  max-width: 20ch;
+}
+
+.markdown h2 {
+  font-weight: 350;
+  font-size: var(--cw-fs-xl);
+  line-height: 1.25;
+  letter-spacing: 0.005em;
+  padding-bottom: 0.4em;
+  border-bottom: 1px solid var(--cw-line-soft);
+  text-wrap: balance;
+  scroll-margin-top: calc(var(--cw-navbar-h) + var(--cw-ruler-h) + 1.5rem);
+}
+
+.markdown h3,
+.markdown h4 {
+  font-weight: 350;
+  scroll-margin-top: calc(var(--cw-navbar-h) + var(--cw-ruler-h) + 1.5rem);
+}
+
+.markdown p {
+  margin-bottom: 1.35em;
+}
+
+.markdown strong {
+  color: var(--cw-fg);
+  font-weight: 500;
+}
+
+.markdown a {
+  text-decoration: none;
+  border-bottom: 1px solid color-mix(in srgb, var(--cw-acc) 40%, transparent);
+  transition: border-color 0.2s var(--cw-ease);
+}
+.markdown a:hover {
+  border-bottom-color: var(--cw-acc);
+  text-decoration: none;
+}
+
+.markdown ul,
+.markdown ol {
+  margin-bottom: 1.35em;
+}
+.markdown li {
+  margin-bottom: 0.55em;
+}
+.markdown li::marker {
+  color: var(--cw-acc-deep);
+}
+
+.markdown :not(pre) > code {
+  border: 1px solid var(--cw-line-soft);
+  overflow-wrap: break-word;
+}
+
+/* the separator, with the diamond at its centre */
+.markdown hr {
+  border: 0;
+  height: 1px;
+  background: var(--cw-line-soft);
+  margin-block: 2.4em;
+  position: relative;
+  overflow: visible;
+}
+.markdown hr::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 7px;
+  height: 7px;
+  transform: translate(-50%, -50%) rotate(45deg);
+  border: 1px solid var(--cw-line-hard);
+  background: var(--cw-ink);
+}
+
+.markdown blockquote {
+  border-left: 2px solid var(--cw-line-hard);
+  background: none;
+  padding: 0 0 0 1.4rem;
+  font-style: italic;
+}
+
+.markdown table {
+  border: 1px solid var(--cw-line-soft);
+  display: table;
+  width: 100%;
+}
+.markdown table thead {
+  background: var(--cw-fill);
+}
+.markdown table th {
+  font-family: var(--cw-f-mono);
+  font-size: var(--cw-fs-xs);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--cw-faint);
+  font-weight: 400;
+}
+.markdown table tr {
+  background: transparent;
+  border-top: 1px solid var(--cw-line-soft);
+}
+
+.markdown img {
+  max-width: 100%;
+  height: auto;
+  border: 1px solid var(--cw-line-soft);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   CODE BLOCKS — dark panel, corner tick, mono bar
+   ═══════════════════════════════════════════════════════════════════════ */
+
+.theme-code-block {
+  position: relative;
+  border: 1px solid var(--cw-line);
+  box-shadow: none !important;
+  margin-bottom: 1.6em !important;
+  max-width: min(100%, var(--cw-wide));
+}
+.theme-code-block::after {
+  content: '';
+  position: absolute;
+  top: -1px;
+  left: -1px;
+  width: 12px;
+  height: 12px;
+  border-top: 1px solid var(--cw-acc);
+  border-left: 1px solid var(--cw-acc);
+  pointer-events: none;
+  z-index: 3;
+}
+.theme-code-block pre {
+  border-radius: 0;
+  font-size: clamp(0.78rem, 0.72rem + 0.22vw, 0.92rem);
+  line-height: 1.7;
+  tab-size: 4;
+}
+/* the filename bar */
+.theme-code-block div[class^='codeBlockTitle'] {
+  border-bottom: 1px solid var(--cw-code-line);
+  background: transparent;
+  color: var(--cw-code-muted);
+  font-family: var(--cw-f-mono);
+  font-size: var(--cw-fs-xs);
+  letter-spacing: 0.06em;
+  padding: 0.55rem 0.9rem;
+}
+/* the copy button */
+.theme-code-block button[class*='copyButton'] {
+  border: 1px solid var(--cw-code-btn);
+  background: rgba(8, 11, 11, 0.85);
+  border-radius: 0;
+  color: var(--cw-code-muted);
+}
+.theme-code-block button[class*='copyButton']:hover {
+  background: rgba(129, 204, 194, 0.12);
+  color: var(--cw-acc);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   ADMONITIONS — outlined, corner-ticked, mono label
+   ═══════════════════════════════════════════════════════════════════════ */
+
+.theme-admonition {
+  position: relative;
+  border: 1px solid var(--cw-line);
+  border-left-width: 1px;
+  background: var(--cw-fill);
+  box-shadow: none;
+  max-width: var(--cw-read);
+  margin-bottom: 1.6em;
+}
+.theme-admonition::after {
+  content: '';
+  position: absolute;
+  top: -1px;
+  left: -1px;
+  width: 12px;
+  height: 12px;
+  border-top: 1px solid var(--cw-acc);
+  border-left: 1px solid var(--cw-acc);
+  pointer-events: none;
+}
+.theme-admonition .admonitionHeading_node_modules-\@docusaurus-theme-classic-lib-theme-Admonition-Layout-styles-module,
+.theme-admonition div[class*='admonitionHeading'] {
+  font-family: var(--cw-f-mono);
+  font-size: var(--cw-fs-xs);
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--cw-acc);
+  font-weight: 400;
+  margin-bottom: 0.6rem;
+}
+.theme-admonition div[class*='admonitionIcon'] svg {
+  display: none;
+}
+.theme-admonition div[class*='admonitionContent'] > :last-child {
+  margin-bottom: 0;
+}
+.theme-admonition-caution,
+.theme-admonition-warning,
+.theme-admonition-danger {
+  border-color: color-mix(in srgb, var(--cw-warm) 45%, transparent);
+}
+.theme-admonition-caution::after,
+.theme-admonition-warning::after,
+.theme-admonition-danger::after {
+  border-color: var(--cw-warm);
+}
+.theme-admonition-caution div[class*='admonitionHeading'],
+.theme-admonition-warning div[class*='admonitionHeading'],
+.theme-admonition-danger div[class*='admonitionHeading'] {
+  color: var(--cw-warm);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   NAVBAR & FOOTER
+   ═══════════════════════════════════════════════════════════════════════ */
+
+.navbar {
+  border-bottom: 1px solid var(--cw-line);
+  padding-inline: 0;
+}
+.navbar__inner {
+  width: var(--cw-shell);
+  margin-inline: auto;
+}
+.navbar__title {
+  font-family: var(--cw-f-display);
+  font-weight: 400;
+  font-size: var(--cw-fs-sm);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--cw-fg);
+}
+/* the 13px corner tick used as the logo mark */
+.navbar__brand::before {
+  content: '';
+  width: 13px;
+  height: 13px;
+  flex: none;
+  margin-right: 0.7rem;
+  border-top: 1px solid var(--cw-acc);
+  border-left: 1px solid var(--cw-acc);
+}
+.navbar__link {
+  font-size: var(--cw-fs-sm);
+  letter-spacing: 0.06em;
+}
+.navbar__link--active {
+  color: var(--cw-acc);
+}
+.navbar-sidebar {
+  background: var(--cw-ink);
+}
+.navbar__toggle {
+  color: var(--cw-acc);
+}
+
+/* Infima's .footer--dark hardcodes #303846, which is not in the palette and
+   beat the :root override. Pin every footer variable here, and leave the
+   background transparent so the blueprint grid runs to the bottom of the
+   page — which is what the source theme does with .cwtf-foot. */
+.footer,
+.footer--dark {
+  --ifm-footer-background-color: transparent;
+  --ifm-footer-color: var(--cw-muted);
+  --ifm-footer-link-color: var(--cw-muted);
+  --ifm-footer-link-hover-color: var(--cw-acc);
+  --ifm-footer-title-color: var(--cw-faint);
+  --ifm-footer-padding-vertical: clamp(1.75rem, 3vw, 3rem);
+  background: transparent;
+  border-top: 1px solid var(--cw-line);
+}
+.footer__title {
+  font-family: var(--cw-f-mono);
+  font-size: var(--cw-fs-xs);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  font-weight: 400;
+}
+.footer__link-item {
+  font-size: var(--cw-fs-sm);
+}
+.footer__copyright {
+  font-family: var(--cw-f-mono);
+  font-size: var(--cw-fs-xs);
+  color: var(--cw-faint);
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--cw-line-soft);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   SEARCH (@easyops-cn/docusaurus-search-local)
+   ═══════════════════════════════════════════════════════════════════════ */
+
+.navbar__search-input {
+  border: 1px solid var(--cw-line);
+  border-radius: 0;
+  background: var(--cw-fill);
+  color: var(--cw-fg);
+  font-family: var(--cw-f-mono);
+  font-size: var(--cw-fs-xs);
+  letter-spacing: 0.1em;
+}
+.navbar__search-input:focus {
+  border-color: var(--cw-acc);
+  box-shadow: 0 0 22px -8px var(--cw-glow-strong);
+}
+.search-result-match {
+  color: var(--cw-acc);
+  background: var(--cw-fill-2);
+}
+[class*='searchResultItem'] {
+  border-bottom: 1px solid var(--cw-line-soft);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition: none !important;
+    animation: none !important;
+    scroll-behavior: auto !important;
+  }
+}
