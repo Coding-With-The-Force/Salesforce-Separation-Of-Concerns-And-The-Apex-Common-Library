@@ -16,6 +16,11 @@ There is also some example code showing you how an application (in this case a h
 
 ### Working on the site
 
+> **[ARCHITECTURE.html](ARCHITECTURE.html)** — open it in a browser. It walks
+> through how the markdown becomes pages, where every part of a chapter page
+> comes from, and which file to open to change what. Start there if anything
+> below is unclear.
+
 The chapters are Markdown. They live in `docs/`, one `.mdx` file each, and
 that is where you edit them — the site is built from those files by
 [Docusaurus](https://docusaurus.io/), which lives in `website/`.
