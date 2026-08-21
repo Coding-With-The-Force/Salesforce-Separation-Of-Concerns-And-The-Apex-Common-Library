@@ -535,21 +535,76 @@ main {
   border-color: var(--cw-acc);
   box-shadow: 0 0 22px -8px var(--cw-glow-strong);
 }
-/* Under 576px the search plugin collapses this to 2rem — icon only, no room
-   for the placeholder. That is the right call on a phone, but it only works
-   if there IS an icon, so centre it in the collapsed box and let the field
-   open up on focus. */
-@media (max-width: 576px) {
+/**
+ * The mobile search field.
+ *
+ * 996px is where the navbar becomes the phone layout: Infima hides
+ * .navbar__item, Docusaurus hides the colour-mode toggle (it moves into the
+ * drawer) and absolutely positions .navbarSearchContainer against the right
+ * edge. So from here down the field is on its own, and it collapses to the
+ * icon alone.
+ *
+ * Two things that has to get right:
+ *
+ *   · the placeholder must go. The input keeps rendering "Search" from its
+ *     left edge, straight through the centred magnifying glass. It is only
+ *     ever decorative here — aria-label="Search" is what actually names the
+ *     field — so it is safe to make it transparent.
+ *
+ *   · focus must not shove anything. The container is out of flow and
+ *     anchored right, so the field grows leftward over the masthead rather
+ *     than displacing it; it just needs an opaque ground to grow onto, a
+ *     ceiling that keeps it clear of the hamburger, and the title stepping
+ *     out of the way while it is open.
+ */
+@media (max-width: 996px) {
   .navbar__search-input {
     transition: width 0.25s var(--cw-ease);
   }
   .navbar__search-input:not(:focus) {
-    width: 2.2rem;
+    width: 2.4rem;
     padding: 0;
     background-position: center;
   }
+  .navbar__search-input::placeholder {
+    color: transparent;
+  }
+
+  /* 5.5rem holds back the navbar's own padding plus the hamburger */
   .navbar__search-input:focus {
-    width: min(60vw, 13rem);
+    width: min(calc(100vw - 5.5rem), 15rem);
+    padding: 0 0.6rem 0 2.1rem;
+    background-color: var(--cw-ink);
+    background-position: 0.7rem center;
+  }
+  .navbar__search-input:focus::placeholder {
+    color: var(--cw-faint);
+  }
+  /* The expanded field lands on top of the title; fade it rather than let
+     the two collide. Fenced off in @supports so that an unparsed :has can
+     never take a neighbouring rule down with it if the minifier ever
+     decides to merge them. */
+  @supports selector(:has(*)) {
+    .navbar:has(.navbar__search-input:focus) .navbar__title {
+      opacity: 0;
+      transition: opacity 0.2s var(--cw-ease);
+    }
+  }
+
+  /**
+   * The plugin also parks a ⌘/ctrl + K hint inside the field, absolutely
+   * positioned 10px from its right edge. In a 2.4rem icon-only box that
+   * lands squarely on the magnifying glass — the other thing printing
+   * through it. There is no keyboard shortcut to advertise on a phone
+   * anyway, so it goes for the whole range. (The plugin drops it itself,
+   * but only under 576px, which leaves the tablet widths showing it.)
+   * Module class names are hashed, hence the substring match.
+   */
+  .navbar__search [class*='searchHintContainer'] {
+    display: none;
+  }
+  .navbar__search:not(:focus-within) [class*='searchClearButton'] {
+    display: none;
   }
 }
 .search-result-match {

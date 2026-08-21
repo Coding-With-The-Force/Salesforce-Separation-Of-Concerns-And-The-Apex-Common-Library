@@ -145,9 +145,19 @@ const config: Config = {
           type: 'dropdown',
           label: 'Guide',
           position: 'left',
-          to: '/separation-of-concerns/',
           /**
-           * All seventeen, built from the chapter table so the menu can
+           * Deliberately no `to`.
+           *
+           * DropdownNavbarItem/Mobile decides whether tapping the parent
+           * navigates by asking whether `to` was set — `const href =
+           * props.to ? undefined : '#'` — and its onClick only calls
+           * preventDefault for the '#' case. With a `to`, tapping "Guide"
+           * on a phone both expanded the list AND navigated to chapter 01,
+           * and the navigation closed the drawer before you could pick
+           * anything. Without it, the parent is purely a disclosure and
+           * chapter 01 is simply the first item in the list.
+           *
+           * All seventeen are built from the chapter table so the menu can
            * never drift from the ruler, the homepage index or the pager.
            * The number prefix is part of the label rather than a separate
            * column because Infima dropdown items are a single link.
