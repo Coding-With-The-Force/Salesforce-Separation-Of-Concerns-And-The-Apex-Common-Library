@@ -56,9 +56,9 @@ export default function Home(): JSX.Element {
           <h1>The library that will allow your Salesforce org to scale however you need it to.</h1>
           <p>
             Seventeen chapters on how to implement the {' '}
-            <strong>The Apex Common Library</strong> in your Salesforce org. 
+            <strong><a href="https://github.com/apex-enterprise-patterns/fflib-apex-common">The Apex Common Library</a></strong> in your Salesforce org. 
             Every chapter has a video.
-            Nothing here costs anything.
+            Everything here is open source forever. 
           </p>
           <ul className={styles.facts}>
             <li>Written for Apex developers and architects</li>
@@ -70,25 +70,11 @@ export default function Home(): JSX.Element {
         <div className={`${styles.plan} cw-tick`}>
           <div className={styles.canvas}>
             <div className={styles.canvasHead}>
-              <span>Where one Case insert goes</span>
+              <span>How the Separation of Concerns layers work together</span>
               <em>showing {info.name.toLowerCase()}</em>
             </div>
             <div className={styles.figwrap}>
               <LayerDiagram highlight={layer} onPick={setLayer} interactive />
-            </div>
-            <div className={styles.legend}>
-              <span>
-                <i className={styles.legendAcc} />
-                the path being described
-              </span>
-              <span>
-                <i />
-                everything else
-              </span>
-              <span>
-                <i className={styles.legendWarm} />
-                the boundary you don't cross directly
-              </span>
             </div>
           </div>
 
