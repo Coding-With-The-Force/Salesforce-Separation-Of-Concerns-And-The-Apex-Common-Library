@@ -104,15 +104,11 @@
   letter-spacing: 0.14em;
   margin-left: auto;
 }
+/* Sizing lives on .cw-diagram now — it swaps between a landscape and a
+   stacked drawing on its own container width, and this panel is a lot
+   narrower than the viewport it sits in. */
 .figwrap {
   overflow-x: auto;
-}
-.figwrap svg {
-  display: block;
-  width: 100%;
-  min-width: 34rem;
-  height: auto;
-  color: var(--cw-muted);
 }
 .legend {
   display: flex;

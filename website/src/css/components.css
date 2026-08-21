@@ -645,6 +645,59 @@
   font-weight: 400;
 }
 
+/* ── <LayerDiagram /> ─────────────────────────────────────────── */
+
+/**
+ * Two drawings of the same graph; the container picks one.
+ *
+ * A container query rather than a media query, because the two places this
+ * figure appears have very different widths at the same viewport size — the
+ * article column on a chapter page, and the narrower blueprint panel on the
+ * homepage. Below 620px of ROOM the landscape version's labels would render
+ * under about 9px, so the stacked version takes over instead.
+ */
+.cw-diagram {
+  container-type: inline-size;
+  width: 100%;
+  color: var(--cw-muted);
+}
+/* .cw-figure svg is (0,1,1); these have to beat it to control display */
+.cw-diagram svg.cw-diagram__wide,
+.cw-diagram svg.cw-diagram__stack {
+  display: block;
+  width: 100%;
+  height: auto;
+  margin-inline: auto;
+  min-width: 0;
+}
+/* the stacked drawing is 460 units — past that it just gets cartoonish */
+.cw-diagram svg.cw-diagram__stack {
+  max-width: 470px;
+}
+.cw-diagram svg.cw-diagram__wide {
+  display: none;
+  max-width: 980px;
+}
+@container (min-width: 620px) {
+  .cw-diagram svg.cw-diagram__stack {
+    display: none;
+  }
+  .cw-diagram svg.cw-diagram__wide {
+    display: block;
+  }
+}
+/* no container query support: keep the landscape one, which is the richer
+   drawing, and let .cw-figure's overflow-x carry it */
+@supports not (container-type: inline-size) {
+  .cw-diagram svg.cw-diagram__stack {
+    display: none;
+  }
+  .cw-diagram svg.cw-diagram__wide {
+    display: block;
+    min-width: 620px;
+  }
+}
+
 /* shared diagram primitives */
 .cw-dbox {
   fill: var(--cw-ink);
@@ -662,7 +715,7 @@
 }
 .cw-dlab {
   fill: var(--cw-fg);
-  font-size: 13px;
+  font-size: 15px;
   font-family: var(--cw-f-display);
 }
 .cw-dlab--on {
@@ -680,14 +733,40 @@
   stroke: var(--cw-acc);
   stroke-width: 1.4;
 }
-.cw-dtxt {
-  fill: var(--cw-faint);
-  font-size: 10.5px;
+.cw-dhead {
+  fill: var(--cw-muted);
+}
+.cw-dhead--hot {
+  fill: var(--cw-acc);
+}
+/**
+ * Edge labels sit in the gaps between boxes, which means they can land on
+ * top of a rule or the blueprint grid. The stroke-then-fill paint order
+ * knocks a background-coloured halo out around each glyph, so they stay
+ * legible wherever they fall.
+ */
+.cw-dtxt,
+.cw-dsub {
   font-family: var(--cw-f-mono);
+  paint-order: stroke fill;
+  stroke: var(--cw-ink);
+  stroke-width: 3px;
+  stroke-linejoin: round;
+}
+.cw-dtxt {
+  fill: var(--cw-muted);
+  font-size: 11.5px;
   letter-spacing: 0.06em;
 }
 .cw-dtxt--on {
   fill: var(--cw-acc);
+}
+/* the in-box sub-label: a shade smaller and tighter, so the longest of them
+   ("LWC · batch · API") clears a 132-unit box even in a wide mono fallback */
+.cw-dsub {
+  fill: var(--cw-faint);
+  font-size: 11px;
+  letter-spacing: 0.04em;
 }
 
 /* ── <AnnotatedSource /> ──────────────────────────────────────── */

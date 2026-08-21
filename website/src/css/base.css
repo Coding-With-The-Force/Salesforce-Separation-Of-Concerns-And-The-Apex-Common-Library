@@ -414,6 +414,49 @@ main {
   color: var(--cw-acc);
 }
 
+/**
+ * The Guide dropdown carries all seventeen chapters, which is a taller menu
+ * than Infima expects. Cap it at most of the viewport and let it scroll,
+ * tighten the rows, and give it the wire treatment — square, outlined, a
+ * glow instead of the default drop shadow.
+ */
+.navbar .dropdown__menu {
+  min-width: 19rem;
+  max-height: min(72vh, 34rem);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  padding: 0.4rem;
+  background: var(--cw-ink);
+  border: 1px solid var(--cw-line);
+  border-radius: 0;
+  box-shadow: 0 0 34px -10px var(--cw-glow);
+}
+.navbar .dropdown__link {
+  font-size: var(--cw-fs-sm);
+  line-height: 1.35;
+  padding: 0.42rem 0.6rem;
+  border-radius: 0;
+  color: var(--cw-muted);
+  /* the "07 · " prefix is part of the label, so hold the digits on one line */
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+.navbar .dropdown__link:hover {
+  background: var(--cw-fill-2);
+  color: var(--cw-acc);
+}
+.navbar .dropdown__link--active {
+  background: transparent;
+  color: var(--cw-acc);
+  box-shadow: inset 2px 0 0 var(--cw-acc);
+}
+/* In the mobile drawer the same items render as a collapsible menu list —
+   same numbering, so keep the digits aligned there too. */
+.navbar-sidebar .menu__link {
+  font-variant-numeric: tabular-nums;
+}
+
 /* Infima's .footer--dark hardcodes #303846, which is not in the palette and
    beat the :root override. Pin every footer variable here, and leave the
    background transparent so the blueprint grid runs to the bottom of the
@@ -452,18 +495,62 @@ main {
    SEARCH (@easyops-cn/docusaurus-search-local)
    ═══════════════════════════════════════════════════════════════════════ */
 
+/**
+ * Infima draws the magnifying glass with a `background` SHORTHAND that packs
+ * the colour and --ifm-navbar-search-input-icon together. Setting
+ * `background: var(--cw-fill)` here reset the image along with it, and since
+ * Infima collapses this input to 9rem with no visible placeholder under
+ * 996px, mobile was left with a bare outlined rectangle and no clue what it
+ * was for. Longhands only from here on, and the icon is repointed at a teal
+ * one that belongs to the palette.
+ */
+:root,
+[data-theme='dark'] {
+  --ifm-navbar-search-input-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='none' stroke='%2381ccc2' stroke-width='1.7'%3E%3Ccircle cx='8.6' cy='8.6' r='5.4'/%3E%3Cpath d='M12.7 12.7 17 17'/%3E%3C/svg%3E");
+}
+[data-theme='light'] {
+  --ifm-navbar-search-input-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='none' stroke='%231b5e54' stroke-width='1.7'%3E%3Ccircle cx='8.6' cy='8.6' r='5.4'/%3E%3Cpath d='M12.7 12.7 17 17'/%3E%3C/svg%3E");
+}
+
 .navbar__search-input {
   border: 1px solid var(--cw-line);
   border-radius: 0;
-  background: var(--cw-fill);
+  background-color: var(--cw-fill);
+  background-image: var(--ifm-navbar-search-input-icon);
+  background-repeat: no-repeat;
+  background-position: 0.72rem center;
+  background-size: 0.95rem 0.95rem;
+  padding: 0 0.6rem 0 2.2rem;
   color: var(--cw-fg);
   font-family: var(--cw-f-mono);
   font-size: var(--cw-fs-xs);
   letter-spacing: 0.1em;
 }
+.navbar__search-input::placeholder {
+  color: var(--cw-faint);
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+}
 .navbar__search-input:focus {
   border-color: var(--cw-acc);
   box-shadow: 0 0 22px -8px var(--cw-glow-strong);
+}
+/* Under 576px the search plugin collapses this to 2rem — icon only, no room
+   for the placeholder. That is the right call on a phone, but it only works
+   if there IS an icon, so centre it in the collapsed box and let the field
+   open up on focus. */
+@media (max-width: 576px) {
+  .navbar__search-input {
+    transition: width 0.25s var(--cw-ease);
+  }
+  .navbar__search-input:not(:focus) {
+    width: 2.2rem;
+    padding: 0;
+    background-position: center;
+  }
+  .navbar__search-input:focus {
+    width: min(60vw, 13rem);
+  }
 }
 .search-result-match {
   color: var(--cw-acc);
