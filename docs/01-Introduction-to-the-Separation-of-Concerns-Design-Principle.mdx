@@ -12,9 +12,9 @@ hide_title: true
 
 ## What is the Separation of Concerns Design Principle? 
 
-Basically separation of concerns is the practice of putting logical boundaries on your code. Putting these logical boundaries on your code helps make your code easier to understand, easier to maintain and much more flexible when it needs to be altered (and every code base ever has to be altered all the time). 
+Separation of concerns is the practice of putting logical boundaries on your code. Putting these logical boundaries on your code helps make your code easier to understand, easier to maintain and much more flexible when it needs to be altered (and every code base ever has to be altered all the time). 
 
-In the Salesforce Ecosystem there are three major areas of concern we ideally should separate our code into. They are the following:
+In the Salesforce Ecosystem there are three major areas of concern to separate our code into. They are the following:
 
 _**The Service Layer:**_
 
@@ -36,18 +36,21 @@ There are many benefits to implementing SoC, most of which were outlined above, 
 
 1) Modularizes your code into easy to understand packages of code making it easier to know what code controls what, why and when.  
 
-2) Massively reduces the amount of code in your org by centralizing your logic into different containers. For instance, maybe you currently have 13 different apex controllers that house similar case business logic. If you placed that business logic into a service class and had all 13 apex controllers call that service class instead your life would be a whole lot simpler. This can get a lot more abstract and turn into absolutely unprecedented code reduction, but we have to start somewhere a bit simpler.  
+2) Helps improve code navigation and reduces the amount of code sprawl in your org by centralizing your logic into different containers. For instance, maybe you currently have 13 different apex controllers that house similar case business logic. If you placed that business logic into a service class and had all 13 apex controllers call that service class instead your life would be a whole lot simpler. 
 
-3) Separation of Concerns lends itself to writing extremely well done and comprehensive Unit Tests. It allows for easy [dependency injection](https://en.wikipedia.org/wiki/Dependency_injection) which allows you to, in test classes, mock a classes dependent classes. We'll go over this more when we get to the Unit testing and Apex Mocks section of this tutuorial, but if you want a quick and easy explanation, please feel free to check out my video covering [dependency injection and mocking in apex](https://youtu.be/-esf8Q_Vp7U).
+3) Separation of Concerns lends itself to writing well done and comprehensive Unit Tests. It allows for easy [dependency injection](https://en.wikipedia.org/wiki/Dependency_injection) which allows you to, in test classes, mock a classes dependent classes. We'll go over this more when we get to the Unit testing and Apex Mocks section of this tutuorial, but if you want a quick and easy explanation, please feel free to take a look at this video covering [dependency injection and mocking in apex](https://youtu.be/-esf8Q_Vp7U).
 
 ---
 
 ## How does the Apex Common Library help with SoC?
 
-The Apex Common Library was quite literally built upon the three layers outlined above. It provides an unrivaled foundation to implement SoC in your Salesforce org. When I started this tutorial series I was not convinced it was the absolute best choice out there, but after hundreds of hours of practice, documentation, experimentation with other similar groupings of libraries, etc I feel I can confidently say (as of today) that this is something the community is lucky even exists and needs to be leveraged much more than it is today.
+The Apex Common Library was built with the Separation of Concerns design principle and the three layers outlined above in mind (Service, Selector and Domain Layers). It provides a solid foundation to implement SoC in your Salesforce org. 
 
 ---
 
 ## Example Code
 
-All of the code examples in this repo are examples of SoC in action. You can check the [whole repo out here](https://github.com/Coding-With-The-Force/Salesforce-Separation-Of-Concerns-And-The-Apex-Common-Library/tree/main/src/classes). For layer specific examples check out the layer specific pages of this wiki.
+There are two places to get example code you can reference:
+
+1) There is example code that is updated and maintained in the [fflib-apex-common-samplecode](https://github.com/apex-enterprise-patterns/fflib-apex-common-samplecode) GitHub repo.   
+2) There is example code in the repo that hosts this doc site. The code is located [here](https://github.com/Coding-With-The-Force/Salesforce-Separation-Of-Concerns-And-The-Apex-Common-Library/tree/main/src/classes). For layer specific code examples check out the layer specific pages of this doc site, they all host example code you can reference.

@@ -2,9 +2,9 @@
 
 ### The guide
 
-**Read it at <a href="https://apex-enterprise-patterns.dev/" target="_blank">apex-enterprise-patterns.dev</a>** — seventeen chapters on Separation of Concerns in Salesforce and implementing it with the Apex Common Library. Every chapter has a companion video, and the whole thing is searchable.
+**Check out the doc site here <a href="https://apex-enterprise-patterns.dev/" target="_blank">apex-enterprise-patterns.dev</a>**. It houses seventeen chapters on Separation of Concerns in Salesforce and implementing it with the Apex Common Library. Every chapter has a companion video, and the whole thing is searchable.
 
-Housed in this repo is also an older version of the <a href="https://github.com/Coding-With-The-Force/Salesforce_Separation_Of_Concerns/wiki" target="_blank">wiki</a>. The site above is the maintained version.
+Housed in this repo is also an older version of the <a href="https://github.com/Coding-With-The-Force/Salesforce_Separation_Of_Concerns/wiki" target="_blank">wiki</a>. It is no longer maintained. The site above is the maintained version.
 
 ***
 

@@ -185,14 +185,41 @@ aside.theme-doc-sidebar-container {
   letter-spacing: 0.22em;
   text-transform: uppercase;
   color: var(--cw-faint);
-  margin: 0 0 0.9rem;
+  margin: 0 0 0.5rem;
+}
+
+/**
+ * Three separate paddings were stacking up under that title and reading as
+ * one large unexplained gap:
+ *
+ *   · @theme/TOC's own wrapper is `position: sticky` with a `top` offset
+ *     built from --ifm-navbar-height — pointless inside .cw-rail, which is
+ *     already sticky and already scrolls itself
+ *   · Infima gives BOTH that wrapper and ul.table-of-contents a
+ *     --ifm-toc-padding-vertical
+ *   · and .cw-rail .table-of-contents li adds a top margin to the first item
+ *
+ * Flatten the wrapper and zero the leading space; the title's own margin is
+ * then the only thing setting the distance.
+ */
+.cw-rail [class*='tableOfContents'] {
+  position: static;
+  top: auto;
+  max-height: none;
+  overflow: visible;
+  padding: 0;
 }
 
 /* Docusaurus's TOC, restyled for the rail */
 .cw-rail .table-of-contents {
   border-left: 0;
   padding-left: 0;
+  padding-block: 0;
+  margin: 0;
   font-size: var(--cw-fs-sm);
+}
+.cw-rail .table-of-contents > li:first-child {
+  margin-top: 0;
 }
 .cw-rail .table-of-contents__link {
   color: var(--cw-muted);
@@ -357,6 +384,22 @@ aside.theme-doc-sidebar-container {
   }
   .cw-rail .table-of-contents__link--active {
     margin-left: 0;
+  }
+}
+
+/**
+ * Both Infima and @theme/TOC hide the table of contents outright under
+ * 996px, on the assumption it lives in a right-hand sidebar that the mobile
+ * layout drops. Here it doesn't — it's a plain block at the top of the
+ * page — so hiding it left an "On this page" heading sitting over nothing.
+ * 996px, not 62rem, so the four-pixel seam between the two is covered.
+ */
+@media (max-width: 996px) {
+  .cw-rail [class*='tableOfContents'] {
+    display: block;
+  }
+  .cw-rail .table-of-contents {
+    display: block;
   }
 }
 @media (max-width: 46rem) {

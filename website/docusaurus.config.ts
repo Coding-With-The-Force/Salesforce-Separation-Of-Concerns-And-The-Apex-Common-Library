@@ -120,7 +120,19 @@ const config: Config = {
     colorMode: {
       defaultMode: 'dark', // the MkDocs site defaults dark; CWTF is dark-only
       disableSwitch: false,
-      respectPrefersColorScheme: true,
+      /**
+       * False on purpose. With this on, Docusaurus makes the toggle a THREE
+       * state cycle — system → light → dark → system — and one of those
+       * steps is always a visual no-op, because "system" resolves to
+       * whichever of light or dark the OS already asked for. On a machine
+       * set to light that meant the first click did nothing and the second
+       * one finally moved: the reported "have to click it twice".
+       *
+       * Off, it is a plain two-value toggle, one click per change, and dark
+       * is the brand default regardless of the OS setting — which is what
+       * CWTF is anyway.
+       */
+      respectPrefersColorScheme: false,
     },
     docs: {
       sidebar: {hideable: false, autoCollapseCategories: false},
@@ -129,7 +141,32 @@ const config: Config = {
       title: 'Apex Enterprise Patterns',
       hideOnScroll: false,
       items: [
-        {to: '/separation-of-concerns/', label: 'Guide', position: 'left'},
+        {
+          type: 'dropdown',
+          label: 'Guide',
+          position: 'left',
+          /**
+           * Deliberately no `to`.
+           *
+           * DropdownNavbarItem/Mobile decides whether tapping the parent
+           * navigates by asking whether `to` was set — `const href =
+           * props.to ? undefined : '#'` — and its onClick only calls
+           * preventDefault for the '#' case. With a `to`, tapping "Guide"
+           * on a phone both expanded the list AND navigated to chapter 01,
+           * and the navigation closed the drawer before you could pick
+           * anything. Without it, the parent is purely a disclosure and
+           * chapter 01 is simply the first item in the list.
+           *
+           * All seventeen are built from the chapter table so the menu can
+           * never drift from the ruler, the homepage index or the pager.
+           * The number prefix is part of the label rather than a separate
+           * column because Infima dropdown items are a single link.
+           */
+          items: CHAPTERS.map((c) => ({
+            label: `${String(c.n).padStart(2, '0')} · ${c.short}`,
+            to: c.slug,
+          })),
+        },
         {to: '/videos/', label: 'Videos', position: 'left'},
         {
           href: 'https://github.com/Coding-With-The-Force/Salesforce-Separation-Of-Concerns-And-The-Apex-Common-Library',

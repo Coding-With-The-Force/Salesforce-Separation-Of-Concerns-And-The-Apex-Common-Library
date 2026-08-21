@@ -104,43 +104,22 @@
   letter-spacing: 0.14em;
   margin-left: auto;
 }
+/**
+ * Sizing lives on .cw-diagram — it swaps between a landscape and a stacked
+ * drawing on its own container width, and this panel is a lot narrower than
+ * the viewport it sits in.
+ *
+ * The legend that used to sit under this is gone, so the figure claims what
+ * it left behind: flex:1 takes the slack the detail column's height gives
+ * the canvas, and the drawing centres in it rather than sitting against the
+ * heading with dead space below.
+ */
 .figwrap {
-  overflow-x: auto;
-}
-.figwrap svg {
-  display: block;
-  width: 100%;
-  min-width: 34rem;
-  height: auto;
-  color: var(--cw-muted);
-}
-.legend {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem 1.4rem;
-  font-family: var(--cw-f-mono);
-  font-size: var(--cw-fs-xs);
-  letter-spacing: 0.06em;
-  color: var(--cw-faint);
-  padding-top: 0.9rem;
-  border-top: 1px solid var(--cw-line-soft);
-}
-.legend span {
+  flex: 1;
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-}
-.legend i {
-  width: 14px;
-  height: 0;
-  border-top: 1px solid var(--cw-line-hard);
-  flex: none;
-}
-.legendAcc {
-  border-top-color: var(--cw-acc) !important;
-}
-.legendWarm {
-  border-top: 1px dashed var(--cw-warm) !important;
+  min-height: 0;
+  overflow-x: auto;
 }
 
 .detail {

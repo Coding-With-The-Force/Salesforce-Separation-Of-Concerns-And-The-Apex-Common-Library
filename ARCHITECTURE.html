@@ -1,0 +1,740 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Docs Pipeline — apex-enterprise-patterns.dev</title>
+<meta name="description" content="How apex-enterprise-patterns.dev is put together: the markdown-to-pages pipeline, where each part of a chapter page comes from, and which file to open to change what.">
+<meta name="color-scheme" content="dark light">
+<style>
+/* ═══════════════════════════════════════════════════════════════════════
+   Documentation for apex-enterprise-patterns.dev, drawn in the same wire
+   system the site itself uses — so the thing being explained and the
+   explanation look like they belong together.
+   ═══════════════════════════════════════════════════════════════════════ */
+
+:root{
+  --ink:#0b0d0d; --fg:#f4f4f4;
+  --body:rgba(244,244,244,.82); --muted:rgba(244,244,244,.66); --faint:rgba(244,244,244,.56);
+  --acc:#81ccc2; --acc-deep:#5e9089; --warm:#e2b04a; --bad:#ffb4a8;
+  --line:rgba(129,204,194,.52); --line-soft:rgba(129,204,194,.48); --line-hard:rgba(129,204,194,.70);
+  --fill:rgba(129,204,194,.035); --fill-2:rgba(129,204,194,.10); --fill-3:rgba(129,204,194,.18);
+  --glow:rgba(129,204,194,.35);
+  --grid-line:rgba(129,204,194,.045); --grid:34px;
+  --code-bg:#080b0b; --code-fg:#d8dedc; --code-line:rgba(129,204,194,.28);
+  --tk-k:#c792ea; --tk-s:#ecc48d; --tk-c:#8a9b97; --tk-t:#81ccc2; --tk-a:#e2b04a;
+  --f-display:"Poppins","Century Gothic",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-mono:ui-monospace,"Cascadia Code","Cascadia Mono","SF Mono",Menlo,Consolas,monospace;
+  --fs-xs:clamp(.68rem,.64rem + .12vw,.79rem);
+  --fs-sm:clamp(.82rem,.79rem + .12vw,.93rem);
+  --fs-md:clamp(1rem,.97rem + .14vw,1.13rem);
+  --fs-lg:clamp(1.14rem,1.05rem + .38vw,1.45rem);
+  --fs-xl:clamp(1.4rem,1.18rem + .9vw,2.1rem);
+  --fs-2xl:clamp(1.85rem,1.4rem + 1.8vw,3.1rem);
+  --ease:cubic-bezier(.22,1,.36,1);
+  color-scheme:dark;
+}
+@media (prefers-color-scheme:light){
+  :root:not([data-theme="dark"]){
+    --ink:#e6eae7; --fg:#0d1211;
+    --body:#2e3835; --muted:#495451; --faint:#66716e;
+    --acc:#1b5e54; --acc-deep:#24756a; --warm:#7d5a10; --bad:#a23324;
+    --line:rgba(94,144,137,.42); --line-soft:rgba(94,144,137,.32); --line-hard:rgba(94,144,137,.62);
+    --fill:rgba(94,144,137,.06); --fill-2:rgba(94,144,137,.11); --fill-3:rgba(94,144,137,.18);
+    --glow:rgba(94,144,137,.32);
+    --grid-line:rgba(94,144,137,.11);
+    color-scheme:light;
+  }
+}
+:root[data-theme="light"]{
+  --ink:#e6eae7; --fg:#0d1211;
+  --body:#2e3835; --muted:#495451; --faint:#66716e;
+  --acc:#1b5e54; --acc-deep:#24756a; --warm:#7d5a10; --bad:#a23324;
+  --line:rgba(94,144,137,.42); --line-soft:rgba(94,144,137,.32); --line-hard:rgba(94,144,137,.62);
+  --fill:rgba(94,144,137,.06); --fill-2:rgba(94,144,137,.11); --fill-3:rgba(94,144,137,.18);
+  --glow:rgba(94,144,137,.32);
+  --grid-line:rgba(94,144,137,.11);
+  color-scheme:light;
+}
+
+*{box-sizing:border-box}
+body{margin:0;background:transparent;color:var(--body);font-family:var(--f-display);
+  font-size:clamp(1rem,.96rem + .12vw,1.15rem);line-height:1.75;-webkit-font-smoothing:antialiased}
+body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
+  background-color:var(--ink);
+  background-image:
+    repeating-linear-gradient(90deg,var(--grid-line) 0 1px,transparent 1px var(--grid)),
+    repeating-linear-gradient(0deg,var(--grid-line) 0 1px,transparent 1px var(--grid))}
+a{color:var(--acc);text-decoration:none;border-bottom:1px solid color-mix(in srgb,var(--acc) 40%,transparent)}
+a:hover{border-bottom-color:var(--acc)}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+:focus-visible{outline:2px solid var(--acc);outline-offset:3px}
+.shell{width:min(94vw,1160px);margin-inline:auto}
+.mark{width:13px;height:13px;flex:none;border-top:1px solid var(--acc);border-left:1px solid var(--acc)}
+.tick{position:relative}
+.tick::after{content:"";position:absolute;top:-1px;left:-1px;width:12px;height:12px;
+  border-top:1px solid var(--acc);border-left:1px solid var(--acc);pointer-events:none;z-index:2}
+.eyebrow{display:inline-block;font-family:var(--f-mono);font-size:var(--fs-xs);
+  letter-spacing:.3em;text-transform:uppercase;color:var(--acc)}
+code{font-family:var(--f-mono);font-size:.87em;background:var(--fill-2);
+  border:1px solid var(--line-soft);padding:.1em .4em;color:var(--acc);overflow-wrap:anywhere}
+
+/* ── header ─────────────────────────────────────────────────── */
+header{position:sticky;top:0;z-index:60;background:var(--ink);border-bottom:1px solid var(--line)}
+.head{display:flex;align-items:center;gap:1rem;padding-block:.7rem;flex-wrap:wrap}
+.brand{display:inline-flex;align-items:center;gap:.7rem;color:var(--fg);font-size:var(--fs-sm);
+  letter-spacing:.16em;text-transform:uppercase;white-space:nowrap;border:0}
+.head nav{display:flex;gap:1.1rem;flex-wrap:wrap;margin-left:auto}
+.head nav a{font-family:var(--f-mono);font-size:var(--fs-xs);letter-spacing:.1em;
+  text-transform:uppercase;color:var(--muted);border:0}
+.head nav a:hover{color:var(--acc)}
+.ib{width:2.2rem;height:2.2rem;border:1px solid var(--line);display:grid;place-items:center;
+  color:var(--muted);flex:none;transition:.25s var(--ease)}
+.ib:hover{border-color:var(--acc);color:var(--acc)}
+.ib svg{width:15px;height:15px}
+
+/* ── type ───────────────────────────────────────────────────── */
+.mast{padding-block:clamp(2.5rem,5vw,4.5rem) clamp(1.5rem,3vw,2.5rem)}
+h1{margin:1rem 0 .5em;font-family:var(--f-display);font-weight:300;font-size:var(--fs-2xl);
+  line-height:1.1;letter-spacing:-.02em;color:var(--fg);max-width:20ch;text-wrap:balance}
+.lede{font-size:var(--fs-lg);line-height:1.55;color:var(--muted);margin:0;max-width:66ch;
+  font-weight:300}
+section{padding-block:clamp(1.8rem,3.5vw,3rem);border-top:1px solid var(--line-soft)}
+h2{margin:0 0 .7em;font-family:var(--f-display);font-weight:350;font-size:var(--fs-xl);
+  line-height:1.25;color:var(--fg);display:flex;align-items:baseline;gap:.9rem;text-wrap:balance;
+  scroll-margin-top:5rem}
+h2 .n{font-family:var(--f-mono);font-size:var(--fs-xs);letter-spacing:.16em;color:var(--acc);
+  flex:none;opacity:.8}
+h3{margin:2em 0 .6em;font-family:var(--f-display);font-weight:350;font-size:var(--fs-lg);
+  color:var(--fg)}
+p{margin:0 0 1.2em;max-width:74ch}
+strong{color:var(--fg);font-weight:500}
+ul{margin:0 0 1.2em;padding-left:0;list-style:none;max-width:74ch}
+li{position:relative;padding-left:1.4rem;margin-bottom:.55em}
+li::before{content:"";position:absolute;left:.15rem;top:.72em;width:5px;height:5px;
+  border:1px solid var(--acc-deep);transform:rotate(45deg)}
+
+/* ── figures ────────────────────────────────────────────────── */
+figure{margin:0 0 1.6em;border:1px solid var(--line);background:var(--fill);
+  padding:clamp(1rem,2vw,1.8rem);position:relative;overflow-x:auto}
+figure svg{display:block;width:100%;height:auto;color:var(--muted)}
+figcaption{margin-top:1.2rem;padding-top:.9rem;border-top:1px solid var(--line-soft);
+  font-size:var(--fs-sm);color:var(--faint);line-height:1.6}
+figcaption b{color:var(--fg);font-weight:400}
+.dbox{fill:var(--ink);stroke:currentColor;stroke-width:1}
+.dbox.hot{stroke:var(--acc);stroke-width:1.5;fill:var(--fill-3)}
+.dbox.data{stroke:var(--warm);stroke-width:1.4;fill:color-mix(in srgb,var(--warm) 8%,transparent)}
+.dbox.ghost{stroke:currentColor;stroke-dasharray:4 3;fill:none;opacity:.75}
+.dlab{fill:var(--fg);font-size:13px;font-family:var(--f-display)}
+.dlab.on{fill:var(--acc)} .dlab.wm{fill:var(--warm)}
+.dsub{fill:var(--faint);font-size:10px;font-family:var(--f-mono);letter-spacing:.05em}
+.dedge{stroke:currentColor;stroke-width:1;fill:none}
+.dedge.hot{stroke:var(--acc);stroke-width:1.5}
+.dedge.wm{stroke:var(--warm);stroke-width:1.2;stroke-dasharray:4 3}
+.dtxt{fill:var(--faint);font-size:10px;font-family:var(--f-mono);letter-spacing:.05em}
+.dtxt.on{fill:var(--acc)} .dtxt.wm{fill:var(--warm)}
+.dnum{fill:var(--acc);font-size:11px;font-family:var(--f-mono);font-weight:700}
+.dregion{fill:var(--fill-2);stroke:var(--line-soft);stroke-width:1}
+.dregion.body{fill:var(--fill-3);stroke:var(--acc)}
+
+/* ── legend under the wireframe ─────────────────────────────── */
+.legend{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,20rem),1fr));
+  gap:1px;background:var(--line-soft);border:1px solid var(--line-soft);margin-bottom:1.6em}
+.legend > div{background:var(--ink);padding:.85rem 1rem;display:flex;gap:.85rem;align-items:baseline}
+.legend .k{font-family:var(--f-mono);font-size:var(--fs-xs);color:var(--acc);
+  border:1px solid var(--line-soft);width:1.6rem;height:1.6rem;display:grid;place-items:center;
+  flex:none;align-self:flex-start}
+.legend .t{font-size:var(--fs-sm);color:var(--fg);line-height:1.4;display:block;margin-bottom:.15rem}
+.legend .s{font-family:var(--f-mono);font-size:var(--fs-xs);color:var(--faint);line-height:1.5;
+  display:block;overflow-wrap:anywhere}
+
+/* ── tables ─────────────────────────────────────────────────── */
+.tbl{border:1px solid var(--line-soft);margin-bottom:1.6em;overflow-x:auto}
+table{width:100%;border-collapse:collapse;min-width:34rem}
+thead{background:var(--fill)}
+th{text-align:left;font-family:var(--f-mono);font-size:var(--fs-xs);letter-spacing:.16em;
+  text-transform:uppercase;color:var(--faint);font-weight:400;padding:.7rem 1rem;
+  border-bottom:1px solid var(--line-soft)}
+td{padding:.75rem 1rem;border-bottom:1px solid var(--line-soft);font-size:var(--fs-sm);
+  color:var(--muted);line-height:1.55;vertical-align:top}
+tr:last-child td{border-bottom:0}
+td b{color:var(--fg);font-weight:500}
+td code{font-size:.85em}
+tbody tr:hover{background:var(--fill)}
+
+/* ── code ───────────────────────────────────────────────────── */
+.code{position:relative;border:1px solid var(--line);background:var(--code-bg);margin:0 0 1.6em}
+.code::after{content:"";position:absolute;top:-1px;left:-1px;width:12px;height:12px;
+  border-top:1px solid var(--acc);border-left:1px solid var(--acc);z-index:2}
+.code .bar{display:flex;align-items:center;gap:.9rem;padding:.55rem .9rem;flex-wrap:wrap;
+  border-bottom:1px solid var(--code-line);font-family:var(--f-mono);font-size:var(--fs-xs)}
+.code .f{color:rgba(216,222,220,.62)}
+.code .l{color:#81ccc2;letter-spacing:.16em;text-transform:uppercase}
+.code pre{margin:0;padding:1rem 1.1rem;overflow-x:auto;font-family:var(--f-mono);
+  font-size:clamp(.76rem,.72rem + .2vw,.87rem);line-height:1.7;color:var(--code-fg);tab-size:2}
+.k{color:var(--tk-k)}.s{color:var(--tk-s)}.c{color:var(--tk-c);font-style:italic}
+.t{color:var(--tk-t)}.a{color:var(--tk-a)}
+
+/* ── callouts ───────────────────────────────────────────────── */
+.note{position:relative;border:1px solid var(--line);background:var(--fill);
+  padding:clamp(1rem,2vw,1.5rem);margin:0 0 1.6em;max-width:76ch}
+.note::after{content:"";position:absolute;top:-1px;left:-1px;width:12px;height:12px;
+  border-top:1px solid var(--acc);border-left:1px solid var(--acc)}
+.note.warm::after{border-color:var(--warm)}
+.note .h{font-family:var(--f-mono);font-size:var(--fs-xs);letter-spacing:.22em;
+  text-transform:uppercase;color:var(--acc);margin-bottom:.6rem}
+.note.warm .h{color:var(--warm)}
+.note p:last-child{margin-bottom:0}
+
+/* ── the flow strip ─────────────────────────────────────────── */
+.flow{display:flex;flex-wrap:wrap;gap:.5rem;align-items:center;font-family:var(--f-mono);
+  font-size:var(--fs-xs);letter-spacing:.08em;margin-bottom:1.6em}
+.flow span{border:1px solid var(--line-soft);padding:.4em .8em;color:var(--muted);
+  white-space:nowrap}
+.flow span.on{border-color:var(--acc);color:var(--acc);background:var(--fill-2)}
+.flow i{color:var(--faint);font-style:normal}
+
+footer{border-top:1px solid var(--line);padding-block:2rem 3rem;font-family:var(--f-mono);
+  font-size:var(--fs-xs);color:var(--faint);display:flex;gap:1rem;flex-wrap:wrap}
+footer .sp{flex:1}
+
+@media (max-width:48rem){
+  h2{flex-direction:column;gap:.3rem}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<header><div class="shell head">
+  <span class="brand"><span class="mark"></span>apex-enterprise-patterns.dev</span>
+  <nav>
+    <a href="#pipeline">Pipeline</a>
+    <a href="#anatomy">Page anatomy</a>
+    <a href="#data">Data</a>
+    <a href="#components">Components</a>
+    <a href="#css">CSS</a>
+    <a href="#deploy">Deploy</a>
+    <a href="#change">Change what?</a>
+  </nav>
+  <button class="ib" id="theme" aria-label="Toggle theme"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5z"/></svg></button>
+</div></header>
+
+<div class="shell">
+
+<div class="mast">
+  <span class="eyebrow">How the site is put together</span>
+  <h1>Markdown goes in. Pages come out.</h1>
+  <p class="lede">Everything between those two things is machinery you set up once and then mostly
+    forget. This walks through each piece of it — what feeds what, and where to go when you want to
+    change something.</p>
+</div>
+
+<!-- ══════════════ 1 · THE PIPELINE ══════════════ -->
+<section id="pipeline">
+  <h2><span class="n">01</span>The pipeline, end to end</h2>
+
+  <p>Five stages. You only ever touch the first one.</p>
+
+  <div class="flow">
+    <span class="on">docs/*.mdx</span><i>→</i>
+    <span>docs plugin</span><i>→</i>
+    <span>MDX compiler</span><i>→</i>
+    <span>theme swizzles</span><i>→</i>
+    <span>build/</span>
+  </div>
+
+  <figure>
+    <svg viewBox="0 0 1060 400" role="img" aria-label="The seventeen mdx chapter files are read by the Docusaurus docs plugin, which is pointed at them by docusaurus.config.ts. The MDX compiler turns each file into a React tree, resolving component tags through MDXComponents.tsx. The theme swizzles wrap that tree in the site shell, pulling chapter metadata from chapters.ts. The result is static HTML in the build directory.">
+      <defs>
+        <marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+          <polygon points="0,0 10,5 0,10" fill="currentColor"/></marker>
+        <marker id="arA" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+          <polygon points="0,0 10,5 0,10" fill="#81ccc2"/></marker>
+        <marker id="arW" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+          <polygon points="0,0 10,5 0,10" fill="#e2b04a"/></marker>
+      </defs>
+
+      <!-- main chain -->
+      <rect class="dbox hot" x="14" y="150" width="150" height="60"/>
+      <text class="dlab on" x="89" y="176" text-anchor="middle">docs/*.mdx</text>
+      <text class="dsub" x="89" y="192" text-anchor="middle">17 chapters · you edit these</text>
+
+      <rect class="dbox" x="240" y="150" width="150" height="60"/>
+      <text class="dlab" x="315" y="176" text-anchor="middle">docs plugin</text>
+      <text class="dsub" x="315" y="192" text-anchor="middle">reads frontmatter</text>
+
+      <rect class="dbox" x="466" y="150" width="150" height="60"/>
+      <text class="dlab" x="541" y="176" text-anchor="middle">MDX compiler</text>
+      <text class="dsub" x="541" y="192" text-anchor="middle">markdown → React</text>
+
+      <rect class="dbox" x="692" y="150" width="150" height="60"/>
+      <text class="dlab" x="767" y="176" text-anchor="middle">theme swizzles</text>
+      <text class="dsub" x="767" y="192" text-anchor="middle">wrap in the shell</text>
+
+      <rect class="dbox data" x="918" y="150" width="128" height="60"/>
+      <text class="dlab wm" x="982" y="176" text-anchor="middle">build/</text>
+      <text class="dsub" x="982" y="192" text-anchor="middle">37 static pages</text>
+
+      <line class="dedge hot" x1="164" y1="180" x2="232" y2="180" marker-end="url(#arA)"/>
+      <line class="dedge hot" x1="390" y1="180" x2="458" y2="180" marker-end="url(#arA)"/>
+      <line class="dedge hot" x1="616" y1="180" x2="684" y2="180" marker-end="url(#arA)"/>
+      <line class="dedge hot" x1="842" y1="180" x2="910" y2="180" marker-end="url(#arA)"/>
+
+      <!-- feeders above -->
+      <rect class="dbox ghost" x="240" y="34" width="150" height="52"/>
+      <text class="dlab" x="315" y="56" text-anchor="middle" font-size="12">docusaurus.config.ts</text>
+      <text class="dsub" x="315" y="72" text-anchor="middle">path: ../docs</text>
+      <line class="dedge" x1="315" y1="86" x2="315" y2="142" marker-end="url(#ar)"/>
+      <text class="dtxt" x="325" y="118">points it here</text>
+
+      <rect class="dbox ghost" x="466" y="34" width="150" height="52"/>
+      <text class="dlab" x="541" y="56" text-anchor="middle" font-size="12">MDXComponents.tsx</text>
+      <text class="dsub" x="541" y="72" text-anchor="middle">the component registry</text>
+      <line class="dedge" x1="541" y1="86" x2="541" y2="142" marker-end="url(#ar)"/>
+      <text class="dtxt" x="551" y="118">resolves &lt;YouTube/&gt;</text>
+
+      <!-- feeder below -->
+      <rect class="dbox data" x="692" y="292" width="150" height="56"/>
+      <text class="dlab wm" x="767" y="316" text-anchor="middle" font-size="12">data/chapters.ts</text>
+      <text class="dsub" x="767" y="332" text-anchor="middle">the one source of truth</text>
+      <line class="dedge wm" x1="767" y1="292" x2="767" y2="218" marker-end="url(#arW)"/>
+      <text class="dtxt wm" x="777" y="258">title · slug · video</text>
+
+      <!-- shell components -->
+      <rect class="dbox ghost" x="918" y="292" width="128" height="56"/>
+      <text class="dlab" x="982" y="316" text-anchor="middle" font-size="12">components/</text>
+      <text class="dsub" x="982" y="332" text-anchor="middle">8 React pieces</text>
+      <line class="dedge" x1="918" y1="320" x2="850" y2="320" marker-end="url(#ar)"/>
+    </svg>
+    <figcaption><b>Only the teal box is yours.</b> The four stages to its right are set up once and
+      run on every build. The dashed boxes are configuration — they steer a stage without being part
+      of the chain.</figcaption>
+  </figure>
+
+  <p>In plain terms: Docusaurus is told to look in <code>../docs</code>. It reads the frontmatter at
+    the top of each file to learn the title and the URL, hands the body to the MDX compiler, and the
+    compiler turns your markdown into a React component. Any <code>&lt;Tag /&gt;</code> it meets gets
+    looked up in the component registry. Finally the theme wrapper puts that component inside the
+    site shell — navbar, ruler, rails, footer — and writes the whole thing out as a plain HTML file.</p>
+
+  <div class="note">
+    <div class="h">Why this matters</div>
+    <p>Nothing in stages 2–5 knows anything about the Apex Common Library. They are generic. All the
+      subject matter lives in the seventeen markdown files, which is why you can keep writing prose
+      and never touch React.</p>
+  </div>
+</section>
+
+<!-- ══════════════ 2 · PAGE ANATOMY ══════════════ -->
+<section id="anatomy">
+  <h2><span class="n">02</span>Where each part of a chapter page comes from</h2>
+
+  <p>A chapter page is assembled from four different sources. Knowing which region comes from where
+    is the single most useful thing on this page — it tells you which file to open.</p>
+
+  <figure>
+    <svg viewBox="0 0 1000 560" role="img" aria-label="Wireframe of a chapter page. From top to bottom: navbar from the config, chapter ruler from ChapterRuler and chapters.ts, then a two-column area with the section rail on the left and the article on the right. The article is the masthead from chapters.ts, the body from your mdx file, and the pager from chapters.ts. The footer comes from the config.">
+      <!-- browser frame -->
+      <rect class="dbox" x="10" y="10" width="980" height="540"/>
+
+      <!-- navbar -->
+      <rect class="dregion" x="26" y="26" width="948" height="44"/>
+      <circle cx="52" cy="48" r="9" fill="none" stroke="#81ccc2" stroke-width="1.4"/>
+      <text class="dnum" x="52" y="52" text-anchor="middle">1</text>
+      <text class="dlab" x="80" y="52" font-size="12">Navbar — title, links, search, theme toggle</text>
+
+      <!-- ruler -->
+      <rect class="dregion" x="26" y="82" width="948" height="66"/>
+      <circle cx="52" cy="104" r="9" fill="none" stroke="#81ccc2" stroke-width="1.4"/>
+      <text class="dnum" x="52" y="108" text-anchor="middle">2</text>
+      <text class="dlab" x="80" y="108" font-size="12">The ruler — 17 ticks, hover bubble, position readout</text>
+      <g stroke="#81ccc2" stroke-width="1" opacity=".55">
+        <line x1="90" y1="126" x2="90" y2="138"/><line x1="140" y1="128" x2="140" y2="138"/>
+        <line x1="190" y1="128" x2="190" y2="138"/><line x1="240" y1="128" x2="240" y2="138"/>
+        <line x1="290" y1="126" x2="290" y2="138"/><line x1="340" y1="128" x2="340" y2="138"/>
+        <line x1="390" y1="120" x2="390" y2="138" stroke-width="2"/>
+        <line x1="440" y1="128" x2="440" y2="138"/><line x1="490" y1="126" x2="490" y2="138"/>
+        <line x1="540" y1="128" x2="540" y2="138"/><line x1="590" y1="128" x2="590" y2="138"/>
+        <line x1="640" y1="126" x2="640" y2="138"/><line x1="690" y1="128" x2="690" y2="138"/>
+        <line x1="740" y1="128" x2="740" y2="138"/><line x1="790" y1="126" x2="790" y2="138"/>
+        <line x1="840" y1="128" x2="840" y2="138"/><line x1="890" y1="128" x2="890" y2="138"/>
+      </g>
+
+      <!-- left rail -->
+      <rect class="dregion" x="26" y="160" width="196" height="290"/>
+      <circle cx="52" cy="182" r="9" fill="none" stroke="#81ccc2" stroke-width="1.4"/>
+      <text class="dnum" x="52" y="186" text-anchor="middle">3</text>
+      <text class="dlab" x="72" y="186" font-size="11">Section rail</text>
+      <g stroke="currentColor" stroke-width="1" opacity=".3">
+        <line x1="46" y1="212" x2="180" y2="212"/><line x1="46" y1="232" x2="200" y2="232"/>
+        <line x1="46" y1="252" x2="160" y2="252"/><line x1="46" y1="272" x2="190" y2="272"/>
+      </g>
+      <circle cx="52" cy="320" r="9" fill="none" stroke="#81ccc2" stroke-width="1.4"/>
+      <text class="dnum" x="52" y="324" text-anchor="middle">4</text>
+      <text class="dlab" x="72" y="324" font-size="11">Prev / next / contents</text>
+      <g stroke="currentColor" stroke-width="1" opacity=".3">
+        <line x1="46" y1="350" x2="180" y2="350"/><line x1="46" y1="370" x2="150" y2="370"/>
+      </g>
+
+      <!-- masthead -->
+      <rect class="dregion" x="240" y="160" width="734" height="86"/>
+      <circle cx="266" cy="182" r="9" fill="none" stroke="#81ccc2" stroke-width="1.4"/>
+      <text class="dnum" x="266" y="186" text-anchor="middle">5</text>
+      <text class="dlab" x="294" y="186" font-size="12">Masthead — eyebrow, h1, standfirst, meta line</text>
+      <g stroke="currentColor" stroke-width="1" opacity=".3">
+        <line x1="260" y1="210" x2="640" y2="210"/><line x1="260" y1="228" x2="520" y2="228"/>
+      </g>
+
+      <!-- article body -->
+      <rect class="dregion body" x="240" y="258" width="734" height="192"/>
+      <circle cx="266" cy="280" r="9" fill="none" stroke="#81ccc2" stroke-width="1.4"/>
+      <text class="dnum" x="266" y="284" text-anchor="middle">6</text>
+      <text class="dlab on" x="294" y="284" font-size="12">The article — everything you wrote</text>
+      <g stroke="#81ccc2" stroke-width="1" opacity=".45">
+        <line x1="260" y1="308" x2="900" y2="308"/><line x1="260" y1="326" x2="860" y2="326"/>
+        <line x1="260" y1="344" x2="880" y2="344"/>
+        <rect x="260" y="360" width="640" height="46" fill="none" stroke="#81ccc2" stroke-dasharray="3 3"/>
+        <line x1="260" y1="424" x2="820" y2="424"/>
+      </g>
+      <text class="dsub" x="580" y="388" text-anchor="middle" fill="#81ccc2">a component you dropped in</text>
+
+      <!-- pager -->
+      <rect class="dregion" x="240" y="462" width="734" height="34"/>
+      <circle cx="266" cy="479" r="9" fill="none" stroke="#81ccc2" stroke-width="1.4"/>
+      <text class="dnum" x="266" y="483" text-anchor="middle">7</text>
+      <text class="dlab" x="294" y="483" font-size="12">Pager — previous and next chapter</text>
+
+      <!-- footer -->
+      <rect class="dregion" x="26" y="508" width="948" height="30"/>
+      <circle cx="52" cy="523" r="9" fill="none" stroke="#81ccc2" stroke-width="1.4"/>
+      <text class="dnum" x="52" y="527" text-anchor="middle">8</text>
+      <text class="dlab" x="80" y="527" font-size="12">Footer — link columns and copyright</text>
+    </svg>
+    <figcaption><b>The teal region is the only part that comes from your markdown file.</b> Everything
+      around it is generated from the chapter table and the config.</figcaption>
+  </figure>
+
+  <div class="legend">
+    <div><span class="k">1</span><span><span class="t">Navbar</span><span class="s">docusaurus.config.ts → themeConfig.navbar</span></span></div>
+    <div><span class="k">2</span><span><span class="t">The ruler</span><span class="s">components/ChapterRuler.tsx + data/chapters.ts</span></span></div>
+    <div><span class="k">3</span><span><span class="t">Section rail</span><span class="s">Docusaurus, generated from your ## headings</span></span></div>
+    <div><span class="k">4</span><span><span class="t">Prev / next / contents</span><span class="s">theme/DocItem/Layout + data/chapters.ts</span></span></div>
+    <div><span class="k">5</span><span><span class="t">Masthead</span><span class="s">theme/DocItem/Layout + data/chapters.ts</span></span></div>
+    <div><span class="k">6</span><span><span class="t">The article</span><span class="s">docs/NN-Your-Chapter.mdx</span></span></div>
+    <div><span class="k">7</span><span><span class="t">Pager</span><span class="s">theme/DocItem/Layout + data/chapters.ts</span></span></div>
+    <div><span class="k">8</span><span><span class="t">Footer</span><span class="s">docusaurus.config.ts → themeConfig.footer</span></span></div>
+  </div>
+
+  <div class="note warm">
+    <div class="h">Why your h1 isn't in the markdown</div>
+    <p>Each chapter has <code>hide_title: true</code> in its frontmatter. That tells Docusaurus not to
+      print the title into the article body, so the layout can render it up in the masthead instead —
+      above the standfirst and the meta line. If you paste an <code># H1</code> back into a chapter
+      file you'll get two titles.</p>
+  </div>
+</section>
+
+<!-- ══════════════ 3 · DATA ══════════════ -->
+<section id="data">
+  <h2><span class="n">03</span>One table feeds five things</h2>
+
+  <p><code>website/src/data/chapters.ts</code> is the spine of the whole site. It is a plain list of
+    seventeen objects, and five separate parts of the site read from it. Change a chapter's URL there
+    and it changes everywhere at once, including the redirect from the old address.</p>
+
+  <figure>
+    <svg viewBox="0 0 980 400" role="img" aria-label="chapters.ts sits on the left and feeds five consumers: the chapter ruler, the chapter layout, the homepage index, the video hub, and the redirect list in the config.">
+      <rect class="dbox data" x="14" y="150" width="196" height="100"/>
+      <text class="dlab wm" x="112" y="182" text-anchor="middle">data/chapters.ts</text>
+      <text class="dsub" x="112" y="202" text-anchor="middle">17 entries</text>
+      <text class="dsub" x="112" y="218" text-anchor="middle">n · title · short · slug</text>
+      <text class="dsub" x="112" y="234" text-anchor="middle">legacy · blurb · video</text>
+
+      <rect class="dbox" x="520" y="14" width="250" height="52"/>
+      <text class="dlab" x="645" y="38" text-anchor="middle" font-size="12">ChapterRuler.tsx</text>
+      <text class="dsub" x="645" y="54" text-anchor="middle">the 17 ticks + the hover bubble</text>
+
+      <rect class="dbox hot" x="520" y="90" width="250" height="52"/>
+      <text class="dlab on" x="645" y="114" text-anchor="middle" font-size="12">DocItem/Layout.tsx</text>
+      <text class="dsub" x="645" y="130" text-anchor="middle">masthead, rail links, pager</text>
+
+      <rect class="dbox" x="520" y="174" width="250" height="52"/>
+      <text class="dlab" x="645" y="198" text-anchor="middle" font-size="12">pages/index.tsx</text>
+      <text class="dsub" x="645" y="214" text-anchor="middle">the homepage index</text>
+
+      <rect class="dbox" x="520" y="258" width="250" height="52"/>
+      <text class="dlab" x="645" y="282" text-anchor="middle" font-size="12">pages/videos.tsx</text>
+      <text class="dsub" x="645" y="298" text-anchor="middle">the video hub</text>
+
+      <rect class="dbox" x="520" y="332" width="250" height="52"/>
+      <text class="dlab" x="645" y="356" text-anchor="middle" font-size="12">docusaurus.config.ts</text>
+      <text class="dsub" x="645" y="372" text-anchor="middle">17 redirects, generated</text>
+
+      <path class="dedge wm" d="M210 176 C 360 176, 380 40, 512 40" marker-end="url(#arW)"/>
+      <path class="dedge wm" d="M210 186 C 360 186, 380 116, 512 116" marker-end="url(#arW)"/>
+      <path class="dedge wm" d="M210 200 C 380 200, 400 200, 512 200" marker-end="url(#arW)"/>
+      <path class="dedge wm" d="M210 214 C 360 214, 380 284, 512 284" marker-end="url(#arW)"/>
+      <path class="dedge wm" d="M210 224 C 360 224, 380 358, 512 358" marker-end="url(#arW)"/>
+
+      <text class="dtxt wm" x="300" y="96">every consumer reads the same list</text>
+    </svg>
+    <figcaption><b>Rename a chapter in one place.</b> The ruler, the page furniture, the homepage, the
+      video hub and the old-URL redirect all update from the same edit — they cannot disagree with
+      each other, because there is only one list.</figcaption>
+  </figure>
+
+  <h3>What each field is for</h3>
+  <div class="tbl"><table>
+    <thead><tr><th>Field</th><th>What it does</th></tr></thead>
+    <tbody>
+      <tr><td><code>n</code></td><td>Chapter number. Drives reading order, the ruler position, and which chapters are "before" this one.</td></tr>
+      <tr><td><code>title</code></td><td>The full title. Must match the <code>title:</code> in the file's frontmatter.</td></tr>
+      <tr><td><code>short</code></td><td>The trimmed version, for the hover bubble and the prev/next links where space is tight.</td></tr>
+      <tr><td><code>slug</code></td><td>The page's URL. Must match the <code>slug:</code> in the frontmatter.</td></tr>
+      <tr><td><code>legacy</code></td><td>The old MkDocs address. The redirect from it is generated automatically.</td></tr>
+      <tr><td><code>blurb</code></td><td>The standfirst under the title, and the one-line description in the homepage index.</td></tr>
+      <tr><td><code>video</code>, <code>duration</code></td><td>YouTube id and runtime. Used by the video hub and the meta line.</td></tr>
+      <tr><td><code>read</code></td><td>Reading time shown in the meta line. Hand-estimated.</td></tr>
+      <tr><td><code>template</code></td><td>A <b>label only</b> — see the note below.</td></tr>
+      <tr><td><code>part</code></td><td>Which group the chapter belongs to, for the homepage's layer filters.</td></tr>
+    </tbody>
+  </table></div>
+
+  <div class="note warm">
+    <div class="h">There is no template engine</div>
+    <p><code>template: 'pattern'</code> does not switch layouts. Every chapter uses the same layout.
+      The field only prints a word in the meta line and in the homepage index.</p>
+    <p>What actually makes a "pattern chapter" look different is <strong>which components you put in
+      the file</strong>. A pattern chapter is one where you wrote a <code>&lt;PatternCard&gt;</code>.
+      That's the whole mechanism. If you add a component to a chapter, update the label to match —
+      nothing will break if you don't, it will just say the wrong word.</p>
+  </div>
+
+  <h3>The frontmatter contract</h3>
+  <p>Every chapter file starts with the same five lines. Three of them must agree with the chapter
+    table.</p>
+
+  <div class="code">
+    <div class="bar"><span class="f">docs/10-The-Domain-Layer.mdx</span><span class="l">frontmatter</span></div>
+    <pre>---
+<span class="a">title</span>: <span class="s">"The Domain Layer"</span>          <span class="c"># must match chapters.ts</span>
+<span class="a">slug</span>: /domain-layer/                <span class="c"># must match chapters.ts</span>
+<span class="a">sidebar_position</span>: <span class="t">10</span>              <span class="c"># must match n</span>
+<span class="a">hide_title</span>: <span class="k">true</span>                 <span class="c"># always — the masthead renders the h1</span>
+---</pre>
+  </div>
+</section>
+
+<!-- ══════════════ 4 · COMPONENTS ══════════════ -->
+<section id="components">
+  <h2><span class="n">04</span>How components get their information</h2>
+
+  <p>You never import anything. <code>src/theme/MDXComponents.tsx</code> registers every component
+    globally, so writing <code>&lt;YouTube /&gt;</code> in a markdown file just works. What differs
+    between components is <em>how</em> you hand them their content — there are four ways, and each
+    component uses whichever suits it.</p>
+
+  <div class="tbl"><table>
+    <thead><tr><th>Way in</th><th>Looks like</th><th>Used by</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><b>Attributes</b><br><span style="font-size:.9em">Short values on the tag.</span></td>
+        <td><code>&lt;YouTube id="ZUD…" duration="21:04" /&gt;</code></td>
+        <td>YouTube, MFile, Deploy</td>
+      </tr>
+      <tr>
+        <td><b>Nested markdown</b><br><span style="font-size:.9em">The component reads what's inside it.</span></td>
+        <td><code>&lt;PCell title="Intent"&gt;…markdown…&lt;/PCell&gt;</code></td>
+        <td>PatternCard, Figure, Step</td>
+      </tr>
+      <tr>
+        <td><b>Structured children</b><br><span style="font-size:.9em">Child tags the parent sorts into slots.</span></td>
+        <td><code>&lt;BeforeAfter&gt;</code> reads its <code>&lt;Without&gt;</code>, <code>&lt;With&gt;</code>, <code>&lt;CodeFile&gt;</code> and <code>&lt;Takeaway&gt;</code> children</td>
+        <td>BeforeAfter, Steps</td>
+      </tr>
+      <tr>
+        <td><b>Imported data</b><br><span style="font-size:.9em">The one case that needs an import line.</span></td>
+        <td><code>import {APPLICATION_CLS} from '@site/src/snippets/application'</code></td>
+        <td>AnnotatedSource</td>
+      </tr>
+    </tbody>
+  </table></div>
+
+  <h3>The interesting one</h3>
+  <p><code>&lt;BeforeAfter&gt;</code> is worth understanding because it shows the pattern the others
+    follow. You write ordinary fenced code blocks inside it — no strings, no escaping — and the
+    component sorts your children into the file tabs and the takeaway strip by looking at what kind
+    of tag each one is.</p>
+
+  <div class="code">
+    <div class="bar"><span class="f">inside any chapter</span><span class="l">mdx</span></div>
+    <pre><span class="t">&lt;BeforeAfter</span> <span class="a">label</span>=<span class="s">"Summarise contacts"</span><span class="t">&gt;</span>
+
+  <span class="t">&lt;Without</span> <span class="a">lines</span>=<span class="s">"418"</span> <span class="a">files</span>=<span class="s">"1"</span> <span class="a">testable</span>=<span class="s">"0%"</span><span class="t">&gt;</span>          <span class="c">← the stats row</span>
+    <span class="t">&lt;CodeFile</span> <span class="a">name</span>=<span class="s">"AccountTrigger.trigger"</span><span class="t">&gt;</span>          <span class="c">← becomes a file tab</span>
+      ```apex … ```                                <span class="c">← a normal code fence</span>
+    <span class="t">&lt;/CodeFile&gt;</span>
+    <span class="t">&lt;Takeaway</span> <span class="a">bad</span> <span class="a">title</span>=<span class="s">"SOQL in a loop"</span><span class="t">&gt;</span>…<span class="t">&lt;/Takeaway&gt;</span>  <span class="c">← the strip below</span>
+  <span class="t">&lt;/Without&gt;</span>
+
+  <span class="t">&lt;With</span> <span class="a">lines</span>=<span class="s">"78"</span> <span class="a">files</span>=<span class="s">"4"</span> <span class="a">testable</span>=<span class="s">"100%"</span><span class="t">&gt;</span> … <span class="t">&lt;/With&gt;</span>
+
+<span class="t">&lt;/BeforeAfter&gt;</span></pre>
+  </div>
+
+  <h3>All eight components</h3>
+  <div class="tbl"><table>
+    <thead><tr><th>Component</th><th>What it's for</th><th>Where it's used today</th></tr></thead>
+    <tbody>
+      <tr><td><code>&lt;YouTube&gt;</code></td><td>The companion video. Responsive, loads only when clicked.</td><td>All 17 chapters</td></tr>
+      <tr><td><code>&lt;BeforeAfter&gt;</code></td><td>The with/without-the-library comparison.</td><td>Chapter 10</td></tr>
+      <tr><td><code>&lt;PatternCard&gt;</code></td><td>The catalogue entry — intent, participants, cost.</td><td>Chapter 09</td></tr>
+      <tr><td><code>&lt;Steps&gt;</code> / <code>&lt;Manifest&gt;</code></td><td>Tickable build-along steps, and the file list.</td><td>Chapter 11 (Manifest)</td></tr>
+      <tr><td><code>&lt;AnnotatedSource&gt;</code></td><td>Notes beside a pinned source file that lights the lines being discussed.</td><td>Chapter 04</td></tr>
+      <tr><td><code>&lt;Figure&gt;</code> / <code>&lt;LayerDiagram&gt;</code></td><td>The architecture diagram with a caption.</td><td>Chapter 10, homepage</td></tr>
+      <tr><td><code>&lt;ChapterRuler&gt;</code></td><td>Not for chapters — the shell uses it.</td><td>Every page, automatically</td></tr>
+    </tbody>
+  </table></div>
+
+  <div class="note">
+    <div class="h">Adding one to another chapter</div>
+    <p>Open the chapter, type the tag, save. There is no registration step and no import. The reason
+      only a few chapters use these today is that pointing them at more chapters means reshaping
+      prose, which is an editing decision rather than a technical one.</p>
+  </div>
+</section>
+
+<!-- ══════════════ 5 · CSS ══════════════ -->
+<section id="css">
+  <h2><span class="n">05</span>The CSS, in four layers</h2>
+
+  <p>Four files, loaded in this order. Later files depend on earlier ones, so the order matters.</p>
+
+  <div class="tbl"><table>
+    <thead><tr><th>File</th><th>Owns</th></tr></thead>
+    <tbody>
+      <tr><td><code>tokens.css</code></td><td>Every colour, size and spacing value, for both themes. Also repoints Docusaurus's own variables at them so its built-in bits inherit the palette.</td></tr>
+      <tr><td><code>base.css</code></td><td>The blueprint grid, body type, prose, code blocks, callouts, navbar, footer.</td></tr>
+      <tr><td><code>shell.css</code></td><td>The ruler, the two-column page, the section rail, the masthead, the pager.</td></tr>
+      <tr><td><code>components.css</code></td><td>Everything an author can drop into a chapter.</td></tr>
+    </tbody>
+  </table></div>
+
+  <p>Two of the tokens are worth knowing by name, because they control how wide the content is:</p>
+
+  <ul>
+    <li><code>--cw-read</code> — how wide prose runs. Currently <code>104ch</code>.</li>
+    <li><code>--cw-wide</code> — how wide things with internal structure run: code blocks, the
+      comparison, figures, the pager. Currently <code>115ch</code>.</li>
+  </ul>
+
+  <p>Both live in <code>tokens.css</code> and nothing else hardcodes a width, so those two numbers
+    are the only dials for the reading measure.</p>
+
+  <div class="note warm">
+    <div class="h">The one thing that isn't a token</div>
+    <p>Code blocks stay dark in light mode on purpose. The syntax colours come from
+      <code>src/theme/prismTheme.ts</code> and are tuned for a dark panel — inverting them would mean
+      inventing a second colour scheme that isn't in the brand.</p>
+  </div>
+</section>
+
+<!-- ══════════════ 6 · DEPLOY ══════════════ -->
+<section id="deploy">
+  <h2><span class="n">06</span>How it gets published</h2>
+
+  <div class="flow">
+    <span class="on">push to main</span><i>→</i>
+    <span>GitHub Actions</span><i>→</i>
+    <span>npm ci</span><i>→</i>
+    <span>typecheck</span><i>→</i>
+    <span>build</span><i>→</i>
+    <span>GitHub Pages</span>
+  </div>
+
+  <p>Pushing to <code>main</code> is the whole deploy. The workflow in
+    <code>.github/workflows/deploy.yml</code> installs from the committed lockfile, type-checks,
+    builds, and hands the output to GitHub Pages. There is no server anywhere — the result is a
+    folder of HTML files.</p>
+
+  <h3>Three things that protect you</h3>
+  <ul>
+    <li><strong>Broken links fail the build.</strong> <code>onBrokenLinks: 'throw'</code> means a
+      link to a chapter that doesn't exist stops the deploy instead of shipping a dead link.</li>
+    <li><strong>The lockfile is committed.</strong> <code>npm ci</code> rebuilds the exact same
+      dependency tree every time, so a package can't change under you without a commit.</li>
+    <li><strong>The domain is in the repo.</strong> <code>website/static/CNAME</code> carries
+      <code>apex-enterprise-patterns.dev</code>, so it survives a settings reset.</li>
+  </ul>
+
+  <div class="note">
+    <div class="h">The old URLs still work</div>
+    <p>All seventeen MkDocs addresses redirect to their new homes. Those redirect pages are generated
+      from the <code>legacy</code> field in the chapter table, so they can never drift out of sync
+      with the real URLs.</p>
+  </div>
+</section>
+
+<!-- ══════════════ 7 · CHANGE WHAT ══════════════ -->
+<section id="change">
+  <h2><span class="n">07</span>"I want to change…"</h2>
+
+  <div class="tbl"><table>
+    <thead><tr><th>You want to</th><th>Open this</th></tr></thead>
+    <tbody>
+      <tr><td>Fix a typo, rewrite a paragraph, add a section</td><td><code>docs/NN-Whatever.mdx</code> — it's just markdown</td></tr>
+      <tr><td>Add a code sample</td><td>Same file. Use a fenced block tagged <code>```apex</code></td></tr>
+      <tr><td>Add a callout</td><td>Same file. <code>:::note</code>, <code>:::tip</code> or <code>:::warning</code></td></tr>
+      <tr><td>Change a chapter's title, URL or blurb</td><td><code>src/data/chapters.ts</code>, then match <code>title:</code>/<code>slug:</code> in the file's frontmatter</td></tr>
+      <tr><td>Reorder chapters</td><td><code>chapters.ts</code> (the <code>n</code> field) and <code>sidebar_position:</code> in each file</td></tr>
+      <tr><td>Add an eighteenth chapter</td><td>New <code>.mdx</code> in <code>docs/</code> + a new entry in <code>chapters.ts</code></td></tr>
+      <tr><td>Change a colour</td><td><code>src/css/tokens.css</code> — nothing else holds a colour</td></tr>
+      <tr><td>Make the text column wider or narrower</td><td><code>--cw-read</code> in <code>tokens.css</code></td></tr>
+      <tr><td>Change the navbar or footer links</td><td><code>docusaurus.config.ts</code></td></tr>
+      <tr><td>Change what the homepage diagram says about a layer</td><td><code>src/data/layers.ts</code></td></tr>
+      <tr><td>Change how a component looks</td><td><code>src/css/components.css</code></td></tr>
+      <tr><td>Change how a component behaves</td><td><code>src/components/TheOne.tsx</code></td></tr>
+      <tr><td>Change the page furniture — masthead, rail, pager</td><td><code>src/theme/DocItem/Layout/index.tsx</code></td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>Working on it locally</h3>
+  <div class="code">
+    <div class="bar"><span class="f">terminal</span><span class="l">bash</span></div>
+    <pre><span class="k">cd</span> website
+npm install        <span class="c"># once</span>
+npm start          <span class="c"># dev server, reloads as you type</span>
+npm run build      <span class="c"># the real build — catches broken links</span>
+npm run serve      <span class="c"># preview that build exactly as it will ship</span></pre>
+  </div>
+
+  <div class="note">
+    <div class="h">One habit worth having</div>
+    <p><code>npm start</code> is forgiving; <code>npm run build</code> is not. Run the build before
+      pushing anything structural — it's the same command CI runs, so if it passes locally it will
+      pass there.</p>
+  </div>
+</section>
+
+</div>
+
+<footer><div class="shell" style="display:flex;gap:1rem;flex-wrap:wrap;width:min(94vw,1160px)">
+  <span><span class="mark" style="display:inline-block;vertical-align:-2px;margin-right:.5rem"></span>apex-enterprise-patterns.dev</span>
+  <span class="sp"></span>
+  <span>Docusaurus 3 · GitHub Pages · CWTF wire system</span>
+</div></footer>
+
+<script>
+document.getElementById('theme').onclick=()=>{
+  const r=document.documentElement;
+  const light=r.getAttribute('data-theme')==='light'||
+    (!r.hasAttribute('data-theme')&&matchMedia('(prefers-color-scheme:light)').matches);
+  r.setAttribute('data-theme',light?'dark':'light');
+};
+document.querySelectorAll('.head nav a').forEach(a=>a.onclick=e=>{
+  e.preventDefault();
+  document.querySelector(a.getAttribute('href'))?.scrollIntoView({behavior:'smooth',block:'start'});
+});
+</script>
+</body>
+</html>
