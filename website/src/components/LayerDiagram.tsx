@@ -141,7 +141,7 @@ export default function LayerDiagram({
         Database
       </text>
       <text className="cw-dsub" x={x + w / 2} y={y + h - 12} textAnchor="middle">
-        the side effect
+        objects and records
       </text>
     </g>
   );

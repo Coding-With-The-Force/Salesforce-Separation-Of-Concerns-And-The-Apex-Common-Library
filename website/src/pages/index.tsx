@@ -114,7 +114,7 @@ export default function Home(): JSX.Element {
 
         {/* ── the index ── */}
         <div className={styles.idxHead}>
-          <span className="cw-eyebrow">All seventeen</span>
+          <span className="cw-eyebrow">All seventeen chapters</span>
           <h2>Read it in order, or jump to the layer you're interested in.</h2>
           <p>
             Find out exactly what you need to implement the apex common library fast.
