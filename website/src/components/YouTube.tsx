@@ -52,6 +52,18 @@ export default function YouTube({
           alt=""
           loading="lazy"
           decoding="async"
+          onLoad={(e) => {
+            // A missing maxresdefault is served as a *decodable* 120x90
+            // placeholder JPEG on a 404 status, so onError never fires.
+            // Real thumbnails are 480px (hqdefault) or wider; anything
+            // smaller is the placeholder and means fall back.
+            if (
+              e.currentTarget.naturalWidth < 320 &&
+              !poster.includes('hqdefault')
+            ) {
+              setPoster(`https://i.ytimg.com/vi/${id}/hqdefault.jpg`);
+            }
+          }}
           onError={() => {
             if (!poster.includes('hqdefault')) {
               setPoster(`https://i.ytimg.com/vi/${id}/hqdefault.jpg`);
