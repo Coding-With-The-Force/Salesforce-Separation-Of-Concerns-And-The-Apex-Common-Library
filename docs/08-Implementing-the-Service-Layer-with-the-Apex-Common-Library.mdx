@@ -19,7 +19,7 @@ There is NO FRAMEWORK that can be made for service layer classes. This is a busi
 
 For every service layer class you create you will create an interface (or potentially a virtual class you can extend) that your service layer implementation class will implement (more on that below). This interface will have every method in your class represented in it. An example of a service interface is below. Some people like to prefix their interfaces with the letter I (example: ICaseService), however I prefer to postfix it with _I or _Interface as it's a bit clearer in my opinion.
 
-This methods in this interface should represent all of the public methods you plan to create for this service class. Private methods should not be represented here.
+The methods in this interface should represent all of the public methods you plan to create for this service class. Private methods should not be represented here.
 
 ```apex
 public interface Task_Service_Interface
@@ -102,7 +102,7 @@ public with sharing class Task_Service_Impl implements Task_Service_Interface
 			taskCreator.createTasks(objectsThatNeedTasks, unitOfWork);
 		}
 
-		//Try commiting the records we've created and/or updated in our unit of work (we're basically doing all our DML at
+		//Try committing the records we've created and/or updated in our unit of work (we're basically doing all our DML at
 		//once here), else throw an exception.
 		try{
 			unitOfWork.commitWork();
@@ -121,7 +121,7 @@ public with sharing class Task_Service_Impl implements Task_Service_Interface
 
 The fflib_Application.ServiceFactory class... what is it and how does it fit in here. Well, if you read through all of [Part 4: The fflib\_Application Class](/application/fflib-application/) then you hopefully have some solid background on what it's used for and why, but it's a little trickier to conceptualize for the service class so let's go over it a bit again. Basically it leverages [The Factory Pattern](/application/factory-method-pattern/) to dynamically generate the correct code implementations at run time (when your code is actually running).  
 
-This is awesome for tons of stuff, but it's especially awesome for the service layer. Why? You'll notice as your Salesforce instance grows so do the amount of interested parties. All of the sudden you've gone from one or two business units to 25 different business units and what happens when those businesses need the same type of functionality with differing logic? You could make tons of if else statements determining what the user type is and then calling different methods based on that users type... but maybe there's an easier way. If you are an ISV (a managed package provider) what I'm about to show you is likely 1000 times more important for you. If your product grows and people start adopting it, you absolutely need a way to allow flexibility in your applications business logic, maybe even allow them to write their own logic and have a way for your code to execute it??
+This is awesome for tons of stuff, but it's especially awesome for the service layer. Why? You'll notice as your Salesforce instance grows so do the amount of interested parties. All of a sudden you've gone from one or two business units to 25 different business units and what happens when those businesses need the same type of functionality with differing logic? You could make tons of if else statements determining what the user type is and then calling different methods based on that users type... but maybe there's an easier way. If you are an ISV (a managed package provider) what I'm about to show you is likely 1000 times more important for you. If your product grows and people start adopting it, you absolutely need a way to allow flexibility in your applications business logic, maybe even allow them to write their own logic and have a way for your code to execute it??
 
 Let's check out how allllllllllll these pieces come together below. 
 
@@ -129,7 +129,7 @@ Let's check out how allllllllllll these pieces come together below.
 
 ## Tying all the classes together
 
-Alright, let's tie everything together piece by piece. Pretend we've got a custom metadata type that maps our service interfaces to a service class implementation and a custom user permission (or if you don't wanna pretend you can [check it out here](https://github.com/Coding-With-The-Force/Salesforce-Separation-Of-Concerns-And-The-Apex-Common-Library/blob/main/src/objects/Service_By_User_Type__mdt.object)). Let's first start by creating our new class that extends the [fflibApplication.ServiceFactory class](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_Application.cls) and overrides its [newInstance method](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_Application.cls). 
+Alright, let's tie everything together piece by piece. Pretend we've got a custom metadata type that maps our service interfaces to a service class implementation and a custom user permission (or if you don't wanna pretend you can [check it out here](https://github.com/Coding-With-The-Force/Salesforce-Separation-Of-Concerns-And-The-Apex-Common-Library/blob/main/src/objects/Service_By_User_Type__mdt.object)). Let's first start by creating our new class that extends the [fflib_Application.ServiceFactory class](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_Application.cls) and overrides its [newInstance method](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_Application.cls). 
 
 ```apex
 /*
@@ -192,7 +192,7 @@ public with sharing class Application
 ```
 
 
-Ok we've done the hardest parts now. Next we need to pretend that we are using the service class interface, service implementation class and service class that we already built earlier (just above you, scroll up to those sections and review them if you forgot), because we've about to see how a controller would call this task service we've built.
+Ok we've done the hardest parts now. Next we need to pretend that we are using the service class interface, service implementation class and service class that we already built earlier (just above you, scroll up to those sections and review them if you forgot), because we're about to see how a controller would call this task service we've built.
 
 ```apex
 public with sharing class Abstract_Task_Creator_Controller
@@ -212,7 +212,7 @@ public with sharing class Abstract_Task_Creator_Controller
 
 ```
 
-Now you might be wracking your brain right now and being like... ok, so what... but look closer Simba. This controller will literally never grow, neither will your Application class or your ServiceFactory class we've built above (well the Application class might, but very little). This Task_Service middle man layer is so abstract you can swap out service implementations on the fly whenever you want and this controller will NEVER NEED TO BE UPDATED (at least not for task service logic)! Basically the only thing that will change at this point is your custom metadata type (object), the custom permissions you map to users and you'll add more variations of the Task Service Implementation classes throughout time for your various business units that get onboarded and want to use it. However, your controllers (and other places in the code that call the service) will never know the difference. Wyld right. If you're lost right now lets follow the chain of events step by step in order to clarify some things:
+Now you might be wracking your brain right now and being like... ok, so what... but look closer Simba. This controller will literally never grow, neither will your Application class or your ServiceFactory class we've built above (well the Application class might, but very little). This Task_Service middle man layer is so abstract you can swap out service implementations on the fly whenever you want and this controller will NEVER NEED TO BE UPDATED (at least not for task service logic)! Basically the only thing that will change at this point is your custom metadata type (object), the custom permissions you map to users and you'll add more variations of the Task Service Implementation classes throughout time for your various business units that get onboarded and want to use it. However, your controllers (and other places in the code that call the service) will never know the difference. Wyld right. If you're lost right now, let's follow the chain of events step by step in order to clarify some things:
 
 1) Controller calls the Task_Service class's (the middleman) createTasks() method.
 2) Task_Service's createTasks() method calls its service() method.

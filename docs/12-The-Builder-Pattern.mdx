@@ -116,7 +116,7 @@ public class ComputerCreator{
 
 ```
 
-You can see in the above example that using the builder pattern here gives us an enormous amount of flexibility. We no longer need to pass null values into a constructor or build a bajillion constructor variations, we only need to call the methods to set each piece of the computer should we need to set them. You can see we now only worry about setting values for things we actually need to set for our computer. Additionally, you can add new options for computer parts to set in the ComputerCreator class easily and it won't affect that code that has already been written. For instance if I created a setWebcam method it would be no big deal. My createMidTierComputer and createTopTierComputer methods would not be impacted in any way and continue to function just fine. Builder Pattern FTW!
+You can see in the above example that using the builder pattern here gives us an enormous amount of flexibility. We no longer need to pass null values into a constructor or build a bajillion constructor variations, we only need to call the methods to set each piece of the computer should we need to set them. You can see we now only worry about setting values for things we actually need to set for our computer. Additionally, you can add new options for computer parts to set in the ComputerCreator class easily and it won't affect the code that has already been written. For instance if I created a setWebcam method it would be no big deal. My createMidTierComputer and createTopTierComputer methods would not be impacted in any way and continue to function just fine. Builder Pattern FTW!
 
 ---
 
@@ -124,7 +124,7 @@ You can see in the above example that using the builder pattern here gives us an
 
 Take the computer example above, without the builder pattern you get one of two things. You either get an enormous constructor you send all your computer parts to (that you will likely pass a ton of nulls to) or you have a ton of constructors to represent different computer variations... either choice is not a great choice. Complex objects typically have potentially hundreds of optional choices you can make, you need something more robust to select those options.
 
-The builder pattern allows you to select those options piece by piece if you want them. Take for instance the computer example again. Desktop computers do not need things like network cards or speakers or a webcam to function. That being said, many people building a computer may want them for one reason or another to make their specific computer useful for them. Instead making constructor variations for every combination of those items, why not just use the builder pattern to add them as needed? It makes the code a whole lot easier to deal with and easier to extend in the future.
+The builder pattern allows you to select those options piece by piece if you want them. Take for instance the computer example again. Desktop computers do not need things like network cards or speakers or a webcam to function. That being said, many people building a computer may want them for one reason or another to make their specific computer useful for them. Instead of making constructor variations for every combination of those items, why not just use the builder pattern to add them as needed? It makes the code a whole lot easier to deal with and easier to extend in the future.
 
 ---
 

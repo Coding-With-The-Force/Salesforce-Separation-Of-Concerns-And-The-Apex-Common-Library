@@ -112,7 +112,7 @@ catch(Exception e){
 }
 
 ```
-The reason the above code is detrimental is that you would either have one of two side effects. The transaction management would only be separately by each method and one could fail and the other could complete successfully, despite the fact we don't actually want that to happen. Alternatively you could handle transaction management in the class calling the service layer, which isn't ideal either.  
+The reason the above code is detrimental is that you would either have one of two side effects. The transaction management would only be handled separately by each method and one could fail and the other could complete successfully, despite the fact we don't actually want that to happen. Alternatively you could handle transaction management in the class calling the service layer, which isn't ideal either.  
 
 Instead we should create a new method in the service layer that combines those methods and handles the transaction management in a cleaner manner.
 

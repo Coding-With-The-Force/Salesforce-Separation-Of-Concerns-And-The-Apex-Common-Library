@@ -11,7 +11,7 @@ hide_title: true
 
 ## What is the Selector Layer
 
-The Selector Layer is Salesforce is based off [Martin Fowler's Data Mapper Layer concept](https://martinfowler.com/eaaCatalog/dataMapper.html). It's, "a layer of Mappers that moves data between objects and a database while keeping them independent of each other and the Mapper itself".
+The Selector Layer in Salesforce is based on [Martin Fowler's Data Mapper Layer concept](https://martinfowler.com/eaaCatalog/dataMapper.html). It's, "a layer of Mappers that moves data between objects and a database while keeping them independent of each other and the Mapper itself".
 
 In most tech stacks when you want to represent records in a database table you create classes in your code base to represent them to hold them in memory and prep them for transit to the actual database. These are what Martin references as "objects" in the above quote. Salesforce already creates these classes for you in the background to represent your Custom and Standard Objects. It's why you can just inherently write `Case cs = new Case();` in Apex and it creates a brand new Case record for you.  
 
@@ -37,7 +37,7 @@ Opportunities_Selector
 OpportunityQuotes_Selector
 ```
 
-**_Method Naming and Signatures_** - The names of the methods in a selector class should all start with the word "select". They should also only return a list, map or QuerySelector and should only accept bulkified parameters (Sets, Lists, Maps, etc). A few good examples of method examples are below.
+**_Method Naming and Signatures_** - The names of the methods in a selector class should all start with the word "select". They should also only return a list, map or QuerySelector and should only accept bulkified parameters (Sets, Lists, Maps, etc). A few good examples of method signatures are below.
 
 _Selector Method Examples_  
 

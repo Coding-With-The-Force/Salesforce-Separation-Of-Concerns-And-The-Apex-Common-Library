@@ -11,9 +11,9 @@ hide_title: true
 
 ## What is the fflib_SObjectUnitOfWork class?
 
-It is a foundation built to allow you to leverage the unit of work design pattern from within Salesforce. Basically this class is designed to hold your database operations (insert, update, etc) in memory until you are ready to do all of your database transactions in one big transaction. It also handles savepoint rollbacks to ensure data consistentcy. For instance, if you are inserting Opportunities with Quotes in the same database (DML) transaction, chances are you don't wanna insert those Opportunities if your Quotes fail to insert. The unit of work class is setup to automatically handle that transaction management and roll back if anything fails.
+It is a foundation built to allow you to leverage the unit of work design pattern from within Salesforce. Basically this class is designed to hold your database operations (insert, update, etc) in memory until you are ready to do all of your database transactions in one big transaction. It also handles savepoint rollbacks to ensure data consistency. For instance, if you are inserting Opportunities with Quotes in the same database (DML) transaction, chances are you don't wanna insert those Opportunities if your Quotes fail to insert. The unit of work class is setup to automatically handle that transaction management and roll back if anything fails.
 
-If also follows bulkification best practices to make your life even easier dealing with DML transactions.
+It also follows bulkification best practices to make your life even easier dealing with DML transactions.
 
 ---
 

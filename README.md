@@ -10,7 +10,7 @@ Housed in this repo is also an older version of the <a href="https://github.com/
 
 ### The Example Code
 
-There is also some example code showing you how an application (in this case a help desk app) in a Salesforce org might separate its concerns. If you reference the code while reading the guide it should aide considerably in learning how to leverage the Apex Common Library to implement Separation of Concerns in your Salesforce org.
+There is also some example code showing you how an application (in this case a help desk app) in a Salesforce org might separate its concerns. If you reference the code while reading the guide it should aid considerably in learning how to leverage the Apex Common Library to implement Separation of Concerns in your Salesforce org.
 
 ***
 

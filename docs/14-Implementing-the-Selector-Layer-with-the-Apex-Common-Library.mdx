@@ -57,7 +57,7 @@ public inherited sharing class Contact_Selector extends fflib_SObjectSelector
 
 ## The fflib_SObjectSelector Constructor Parameters and what each of them mean
 
-When you create a Selector class that extends the fflib_SObjectSelector class you have the option to send some parameters to its constructor that determine how to the selector class functions. They are the following (in order of parameters passed to the constructor):
+When you create a Selector class that extends the fflib_SObjectSelector class you have the option to send some parameters to its constructor that determine how the selector class functions. They are the following (in order of parameters passed to the constructor):
 
 1) Would you like to allow your class to use field sets when building the initial query fields for your selector layer class? By default this parameter is set to false.
 2) Would you like to enforce CRUD (Object level create, read, update, delete) security on your selector layer class? By default this parameter is set to true.
@@ -118,7 +118,7 @@ The major benefit of using the field sets for query fields is you can add new fi
 
 ## How to set your default OrderBy clause in your Selector Class
 
-By default all Selector Layer Classes that extend the fflib_SObjectSelctor are ordered by the Name field (if the name field isn't available on the queried object it defaults to CreatedDate). If that's kewl with you, no need to override it, but if you'd prefer the default sort order for your select class be different then you just need to override the following method like so:
+By default all Selector Layer Classes that extend the fflib_SObjectSelector are ordered by the Name field (if the name field isn't available on the queried object it defaults to CreatedDate). If that's kewl with you, no need to override it, but if you'd prefer the default sort order for your select class be different then you just need to override the following method like so:
 
 ```apex
 public override String getOrderBy(){
@@ -138,7 +138,7 @@ public override String getOrderBy(){
 
 ## The fflib_QueryFactory class and Custom Queries
 
-Chances are you're gonna wanna query something that's not immediately available via the fflib_SObjectSelect class, well lucky for you the fflib_QueryFactory class is here just for that! Here is an example of a custom query via the use of the fflib_QueryFactory class (a list of all available query factory methods are at the bottom of this wiki article).
+Chances are you're gonna wanna query something that's not immediately available via the fflib_SObjectSelector class, well lucky for you the fflib_QueryFactory class is here just for that! Here is an example of a custom query via the use of the fflib_QueryFactory class (a list of all available query factory methods is at the bottom of this wiki article).
 
 ```apex
 //This allows us to select all new cases in the system using the QueryFactory in fflib_SObjectSelector
@@ -200,7 +200,7 @@ public List<AggregateResult> selectAverageTacosPerTacoBell(){
 
 While there are many other methods within the [fflib_SObjectSelector class](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_SObjectSelector.cls) below are the methods most commonly utilized in implementations.
 
-1) _**[getSObjectName()](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_SObjectSelector.cls#L286)**_ - Returns the name of the object that your select was built for.
+1) _**[getSObjectName()](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_SObjectSelector.cls#L286)**_ - Returns the name of the object that your selector was built for.
 
 2) _**[enforceFLS()](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_SObjectSelector.cls#L183)**_ - Turns on field level security for your queries you perform in your selector class.
 
@@ -208,7 +208,7 @@ While there are many other methods within the [fflib_SObjectSelector class](http
 
 4) _**[ignoreCRUD()](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_SObjectSelector.cls#L202)**_ - Turns off the CRUD (Create Read Update Delete) checks to make sure a user has CRUD access to an object before performing a query.
 
-5) _**[unsortedSelectFields()](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_SObjectSelector.cls#L192)**_ - Turns of sorting the selected fields for the query. THIS DOES NOT TURN OFF SORTING! This just means in the select statement of your query, the fields will not be selected in alphabetical order.
+5) _**[unsortedSelectFields()](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_SObjectSelector.cls#L192)**_ - Turns off sorting the selected fields for the query. THIS DOES NOT TURN OFF SORTING! This just means in the select statement of your query, the fields will not be selected in alphabetical order.
 
 6) _**[selectSObjectsById(Set&lt;Id> idSet)](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_SObjectSelector.cls#L299)**_ - Returns a query that selects all the records in your id set. It constructs a query based on the fields you declare in your selector class's getSObjectFieldsList method and orders them by whatever is represented in the [m_orderBy variable](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_SObjectSelector.cls#L65).
 
@@ -225,7 +225,7 @@ While there are many other methods within the [fflib_SObjectSelector class](http
 
 While there are many other methods within the [fflib_QueryFactory class](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_QueryFactory.cls) below are the methods most commonly utilized in implementations.
 
-1) **_[assertIsAccessible()](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_QueryFactory.cls#L174)_** - This method checks to see if the running user can actually read to object this selector was built for.
+1) **_[assertIsAccessible()](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_QueryFactory.cls#L174)_** - This method checks to see if the running user can actually read the object this selector was built for.
 
 2) **_[setEnforceFLS(Boolean enforce)](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_QueryFactory.cls#L185)_** - This method determines whether or not to enforce field level security on the query you are running.
 
@@ -237,7 +237,7 @@ While there are many other methods within the [fflib_QueryFactory class](https:/
 
 6) _**[selectFieldSet(Schema.FieldSet fieldSet)](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_QueryFactory.cls#L276)**_ - Use this method to select fields for your query from a field set.
 
-7) _**[setCondition(String conditionExpression)](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_QueryFactory.cls#L298)**_ - Use this method to set the conditions for your query (basically you are setting the WHERE clause in your query. Do NOT add the WHERE to the string you pass into to this method).
+7) _**[setCondition(String conditionExpression)](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_QueryFactory.cls#L298)**_ - Use this method to set the conditions for your query (basically you are setting the WHERE clause in your query. Do NOT add the WHERE to the string you pass into this method).
 
 8) _**[setLimit(Integer limitCount)](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_QueryFactory.cls#L311)**_ - Sets a limit for your query.
 
@@ -259,4 +259,4 @@ While there are many other methods within the [fflib_QueryFactory class](https:/
 
 17) **_[toSOQL()](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_QueryFactory.cls#L641)_** - Takes the fflib_QueryFactory you've just built and turns it into an actual string representation of the query that you can use in a Database.query() call.
 
-18) **_[deepClone()](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_QueryFactory.cls#L686)_** - Creates a clone of your fflib_QueryBuilder query in case you'd like an easy way to generate another permutation of this query without rebuilding the whole thing.
+18) **_[deepClone()](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_QueryFactory.cls#L686)_** - Creates a clone of your fflib_QueryFactory query in case you'd like an easy way to generate another permutation of this query without rebuilding the whole thing.

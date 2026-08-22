@@ -83,7 +83,7 @@ Basically when our trigger calls that triggerHandler method, it eventually runs 
  else if(isUndelete) domainObject = domainConstructor.construct(newRecords);
 ```
 
-The code above essentially passes trigger.new to the [Records variable](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_SObjectDomain.cls#47) in the fflib_SObjectDomain class you Domain class extends when you are doing and insert, update or undelete operation; and it passes in trigger.oldMap.values to the Records variable if you are doing a delete operation.
+The code above essentially passes trigger.new to the [Records variable](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_SObjectDomain.cls#47) in the fflib_SObjectDomain class your Domain class extends when you are doing an insert, update or undelete operation; and it passes in trigger.oldMap.values to the Records variable if you are doing a delete operation.
 
 Ok that's cool, but how do you access trigger.oldMap when you need it?? Well, the only time you need trigger.oldMap are in update operations, so that's the only time it's accessible. When you setup your onBeforeUpdate or onAfterUpdate methods in your Domain class you'll set them up like what you see below:
 
@@ -104,8 +104,8 @@ There you have it! That's it! Simpler than you maybe thought... maybe, lol.
 While there are many other accessible methods in the [fflib_SObjectDomain class](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_SObjectDomain.cls) below are the methods most commonly utilized in implementations. 
 
 1)  **[onApplyDefaults()](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_SObjectDomain.cls#L150) -** This method is called in the handleBeforeInsert method and exists so that you can apply default logic that is applicable to all new records that are created in the system.  
-2)  **[onValidate()](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_SObjectDomain.cls#L155) -** This method is called in the handleAfterInsert method and exists so that you can apply validation logic to your inserted records before commiting them to the database.  
-3)  **[`onValidate(Map<Id, SObject> existingRecords)`](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_SObjectDomain.cls#L160) -** This method is called in the handleAfterUpdate method and exists so that you can apply validation logic to your updated records before commiting them to the database.  
+2)  **[onValidate()](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_SObjectDomain.cls#L155) -** This method is called in the handleAfterInsert method and exists so that you can apply validation logic to your inserted records before committing them to the database.  
+3)  **[`onValidate(Map<Id, SObject> existingRecords)`](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_SObjectDomain.cls#L160) -** This method is called in the handleAfterUpdate method and exists so that you can apply validation logic to your updated records before committing them to the database.  
 4)  **[onBeforeInsert()](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_SObjectDomain.cls#L165) -** This method is called in the handleBeforeInsert method and exists so that you can override it to place logic that should occur during a before insert action in a trigger.  
 5)  **[`onBeforeUpdate(Map<Id, SObject>)`](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_SObjectDomain.cls#L170) -** This method is called in the handleBeforeUpdate method and exists so that you can override it to place logic that should occur during a before update action in a trigger.  
 6)  **[onBeforeDelete()](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_SObjectDomain.cls#L175) -** This method is called in the handleBeforeDelete method and exists so that you can override it to place logic that should occur during a before delete action in a trigger.  
@@ -120,8 +120,8 @@ While there are many other accessible methods in the [fflib_SObjectDomain class]
 15)  **[handleAfterUpdate()](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_SObjectDomain.cls#L241) -** This method is called in the triggerHandler method when an afterUpdate is happening in the trigger. By default it calls the onValidate and onAfterUpdate method but it can be overridden and implemented in a different way if desired.
 16)  **[handleAfterDelete()](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_SObjectDomain.cls#L257) -** This method is called in the triggerHandler method when an afterDelete is happening in the trigger. By default it calls the onAfterDelete method but it can be overridden and implemented in a different way if desired.
 17)  **[handleAfterUndelete()](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_SObjectDomain.cls#L270) -** This method is called in the triggerHandler method when an afterUndelete is happening in the trigger. By default it calls the onUndelete method but it can be overridden and implemented in a different way if desired.  
-18) **[getChangedRecords(Set&lt;String> fieldNames)](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_SObjectDomain.cls#L306) -** This method will return a list of records that have had their fields changed (the fields specificied in the method parameter passed in).  
-19) **[`getChangedRecords(Set<Schema.SObjectField> fieldTokens)`](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_SObjectDomain.cls#L334) -** This method will return a list of records that have had their fields changed (the fields specificied in the method parameter passed in). I would suggest using this method over the one above. Strongly typed field names are a better choice in my opinion so the system knows your code depends on that field.
+18) **[getChangedRecords(Set&lt;String> fieldNames)](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_SObjectDomain.cls#L306) -** This method will return a list of records that have had their fields changed (the fields specified in the method parameter passed in).  
+19) **[`getChangedRecords(Set<Schema.SObjectField> fieldTokens)`](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_SObjectDomain.cls#L334) -** This method will return a list of records that have had their fields changed (the fields specified in the method parameter passed in). I would suggest using this method over the one above. Strongly typed field names are a better choice in my opinion so the system knows your code depends on that field.
 
 
 ---
@@ -143,7 +143,7 @@ Configuration.disableTriggerState();
 
 **Enforcing CRUD**
 
-The enforcing trigger CRUD (Create, Read, Update, Delete) ensures that a users has the appropriate object CRUD permissions before performing any actual DML actions. By default in the fflib_SObjectDomain class this is enforced. Ideally you should leave this as enforced unless you have a really excellent business reason to not enforce it.
+The enforcing trigger CRUD (Create, Read, Update, Delete) ensures that a user has the appropriate object CRUD permissions before performing any actual DML actions. By default in the fflib_SObjectDomain class this is enforced. Ideally you should leave this as enforced unless you have a really excellent business reason to not enforce it.
 
 How to turn CRUD enforcement on and off using the Configuration inner class:
 
@@ -168,7 +168,7 @@ DomainClassName.getTriggerEvent(DomainClassName.class).disableBeforeInsert();
 DomainClassName.getTriggerEvent(DomainClassName.class).enableBeforeInsert();
 ```
 
-The following is a list of trigger event methods a what they do:
+The following is a list of trigger event methods and what they do:
 
 1) **[TriggerEvent.enableBeforeInsert()](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_SObjectDomain.cls#L514) -** This method enables the before insert portion of the trigger.  
 
