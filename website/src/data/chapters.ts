@@ -6,7 +6,7 @@
  */
 
 export type TemplateKey = 'standard' | 'pattern' | 'implementation' | 'annotated';
-export type PartKey = 'intro' | 'application' | 'uow' | 'service' | 'domain' | 'selector' | 'mocks';
+export type PartKey = 'intro' | 'application' | 'uow' | 'service' | 'domain' | 'selector' | 'mocks' | 'di';
 
 export interface Chapter {
   n: number;
@@ -16,7 +16,7 @@ export interface Chapter {
   short: string;
   /** New canonical path. */
   slug: string;
-  /** The MkDocs URL this replaces — used to generate the redirect. */
+  /** The MkDocs URL this replaces - used to generate the redirect. */
   legacy: string;
   /** Source file in docs/. */
   file: string;
@@ -44,6 +44,7 @@ export const PARTS: Part[] = [
   {key: 'domain', title: 'The Domain layer', layer: 'domain'},
   {key: 'selector', title: 'The Selector layer', layer: 'selector'},
   {key: 'mocks', title: 'The Apex Mocks library'},
+  {key: 'di', title: 'Dependency Injection with Force DI'},
 ];
 
 export const TEMPLATE_LABEL: Record<TemplateKey, string> = {
@@ -296,6 +297,50 @@ export const CHAPTERS: Chapter[] = [
     read: '33 min',
     template: 'implementation',
     part: 'mocks',
+  },
+  {
+    n: 18,
+    title: 'Dependency Injection and Inversion of Control',
+    short: 'Dependency Injection & IoC',
+    slug: '/force-di/pattern/',
+    legacy: '/18-Dependency-Injection-and-Inversion-of-Control',
+    file: '18-Dependency-Injection-and-Inversion-of-Control.md',
+    blurb: 'Ask for the interface, let configuration decide the class.',
+    video: 'oce2QO-E_3k',
+    duration: '21:07',
+    read: '8 min',
+    template: 'pattern',
+    part: 'di',
+  },
+  {
+    n: 19,
+    title: 'Implementing Force DI Bindings, Modules and Providers',
+    short: 'Implementing Force DI',
+    slug: '/force-di/implementing/',
+    legacy: '/19-Implementing-Force-DI-Bindings-Modules-and-Providers',
+    file: '19-Implementing-Force-DI-Bindings-Modules-and-Providers.md',
+    blurb:
+      'Wiring up di_Binding__mdt records, modules and providers to resolve dependencies at runtime.',
+    video: 'YzaI5Ddfwkg',
+    duration: '64:42',
+    read: '15 min',
+    template: 'implementation',
+    part: 'di',
+  },
+  {
+    n: 20,
+    title: 'TDD and Mocking with Force DI',
+    short: 'TDD & Mocking with Force DI',
+    slug: '/force-di/testing/',
+    legacy: '/20-TDD-and-Mocking-with-Force-DI',
+    file: '20-TDD-and-Mocking-with-Force-DI.md',
+    blurb:
+      'True unit tests with Test.createStub and runtime binding overrides.',
+    video: '-esf8Q_Vp7U',
+    duration: '31:36',
+    read: '11 min',
+    template: 'implementation',
+    part: 'di',
   },
 ];
 

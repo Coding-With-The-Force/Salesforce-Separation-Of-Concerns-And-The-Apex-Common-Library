@@ -10,7 +10,7 @@ import {
 import styles from './videos.module.css';
 
 /**
- * The seventeen companion videos, collected.
+ * The twenty companion videos, collected.
  *
  * On the MkDocs site these were reachable one chapter at a time and nowhere
  * else. Grouping them is a genuinely new thing the site can do.
@@ -32,14 +32,14 @@ export default function Videos(): JSX.Element {
   return (
     <Layout
       title="The videos"
-      description="All seventeen companion walkthroughs for the Apex Common Library guide, in order.">
+      description="All twenty companion walkthroughs for the Apex Common Library guide, in order.">
       <div className={styles.shell}>
         <div className={styles.mast}>
           <span className="cw-eyebrow">Companion videos</span>
           <h1>The whole guide, on video</h1>
           <p>
-            Seventeen walkthroughs in the order the chapters build on each
-            other — {totalVideoTime()} in total. Every one is free, and every
+            Twenty walkthroughs in the order the chapters build on each
+            other - {totalVideoTime()} in total. Every one is free, and every
             one pairs with a written chapter if you would rather read it.
           </p>
         </div>
@@ -49,10 +49,10 @@ export default function Videos(): JSX.Element {
             <div className={styles.resumeLab}>
               {nextUp ? 'Pick up where you left off' : 'You finished the guide'}
             </div>
-            <h2>{nextUp ? nextUp.title : 'All seventeen watched'}</h2>
+            <h2>{nextUp ? nextUp.title : 'All twenty watched'}</h2>
             <p>
               {nextUp
-                ? `Chapter ${String(nextUp.n).padStart(2, '0')} · ${nextUp.duration} · ${watched.size} of 17 watched (${pct}%)`
+                ? `Chapter ${String(nextUp.n).padStart(2, '0')} · ${nextUp.duration} · ${watched.size} of ${CHAPTERS.length} watched (${pct}%)`
                 : 'Go build something.'}
             </p>
             <div className={styles.bar}>

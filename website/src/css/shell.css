@@ -1,11 +1,11 @@
 /* ═══════════════════════════════════════════════════════════════════════
-   THE SHELL — "Left Rail" and "Full Bleed", merged.
+   THE SHELL - "Left Rail" and "Full Bleed", merged.
 
    Two navigation axes, split so they stop competing:
      · chapters go HORIZONTAL, on the ruler strip under the navbar
      · sections go VERTICAL, on the sticky TOC rail down the left
 
-   Docusaurus's own doc sidebar is removed entirely — the ruler replaced it.
+   Docusaurus's own doc sidebar is removed entirely - the ruler replaced it.
    ═══════════════════════════════════════════════════════════════════════ */
 
 /* the sidebar the ruler replaced */
@@ -193,7 +193,7 @@ aside.theme-doc-sidebar-container {
  * one large unexplained gap:
  *
  *   · @theme/TOC's own wrapper is `position: sticky` with a `top` offset
- *     built from --ifm-navbar-height — pointless inside .cw-rail, which is
+ *     built from --ifm-navbar-height - pointless inside .cw-rail, which is
  *     already sticky and already scrolls itself
  *   · Infima gives BOTH that wrapper and ul.table-of-contents a
  *     --ifm-toc-padding-vertical
@@ -390,8 +390,8 @@ aside.theme-doc-sidebar-container {
 /**
  * Both Infima and @theme/TOC hide the table of contents outright under
  * 996px, on the assumption it lives in a right-hand sidebar that the mobile
- * layout drops. Here it doesn't — it's a plain block at the top of the
- * page — so hiding it left an "On this page" heading sitting over nothing.
+ * layout drops. Here it doesn't - it's a plain block at the top of the
+ * page - so hiding it left an "On this page" heading sitting over nothing.
  * 996px, not 62rem, so the four-pixel seam between the two is covered.
  */
 @media (max-width: 996px) {
@@ -403,7 +403,7 @@ aside.theme-doc-sidebar-container {
   }
 }
 @media (max-width: 46rem) {
-  /* the endpoints go, the readout stays — it's the one that carries meaning */
+  /* the endpoints go, the readout stays - it's the one that carries meaning */
   .cw-rulercap__end {
     display: none;
   }

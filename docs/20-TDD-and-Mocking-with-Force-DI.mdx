@@ -1,0 +1,240 @@
+---
+title: "TDD and Mocking with Force DI"
+slug: /force-di/testing/
+sidebar_position: 20
+hide_title: true
+---
+
+<YouTube id="-esf8Q_Vp7U" title="How to use DML Mocking in your Apex Tests" duration="31:36" />
+
+---
+
+## The Setup: A Chat App with Two Concerns
+
+Let's put Force DI through the test-driven wringer with a small example. We're building `ChatApp`, and its greeting behavior has two configurable concerns: a **Display** (how the greeting is presented) and a **Message** (what it says), where the right implementations depend on the user's out-of-office setting and the day of the week:
+
+```apex
+public interface Display {
+    String startup();
+}
+```
+
+```apex
+public abstract class Message {
+    public abstract String saySomething();
+}
+```
+
+Concrete implementations - `FunDisplay`, `BeAwesomeDisplay`, `WeekendMessage`, `WeekdayMessage` - exist but their contents don't matter for this chapter. What matters is how `ChatApp` gets hold of them.
+
+---
+
+## Life Without Dependency Injection
+
+The straightforward version wires everything up in the constructor:
+
+```apex
+public with sharing class ChatApp {
+
+    private Display display;
+    private Message welcomeMessage;
+
+    public ChatApp(){
+        //Configuration logic baked right into the app class
+        if(UserAvailability__c.getInstance().OutOfOffice__c){
+            display = new FunDisplay();
+            welcomeMessage = new WeekendMessage();
+        }
+        else{
+            display = new BeAwesomeDisplay();
+            welcomeMessage = new WeekdayMessage();
+        }
+    }
+
+    public String greetings(){
+        return display.startup() + ':' + welcomeMessage.saySomething();
+    }
+}
+```
+
+And the "unit" test for it:
+
+```apex
+@IsTest
+private static void greetings_OutOfOffice_IntegrationTest(){
+    //GIVEN the user is out of office
+    insert new UserAvailability__c(OutOfOffice__c = true);
+
+    //WHEN we ask for a greeting
+    String greeting = new ChatApp().greetings();
+
+    //THEN we get the fun weekend greeting
+    Assert.areEqual('Party time!:Have a great weekend!', greeting);
+}
+```
+
+Four problems hiding in that innocent-looking test:
+
+1) **It doesn't just test `greetings()`** - it tests `FunDisplay`, `WeekendMessage`, the custom setting read, and the constructor's branching, all at once. If any of them breaks, this test fails, whether or not `greetings()` is correct.
+2) **The configuration approach had to be decided first.** You couldn't write `ChatApp` without first committing to the custom-setting design.
+3) **The implementations had to be written first.** No `FunDisplay`, no test.
+4) **A lot of work happened before the first test could run.** Which is exactly backwards if you want [test-driven development](https://en.wikipedia.org/wiki/Test-driven_development) - TDD wants the test *first*.
+
+By the definitions in [chapter 15](/apex-mocks/unit-vs-integration-tests/), this isn't a unit test at all. It's an integration test wearing a unit test's name.
+
+---
+
+## Life With Dependency Injection
+
+Now the Force DI version of `ChatApp`:
+
+```apex
+public with sharing class ChatApp {
+
+    private Display display =
+        (Display) di_Injector.Org.getInstance(Display.class);
+    private Message welcomeMessage =
+        (Message) di_Injector.Org.getInstance(Message.class);
+
+    public String greetings(){
+        return display.startup() + ':' + welcomeMessage.saySomething();
+    }
+}
+```
+
+It is *intentional* that this class references no implementations at all - no `FunDisplay`, no custom setting, no branching. And that means the unit test can exist before any of those things do, using the platform's own [Stub API](https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_testing_stub_api.htm) plus Force DI's test-time binding override, `Bindings.set`:
+
+```apex
+@IsTest
+private static void greetings_StubbedDependencies_UnitTest(){
+    //GIVEN stubbed Display and Message implementations bound in place of real ones
+    ChatAppMockProvider provider = new ChatAppMockProvider();
+    di_Injector.Org.Bindings.set(new di_Module()
+        .bind(Message.class).toObject(Test.createStub(Message.class, provider))
+        .bind(Display.class).toObject(Test.createStub(Display.class, provider)));
+
+    //WHEN we ask for a greeting
+    String greeting = new ChatApp().greetings();
+
+    //THEN the app combined whatever its dependencies returned
+    Assert.areEqual('Mock Startup Message:Mock Message', greeting);
+}
+```
+
+```apex
+public with sharing class ChatAppMockProvider implements System.StubProvider {
+    public Object handleMethodCall(
+            Object stubbedObject, String stubbedMethodName,
+            Type returnType, List<Type> paramTypes,
+            List<String> paramNames, List<Object> args){
+        if(stubbedMethodName == 'saySomething'){
+            return 'Mock Message';
+        }
+        if(stubbedMethodName == 'startup'){
+            return 'Mock Startup Message';
+        }
+        return null;
+    }
+}
+```
+
+Run the four problems back the other way: the test exercises **only** `greetings()`; no configuration decision was needed; no implementations were needed; and the test could be written **the moment the method existed**. That's a TDD-shaped workflow on the Salesforce platform.
+
+:::tip You already know a nicer way to write that StubProvider
+The raw `System.StubProvider` above is deliberately dependency-free, but if you've got Apex Mocks in your org ([chapter 17](/apex-mocks/implementing/)), `mocks.mock()` builds Stub API stubs with far less ceremony - and everything it produces can be handed to `.toObject(...)` in a binding just the same:
+
+```apex
+fflib_ApexMocks mocks = new fflib_ApexMocks();
+Display mockDisplay = (Display) mocks.mock(Display.class);
+Message mockMessage = (Message) mocks.mock(Message.class);
+
+mocks.startStubbing();
+mocks.when(mockDisplay.startup()).thenReturn('Mock Startup Message');
+mocks.when(mockMessage.saySomething()).thenReturn('Mock Message');
+mocks.stopStubbing();
+
+di_Injector.Org.Bindings.set(new di_Module()
+    .bind(Display.class).toObject(mockDisplay)
+    .bind(Message.class).toObject(mockMessage));
+```
+
+You also get `mocks.verify(...)` on top, which raw `StubProvider` can't do.
+:::
+
+---
+
+## So Where Did the Configuration Go?
+
+That if/else from the original constructor didn't vanish - it moved to where configuration *belongs*, a `di_Module`:
+
+```apex
+public with sharing class ChatAppConfiguration extends di_Module {
+    public override void configure(){
+        if(UserAvailability__c.getInstance().OutOfOffice__c){
+            bind(Display.class).to(FunDisplay.class);
+            bind(Message.class).to(WeekendMessage.class);
+        }
+        else{
+            bind(Display.class).to(BeAwesomeDisplay.class);
+            bind(Message.class).to(WeekdayMessage.class);
+        }
+    }
+}
+```
+
+Register that module with a `di_Binding__mdt` record (`Type__c` = `Module`, per [chapter 19](/force-di/implementing/)) and it runs automatically as part of `Injector.Org` initialization. `ChatApp` stays configuration-free forever - new displays, new messages, new selection rules all land in the module.
+
+And here's the graceful part: the original integration test **still passes, unchanged**. When a test *doesn't* call `Bindings.set`, the injector resolves the real, module-configured implementations. That original test wasn't *wrong* - its scope was just too broad to be your only kind of test. Keep a couple like it for end-to-end confidence (the [80/20 split from chapter 15](/apex-mocks/unit-vs-integration-tests/)), and write the many-permutation tests as true unit tests.
+
+---
+
+## The Modern Surgical Option: replaceBindingWith
+
+`Bindings.set` is a sledgehammer: it clears the module list and replaces the whole configuration with what you pass in. Perfect when your test controls every binding it touches - but if you want to keep the org's real configuration and swap **just one** binding for a mock, the resolver now has a scalpel:
+
+```apex
+di_Injector.Org.Bindings.byName('paymentengine').replaceBindingWith(mockPaymentEngine);
+```
+
+Everything else resolves as configured; only the named binding returns your mock. (This method postdates the original Force DI articles - if you learned the library from those, this one's worth adding to your toolkit.)
+
+---
+
+## Don't Want Interfaces and Base Classes? It Still Works
+
+If the interface + abstract class + four implementations structure feels like more ceremony than your situation deserves, good news: **Force DI works with plain concrete classes too.** Bind a class to itself, and you keep the test-time stubbing seam with zero extra types:
+
+```apex
+public with sharing class WelcomeMessage {
+    public virtual String saySomething(){ return 'Howdy!'; }
+}
+```
+
+```apex
+//In your module - a class bound to itself
+bind(WelcomeMessage.class).to(WelcomeMessage.class);
+
+//In your test - stub it exactly as before
+di_Injector.Org.Bindings.set(new di_Module()
+    .bind(WelcomeMessage.class).toObject(Test.createStub(WelcomeMessage.class, provider)));
+```
+
+Interfaces still buy you the plug-in extensibility from [chapter 18](/force-di/pattern/) - but they're an upgrade path, not an entry fee.
+
+---
+
+## Three Ways to Inject: Which One When?
+
+You've now seen every injection seam this guide has to offer. They solve the same problem - getting a fake into the class under test - with different trade-offs:
+
+| | Constructor injection ([ch 16](/apex-mocks/mocks-with-separation-of-concerns/)) | `Application.*.setMock` ([ch 17](/apex-mocks/implementing/)) | Force DI `Bindings.set` / `replaceBindingWith` |
+| --- | --- | --- | --- |
+| **Binding lives in** | Each class's constructors | A compile-time map in `Application.cls` | Custom metadata + modules |
+| **Who can rewire it** | Developers (code change) | Developers (code change) | Developers, admins, and installed packages |
+| **Reach** | Apex only | Apex only (fflib layers) | Apex, Aura, VF, Flow |
+| **Best when** | No fflib, few classes, maximum explicitness | You're all-in on Apex Common layers | Implementations vary at runtime, or cross package boundaries |
+| **Watch out for** | Constructor plumbing on every class | Registering every class in the map | Runtime `InjectorException` on missing bindings |
+
+They compose, too - plenty of real orgs use `fflib_Application` factories for their domain/selector/UOW layers and Force DI where implementations genuinely need to vary by configuration. Use the cheapest seam that solves your actual problem, and reach for Force DI when the *configuration itself* is the feature.
+
+That's the guide - all twenty chapters. Head back to [the index](/) or the [videos hub](/videos/) for anything you skipped.

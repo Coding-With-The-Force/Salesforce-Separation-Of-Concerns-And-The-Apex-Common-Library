@@ -1,64 +1,14 @@
-# How to Implement Separation of Concerns in Salesforce
+# CTA Study Guide
 
-### The guide
+This guide houses all my notes for the Salesforce Certified Technical Architect Review Board (or the CTA Exam for short), my personal suggestions on the best way to approach solutioning and presenting your scenario, as well as practice scenarios that are publicly available ranked in order of likeness to what you will experience during the day of your review board. Additionally this guide provides example diagrams, suggestions on what and how to study, and much more. You can find a link to the github pages site with all of this information below:   
 
-**Read it at <a href="https://apex-enterprise-patterns.dev/" target="_blank">apex-enterprise-patterns.dev</a>** — seventeen chapters on Separation of Concerns in Salesforce and implementing it with the Apex Common Library. Every chapter has a companion video, and the whole thing is searchable.
+<a href="https://the-salesforce-cta-exam-guide.com" target="_blank"> Link to the new and improved GitHub Pages site</a>   
 
-Housed in this repo is also an older version of the <a href="https://github.com/Coding-With-The-Force/Salesforce_Separation_Of_Concerns/wiki" target="_blank">wiki</a>. The site above is the maintained version.
+^ As of 5/1/2026 this is still being updated to provide more detail about the exam and finish up unfinished sections. I hope to be done finishing up this site prior to the end of the month.
 
-***
+<a href="https://github.com/Coding-With-The-Force/Salesforce-CTA-Study-Guide/wiki" target="_blank">Link to the old GitHub Wiki</a>
 
-### The Example Code
+^ I will try to update these markdown files to match the new github pages site, but I would suggest using the pages site as it is considerably better and easier to navigate.
 
-There is also some example code showing you how an application (in this case a help desk app) in a Salesforce org might separate its concerns. If you reference the code while reading the guide it should aid considerably in learning how to leverage the Apex Common Library to implement Separation of Concerns in your Salesforce org.
 
-***
 
-### Working on the site
-
-> **[ARCHITECTURE.html](ARCHITECTURE.html)** — open it in a browser. It walks
-> through how the markdown becomes pages, where every part of a chapter page
-> comes from, and which file to open to change what. Start there if anything
-> below is unclear.
-
-The chapters are Markdown. They live in `docs/`, one `.mdx` file each, and
-that is where you edit them — the site is built from those files by
-[Docusaurus](https://docusaurus.io/), which lives in `website/`.
-
-```bash
-cd website
-npm install
-npm start          # local dev server with hot reload
-npm run build      # production build into website/build
-npm run serve      # preview the production build
-```
-
-Pushing to `main` builds and deploys automatically — see
-`.github/workflows/deploy.yml`.
-
-**Writing a chapter.** Ordinary Markdown, plus a handful of components you can
-drop in when the content calls for them. None of them need an import:
-
-| Component | What it's for |
-| --- | --- |
-| `<YouTube id="…" />` | The companion video, in a responsive 16:9 wrapper |
-| `<BeforeAfter>` | The with/without-the-library comparison |
-| `<PatternCard>` | The catalogue entry on a pattern chapter |
-| `<Steps>` / `<Manifest>` | Build-along steps on an implementation chapter |
-| `<Figure>` / `<LayerDiagram>` | The architecture diagram |
-| `<AnnotatedSource>` | Notes beside a pinned source file |
-| `:::note` / `:::warning` | Callouts |
-
-Chapter metadata — title, URL, video id, duration, which page template it
-uses — lives in one place: `website/src/data/chapters.ts`. Adding or reordering
-a chapter means editing that file and the chapter's `sidebar_position`.
-
-***
-
-### How to Submit Feedback for this repo
-
-If you believe there is any information missing from this guide or that it needs more info in certain places, please submit an [issue on this repo here](https://github.com/Coding-With-The-Force/Salesforce-Separation-Of-Concerns-And-The-Apex-Common-Library/issues) and I'll add it ASAP!
-
-### How to Say Thanks
-
-If you enjoy this repo and would like to say thank you, feel free to [send a donation here](https://checkout.codingwiththeforce.com/b/5kQ28raL44rQ96vfH54ko03)! But no pressure, I really just do this for fun!

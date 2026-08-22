@@ -6,7 +6,7 @@ import type {Props} from '@theme/DocRoot/Layout';
 /**
  * The doc shell.
  *
- * Docusaurus's sidebar is gone — the ruler replaced it, which is the whole
+ * Docusaurus's sidebar is gone - the ruler replaced it, which is the whole
  * point of the merge. Everything below is our own two-column layout, so the
  * default Main/Sidebar wrappers are not used either.
  */

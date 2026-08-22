@@ -651,7 +651,7 @@
  * Two drawings of the same graph; the container picks one.
  *
  * A container query rather than a media query, because the two places this
- * figure appears have very different widths at the same viewport size — the
+ * figure appears have very different widths at the same viewport size - the
  * article column on a chapter page, and the narrower blueprint panel on the
  * homepage. Below 620px of ROOM the landscape version's labels would render
  * under about 9px, so the stacked version takes over instead.
@@ -670,7 +670,7 @@
   margin-inline: auto;
   min-width: 0;
 }
-/* the stacked drawing is 460 units — past that it just gets cartoonish */
+/* the stacked drawing is 460 units - past that it just gets cartoonish */
 .cw-diagram svg.cw-diagram__stack {
   max-width: 470px;
 }

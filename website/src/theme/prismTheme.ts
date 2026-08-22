@@ -5,7 +5,7 @@ import type {PrismTheme} from 'prism-react-renderer';
  *
  * Material-Ocean-ish, recoloured so types use the brand teal and annotations
  * use the brand amber. Used as BOTH the light and dark Prism theme, because
- * code panels stay dark in both site themes — inverting this would mean
+ * code panels stay dark in both site themes - inverting this would mean
  * inventing a second syntax theme that isn't in the brand.
  */
 export const cwtfPrismDark: PrismTheme = {

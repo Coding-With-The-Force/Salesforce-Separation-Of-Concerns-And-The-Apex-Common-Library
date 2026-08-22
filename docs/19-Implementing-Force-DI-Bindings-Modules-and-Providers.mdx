@@ -1,0 +1,225 @@
+---
+title: "Implementing Force DI Bindings, Modules and Providers"
+slug: /force-di/implementing/
+sidebar_position: 19
+hide_title: true
+---
+
+<YouTube id="YzaI5Ddfwkg" title="Dependency Injection, Flows, and Force DI" duration="64:42" />
+
+<Manifest>
+  <MFile kind="new" name="PaymentEngine.cls" lines="4" />
+  <MFile kind="new" name="PayPalPaymentEngine.cls" lines="6" />
+  <MFile kind="new" name="StripePaymentEngine.cls" lines="6" />
+  <MFile kind="new" name="PaymentEngine binding (di_Binding__mdt record)" />
+  <MFile kind="new" name="MyAppModule.cls" lines="9" />
+</Manifest>
+
+---
+
+<Steps>
+
+<Step title="Deploy Force DI from source">
+
+There's no managed or unlocked package to install - you clone the repo and deploy the `force-di` source directory into your org (or better, vendor it into your own repo so it versions with your code):
+
+<Deploy command="git clone https://github.com/apex-enterprise-patterns/force-di && sf project deploy start --source-dir force-di/force-di" label="Get it in your org" />
+
+What you get: the `di_Injector`, `di_Binding`, `di_Module` Apex classes and friends, the `di_Binding__mdt` custom metadata type, and the Aura/Visualforce/Flow injector components. If you want worked examples beyond this chapter, they live in a separate repo: [force-di-samples](https://github.com/apex-enterprise-patterns/force-di-samples).
+
+</Step>
+
+<Step title="Write the interface and its implementations" file="PaymentEngine.cls">
+
+Nothing new here - this is the same interface discipline the service layer taught you:
+
+```apex
+public interface PaymentEngine {
+    String authorize(Decimal amount);
+}
+```
+
+```apex
+public with sharing class PayPalPaymentEngine implements PaymentEngine {
+    public String authorize(Decimal amount){
+        //PayPal-specific logic
+        return 'PAYPAL-AUTH';
+    }
+}
+```
+
+```apex
+public with sharing class StripePaymentEngine implements PaymentEngine {
+    public String authorize(Decimal amount){
+        //Stripe-specific logic
+        return 'STRIPE-AUTH';
+    }
+}
+```
+
+Note what's *absent*: no factory class, no map of types, and nothing anywhere that will `new` these up directly.
+
+</Step>
+
+<Step title="Create the binding record" file="di_Binding__mdt">
+
+In Setup → Custom Metadata Types → Binding, create a record that maps the interface to the implementation you want live right now:
+
+| Field | Value | What it does |
+| --- | --- | --- |
+| `BindingName__c` | `paymentengine` | The name callers resolve by (names are lower-cased and trimmed internally). |
+| `Type__c` | `Apex` | What kind of thing is being bound (see the full list below). |
+| `To__c` | `PayPalPaymentEngine` | The class the binding resolves to. |
+| `BindingObject__c` | *(blank)* | Only for SObjectType-keyed bindings - see the trigger step below. |
+| `BindingSequence__c` | *(blank)* | Ordering, for when several bindings share a key. |
+
+Because this is custom metadata: it deploys, it packages, and an admin can retarget it without touching code. Swapping the org from PayPal to Stripe is now a one-field edit.
+
+:::note If you read the original 2018 blog posts
+Early articles about Force DI refer to the metadata type as `Binding__mdt`. Today the object is `di_Binding__mdt`, and its fields are `BindingName__c`, `BindingObject__c`, `BindingObjectAlternate__c`, `BindingSequence__c`, `To__c` and `Type__c`.
+:::
+
+</Step>
+
+<Step title="Resolve it with the Injector">
+
+```apex
+PaymentEngine engine = (PaymentEngine) di_Injector.Org.getInstance('paymentengine');
+
+//Or resolve by the interface's type instead of a string name:
+PaymentEngine engine2 = (PaymentEngine) di_Injector.Org.getInstance(PaymentEngine.class);
+```
+
+`di_Injector.Org` is the org-wide injector, initialized from all your `di_Binding__mdt` records. Two behaviors worth knowing on day one:
+
+- **Bindings resolve to a singleton by default.** The injector caches the instance after first resolution - it's `getInstance`, not `newInstance`. If you need a fresh object per call, that's what Providers are for (below).
+- **A missing binding throws** `di_Injector.InjectorException` with a "Binding for 'x' not found" message - at runtime. Typos in binding names are the classic first-week mistake.
+
+</Step>
+
+<Step title="Or configure bindings in code with a Module" file="MyAppModule.cls">
+
+When bindings need logic - conditional wiring, computed targets, or just the preference of keeping configuration in version-controlled Apex - extend `di_Module` and use its fluent API:
+
+```apex
+public with sharing class MyAppModule extends di_Module {
+    public override void configure(){
+        //An Apex binding, same as the metadata record above
+        bind('paymentengine').apex().to(PayPalPaymentEngine.class);
+
+        //Conditional binding - code can decide
+        if(FeatureManagement.checkPermission('Use_Stripe')){
+            bind('paymentengine').apex().to(StripePaymentEngine.class);
+        }
+    }
+}
+```
+
+And here's the self-bootstrapping trick that makes modules deployable configuration rather than code someone has to remember to call: **register the module itself as a binding record** - `Type__c` = `Module`, `To__c` = `MyAppModule`. The org injector discovers it during initialization and runs your `configure()` automatically.
+
+</Step>
+
+<Step title="Use a Provider when construction isn't trivial">
+
+By default the injector instantiates your class with its no-argument constructor via `Type.forName`. When that's not enough - non-default constructors, objects that need context to build, or you want a **new instance per request** instead of the cached singleton - bind to a class that implements the `di_Binding.Provider` interface:
+
+```apex
+public with sharing class PaymentEngineProvider implements di_Binding.Provider {
+    public Object newInstance(Object params){
+        //params comes from the getInstance overload below - build however you like
+        return new PayPalPaymentEngine();
+    }
+}
+```
+
+```apex
+//The params overload passes context through to your provider
+PaymentEngine engine = (PaymentEngine)
+    di_Injector.Org.getInstance(PaymentEngine.class, someContextData);
+```
+
+Provider bindings are also how you opt out of the singleton behavior - the injector calls your `newInstance` rather than caching.
+
+</Step>
+
+<Step title="Bind by SObjectType (one trigger, many packages)">
+
+Besides string names and interfaces, bindings can be keyed by **SObjectType** (that's the `BindingObject__c` field), and multiple bindings can share a key, ordered by `BindingSequence__c`. That combination unlocks a genuinely great trick: a single generic trigger that resolves *all* bindings registered for its object and runs them in sequence - so separate DX packages can each contribute trigger handlers to the same object without ever touching each other's code. The [force-di-trigger-demo](https://github.com/apex-enterprise-patterns/force-di-samples) sample shows the full setup:
+
+```apex
+bind(Account.getSObjectType()).apex().sequence(20).to(CheckBalanceAccountTrigger.class);
+```
+
+</Step>
+
+<Step title="Know when to use a local Injector">
+
+`di_Injector.Org` is the shared org-wide injector, but you can also construct a **local injector** with its own module list for one-off resolution scopes - useful when a specific process needs its own wiring without polluting (or depending on) the org configuration:
+
+```apex
+di_Injector localInjector = new di_Injector(new List<di_Module>{ new MyAppModule() });
+PaymentEngine engine = (PaymentEngine) localInjector.getInstance(PaymentEngine.class);
+```
+
+</Step>
+
+</Steps>
+
+---
+
+## Injecting Declarative Things: Aura and Visualforce
+
+This is the part `fflib_Application` could never do. Dependencies form declaratively too - an action override points at a specific component; a page layout embeds a specific Visualforce page - and Force DI can put its "bit in the middle" there as well.
+
+**Aura (Lightning) injection.** Instead of binding an object's New-button override directly to a feature component, you bind it to a thin generic proxy that contains only the injector:
+
+```html
+<aura:component implements="lightning:actionOverride,force:hasSObjectName">
+    <c:di_injector bindingName="lc_actionWidgetNew">
+        <c:di_injectorAttribute name="sObjectName" value="{!v.sObjectName}"/>
+    </c:di_injector>
+</aura:component>
+```
+
+The `di_Binding__mdt` record for `lc_actionWidgetNew` (with `Type__c` = `LightningComponent`) decides which real component renders, and `di_injectorAttribute` passes attributes through to it. The same `c:di_injector` component works in Lightning App Builder pages, quick actions and the utility bar. The win is the same as in Apex: the object metadata, the override, and the actual feature component no longer have to travel in the same package.
+
+**Visualforce injection.** Same idea with a proxy page: the page a layout references contains only the `di_injector` VF component (plus the `di_InjectorController` extension), and its binding - `Type__c` = `VisualforceComponent` - points at an **Apex Provider class** that builds the real content via Dynamic Visualforce. The `parameters` attribute even passes the `StandardController` through to the injected content.
+
+:::warning No LWC injector
+The `lwc/` folder in the force-di repo is empty - there is no LWC equivalent of `c:di_injector`, and given LWC's static template compilation there likely won't be. Treat the declarative injectors as an Aura/VF-era capability: valuable if you have those surfaces, irrelevant if you're LWC-only. The Apex and Flow injection surfaces are unaffected.
+:::
+
+---
+
+## What Else Is in the Box
+
+- **Flow injection.** Post-dating the original articles, `Type__c` = `Flow` bindings and the `di_Flow` class let you inject and launch flows the same way (`di_Module` even has a `.flow()` binding type). Doug Ayers built this out - the [companion video](https://www.youtube.com/watch?v=YzaI5Ddfwkg) for this chapter covers it in depth.
+- **Platform cache support.** The `di_Configurations__c` custom setting (`UsePlatformCacheToStoreBindings__c`, `OrgCachePartitionName__c`) lets the injector store resolved binding config in Platform Cache, cutting the custom-metadata query cost on hot paths.
+- **Namespace handling.** Bindings tolerate namespace-prefixed class names, so the library works across managed package boundaries.
+
+---
+
+## Reference: Binding Types and getInstance Overloads
+
+**The five `Type__c` values:**
+
+| Type | Binds a name/key to... |
+| --- | --- |
+| `Apex` *(default)* | An Apex class (optionally via a `Provider`). |
+| `LightningComponent` | An Aura component, rendered through `c:di_injector`. |
+| `VisualforceComponent` | VF content, built by a Provider using Dynamic Visualforce. |
+| `Flow` | A flow, launched through the flow injection support. |
+| `Module` | A `di_Module` subclass to run during Injector initialization. |
+
+**The `di_Injector.getInstance` overloads:**
+
+| Overload | Use when |
+| --- | --- |
+| `getInstance(Type)` | Resolving by interface/class type. |
+| `getInstance(Type, Object params)` | Same, passing context to a Provider. |
+| `getInstance(String)` | Resolving by binding name. |
+| `getInstance(String, Object params)` | Name plus Provider context. |
+| `getInstance(Type, SObjectType)` | Resolving an SObjectType-scoped binding. |
+| `getInstance(Type, SObjectType, Object params)` | All three at once. |
+
+Next up: the payoff chapter - what all this indirection buys you in your tests. On to [chapter 20](/force-di/testing/).

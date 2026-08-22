@@ -16,7 +16,7 @@ import {
  * The chapter page: sections on the left rail, content on the right.
  *
  * The masthead (eyebrow, title, standfirst, meta line) is rendered here
- * rather than authored per chapter, so all seventeen files stay clean
+ * rather than authored per chapter, so all twenty files stay clean
  * Markdown and the metadata lives in one table.
  */
 export default function DocItemLayout({children}: Props): JSX.Element {
@@ -55,7 +55,7 @@ export default function DocItemLayout({children}: Props): JSX.Element {
           )}
           <Link to="/">
             <span className="cw-railnav__d">Contents</span>
-            All seventeen chapters
+            All twenty chapters
           </Link>
         </nav>
       </aside>
@@ -125,6 +125,7 @@ function partTitle(part: string): string {
         domain: 'The Domain layer',
         selector: 'The Selector layer',
         mocks: 'The Apex Mocks library',
+        di: 'Dependency Injection with Force DI',
       }[part] ?? 'Guide'
     : 'Guide';
 }

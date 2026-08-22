@@ -10,6 +10,30 @@ hide_title: true
 
 ---
 
+## Who This Guide is For
+
+This guide is for developers building things on Salesforce that are meant to *last*: org developers in businesses whose processes live on the platform, consultants inheriting an "unknown vault" of someone else's code, and ISV developers whose enterprise customers invest as much in the application as they do in the vendor behind it - building their own processes on top and expecting it all to keep working for years. Salesforce's own documentation is excellent but reference-style; what's hard to piece together from reference docs is a *path* from an empty org to an architecture. That path is what this guide (and its companion videos) tries to be.
+
+---
+
+## Five Questions That Tell You Whether You Have SoC
+
+Before we define anything, try scoring your current org against these five questions:
+
+1) If you had to replace or add another UI to your app - say, migrating an old Aura component to LWC, or adding a Flow screen over the same process - how much code would you be rewriting that actually has *nothing to do with the UI*? How much of it is really record inserting, updating, validating and calculating logic that got stuck in a controller?
+
+2) If you were asked to expose your app's core logic as a public API tomorrow, what would the API implementation actually call? Do clean entry points exist, or would you be scraping logic out of `@AuraEnabled` methods and passing around bits of component state?
+
+3) If a process that runs interactively today needed to also run at scale from Batch Apex or a Queueable, could both paths share the same logic and guarantee the user identical results? Or would you be copy-pasting it into the batch class?
+
+4) Does your code merely *use* an MVC-ish framework, or does it actually separate concerns? Using LWC with Apex controllers doesn't guarantee SoC any more than Visualforce and controllers did - the tell is how fat your controller methods are. Is there code in them that does more than shuttle content to and from the user?
+
+5) How easily can a new developer find their way around your codebase? How long before they know where new code should *go* and where existing behavior *lives*?
+
+If a few of those made you wince, good news: this entire guide is the treatment plan.
+
+---
+
 ## What is the Separation of Concerns Design Principle? 
 
 Separation of concerns is the practice of putting logical boundaries on your code. Putting these logical boundaries on your code helps make your code easier to understand, easier to maintain and much more flexible when it needs to be altered (and every codebase ever has to be altered all the time). 
@@ -32,13 +56,37 @@ _**The Selector Layer:**_
 
 ## Why is it Useful?
 
-There are many benefits to implementing SoC, most of which were outlined above, but here are the highlights:
+First, let's clear up the most common misconception right away.
+
+**_SoC is not just a posh word for code reuse_**
+
+Code reuse is the ad-hoc thing that happens when two places need the same fragment, so it gets moved into a `MyUtil` class or some other generic dumping ground. That's fine - certainly better than copy and paste! But SoC is *upfront* thinking about the internal plumbing of your application - down to the class naming conventions and coding guidelines - done so the structure endures and is self-describing to the developers who come after you. Reuse is a side effect of SoC; it isn't the point of it.
+
+**_The three durable benefits_**
+
+Think of any application as having three parts: storage, logic, and one or more means of interaction (human UIs, APIs, automation). Once you've outlined those, you can define layers, each with its own responsibilities to the application and to the other layers. Managing those layers carefully buys you three things:
+
+1) **Evolution.** Over time, technology, understanding and requirements all change, and any single layer may need to be significantly extended, reworked or dropped entirely. Just look at UI technology on this platform: SControls -> Visualforce → Aura → LWC → Multi-framework -> Flow screens → Agentforce, the UI just never stops evolving. Layers let one part evolve without dragging the rest with it. Software that endures survives its own staff turnover, too - the structure has to outlive the specific developers who built it.
+
+2) **Impact Management.** Working on - or even deleting - one layer should not unduly impact the others. That's what makes change *estimable*: when a request comes in, you can name which layer it touches and be confident about what it won't.
+
+3) **Roles and Responsibility.** Each layer has its own responsibility and should neither under-deliver nor over-extend it. Dropping one client technology for another should never mean losing business logic, because business logic was never the UI layer's responsibility to hold. Be warned: if the lines of responsibility get blurred, the purpose and value of SoC erode with them.
+
+**_And the day-to-day wins_**
 
 1) Modularizes your code into easy to understand packages of code making it easier to know what code controls what, why and when.  
 
 2) Helps improve code navigation and reduces the amount of code sprawl in your org by centralizing your logic into different containers. For instance, maybe you currently have 13 different apex controllers that house similar case business logic. If you placed that business logic into a service class and had all 13 apex controllers call that service class instead your life would be a whole lot simpler. 
 
-3) Separation of Concerns lends itself to writing well done and comprehensive Unit Tests. It allows for easy [dependency injection](https://en.wikipedia.org/wiki/Dependency_injection) which allows you to, in test classes, mock a class's dependent classes. We'll go over this more when we get to the Unit testing and Apex Mocks section of this tutorial, but if you want a quick and easy explanation, please feel free to take a look at this video covering [dependency injection and mocking in Apex](https://youtu.be/-esf8Q_Vp7U).
+3) Separation of Concerns lends itself to writing well done and comprehensive Unit Tests. It allows for easy [dependency injection](https://en.wikipedia.org/wiki/Dependency_injection) which allows you to, in test classes, mock a class's dependent classes. We'll go over this more when we get to the Unit testing and Apex Mocks section of this tutorial (and dependency injection gets a full treatment of its own in [chapter 18](/force-di/pattern/)), but if you want a quick and easy explanation, please feel free to take a look at this video covering [dependency injection and mocking in Apex](https://youtu.be/-esf8Q_Vp7U).
+
+---
+
+## The Layer Above the Code
+
+One more layer deserves naming, because it's invisible in every architecture diagram drawn by developers: the **declarative layer**. Objects, fields, validation rules, flows, formula fields - built without a line of code - are still very much an architecture layer of your application, and on this platform they should be your *first* port of call. If your app is heavily data-centric, a large portion of it can and should be delivered declaratively. Code is what you reach for when the app is process-centric or pushes past what the declarative tools can express: complex calculations, complex validation, rich UI experiences.
+
+Two disciplines follow from that. First, **code only where you need to** - an Apex trigger that reimplements what a validation rule could do is a maintenance liability, not engineering. Second, when you do write code, remember that Apex has a lot of doors: triggers, LWC/Aura controllers, REST services, Invocable Methods, Batch Apex, Queueables, email handlers, platform event subscribers. Of everything you invest developer and testing hours in, **business logic is the asset you most need to protect** - which means it can't live scattered behind whichever door happened to be built first. The layers this guide teaches are, at bottom, a system for keeping the many doors thin and the valuable logic in one defensible place.
 
 ---
 

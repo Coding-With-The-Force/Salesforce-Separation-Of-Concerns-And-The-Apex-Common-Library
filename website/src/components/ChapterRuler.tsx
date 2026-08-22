@@ -4,13 +4,13 @@ import {useLocation} from '@docusaurus/router';
 import {CHAPTERS, chapterBySlug, type Chapter} from '@site/src/data/chapters';
 
 /**
- * Chapter navigation as a measured ruler — seventeen ticks, the most honest
+ * Chapter navigation as a measured ruler - twenty ticks, the most honest
  * blueprint motif available, and the thing that let the sidebar go away.
  *
  * Chapters run horizontally here; sections run vertically on the left rail.
  *
  * The hover bubble is rendered as a sibling of the scrolling track rather
- * than a child of it. A child gets clipped — the track needs overflow-x for
+ * than a child of it. A child gets clipped - the track needs overflow-x for
  * narrow viewports, and overflow clips anything trying to escape, which is
  * what was cutting the titles off. From out here it is only bounded by the
  * shell, and it gets clamped to those edges after measuring so the first and
@@ -48,9 +48,9 @@ export default function ChapterRuler(): JSX.Element {
    *
    * Docusaurus's <Link> spreads your props and then sets its own
    * onMouseEnter for route prefetching, so a handler passed to it is
-   * silently dropped — which is why this only used to fire on focus.
+   * silently dropped - which is why this only used to fire on focus.
    * mouseover bubbles, so catching it on the track sidesteps that
-   * entirely and costs one listener instead of seventeen.
+   * entirely and costs one listener instead of twenty.
    */
   const onOver = (e: React.MouseEvent<HTMLDivElement>) => {
     const el = (e.target as HTMLElement).closest<HTMLElement>('.cw-tickmark');
@@ -88,7 +88,7 @@ export default function ChapterRuler(): JSX.Element {
                   data-n={c.n}
                   // aria-label rather than title: the bubble already says
                   // this, and title would stack a native tooltip on top.
-                  aria-label={`Chapter ${String(c.n).padStart(2, '0')} — ${c.short}`}
+                  aria-label={`Chapter ${String(c.n).padStart(2, '0')} - ${c.short}`}
                   className={[
                     'cw-tickmark',
                     major && 'cw-tickmark--major',
@@ -117,14 +117,14 @@ export default function ChapterRuler(): JSX.Element {
           <span className="cw-rulercap__read">
             {current ? (
               <>
-                Chapter <b>{String(current.n).padStart(2, '0')}</b> of 17
+                Chapter <b>{String(current.n).padStart(2, '0')}</b> of 20
               </>
             ) : (
-              <Link to="/">All seventeen chapters</Link>
+              <Link to="/">All twenty chapters</Link>
             )}
           </span>
           <span className="cw-rulercap__end">
-            <b>17</b> Apex Mocks
+            <b>20</b> Force DI
           </span>
         </div>
       </div>

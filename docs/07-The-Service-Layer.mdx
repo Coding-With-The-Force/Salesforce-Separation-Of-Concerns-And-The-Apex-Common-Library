@@ -11,7 +11,7 @@ hide_title: true
 
 ## What is the Service Layer?
 
-The Service Layer "defines an application's boundaries with a layer of services that establishes a set of available operations and coordinates the application's response in each operation". — Martin Fowler
+The Service Layer "defines an application's boundaries with a layer of services that establishes a set of available operations and coordinates the application's response in each operation". - Martin Fowler
 
 This essentially just means that the service layer should house your business logic. It should be a centralized place that holds code that represents business logic for each object (database table) or the service layer logic for a custom-built app in your org (more common when building managed packages).
 
@@ -45,7 +45,9 @@ public static void generateWordDocument(Map<String, SObject> sObjectByName)
 
 ## Service Layer Security
 
-**_Service Layer Security Enforcement -_** Service layers hold business logic so by default they should at minimum use `inherited sharing` when declaring the classes, however I would suggest always using `with sharing` and allowing developers to elevate the code to run `without sharing` when necessary by using a private inner class. 
+First, a piece of context that surprises most developers new to the platform (and plenty of seasoned ones from other stacks): "sharing" is an end-user-friendly name for what an engineer would call **row-level security**, and it applies both inside and outside of code (reports respect it too). More importantly, **Apex does not run `with sharing` by default** - outside of Anonymous Apex, sharing enforcement is something the developer opts into by annotating classes at design time. It's not a runtime setting someone can flip later. If nobody wrote the keyword, nobody is enforcing record access. That's exactly why it has to be a deliberate part of your layer design rather than an afterthought.
+
+**_Service Layer Security Enforcement -_** Service layers hold business logic so by default they should at minimum use `inherited sharing` when declaring the classes, however I would suggest always using `with sharing` and allowing developers to elevate the code to run `without sharing` when necessary by using a private inner class. Declaring it on the service does double duty: because the service is the entry point into your business logic, it sets the sharing context for all the domain and selector code executed downstream of it.
 
 _Example Security for a Service Layer Class:_
 
@@ -64,7 +66,17 @@ public with sharing class Account_Service{
 }
 ```
 
+Notice the inner class: when you genuinely need `without sharing`, keep its scope **as short and contained as possible** - a private inner class wrapping just the elevated operation - rather than slapping the keyword on a whole domain or selector class where it would silently apply to every method.
 
+:::note Why this guide differs slightly from the original patterns guidance
+Andrew Fawcett's original Apex Enterprise Patterns articles recommended leaving Domain and Selector classes *unqualified* so they'd implicitly inherit the service's sharing context. `inherited sharing` didn't exist yet when that was written (it arrived in API 42). This guide has those layers declare `inherited sharing` explicitly - same intent, but stated in code instead of implied, and it protects you when a domain or selector ends up being some other entry point's first class.
+:::
+
+**_Where else sharing has to be declared_**
+
+Setting `with sharing` on your services does not exempt the rest of your org. Every Apex **entry point** should still declare its sharing mode: controllers, `@AuraEnabled` classes, Invocable Methods, Batch Apex, Scheduled Apex, REST resources, platform event subscribers. Since most of these delegate straight to your service layer it can feel like you're doubling up - that's no bad thing where security is concerned. And if you expose your service layer as an **API** for other teams or packages, enforcing the default sharing mode there matters even more, because you can't control what context your callers run in.
+
+The governance stance to adopt org-wide: sharing is **on by default**, and turning it off requires the developer *and* a business/solution analyst to justify the specific system-level operation that needs it. It's the same well-known guideline as "always put `with sharing` on your controllers" - putting it on your service layer just ensures far more than your controller entry points are covered.
 
 ---
 
@@ -79,7 +91,7 @@ Instead you could pass in a set of Account Ids, have the service method query fo
 
 **_Transaction Management_**
 
-Your service layer method should handle transaction management (either with the unit of work pattern or otherwise) by making sure to leverage Database.setSavePoint() and using try catch blocks to rollback when the execution fails. 
+Your service layer method should handle transaction management (either with the unit of work pattern or otherwise) by making sure to leverage Database.setSavePoint() and using try catch blocks to rollback when the execution fails. If you're wondering why the savepoint is necessary at all when Salesforce "rolls back failed transactions automatically" - it's because a try/catch quietly disables that automatic rollback. [Chapter 5 walks through the trap in detail](/unit-of-work/pattern/), and it's precisely the boilerplate that `commitWork()` exists to standardize.
 
 _Transaction management example_
 ```apex
@@ -126,6 +138,35 @@ catch(Exception e){
     throw e;
 }
 ```
+
+---
+
+## Why the Service Layer Outlives the UI
+
+If you want the single strongest argument for investing in this layer, here it is: **user interfaces and automation tools come and go on this platform, but a well-boundaried service survives all of them, unchanged.**
+
+Consider one service method:
+
+```apex
+public with sharing class Task_Service{
+    public static void createTasks(Set<Id> recordIds, Schema.SObjectType objectType){
+        //business logic behind the boundary
+    }
+}
+```
+
+That exact same method is callable, without modification, from every door into your org:
+
+- An **LWC** (or Aura component), via a thin `@AuraEnabled` wrapper
+- **Flow**, via a thin `@InvocableMethod` wrapper
+- A **REST or SOAP API** exposure, via a thin `@RestResource` wrapper
+- **Batch Apex, Queueable, or Scheduled Apex**, calling it directly
+- A **trigger/domain class** that needs the business operation
+- An **Agentforce agent action**, via that same invocable wrapper
+
+The wrappers are one-liners; the business logic never moves. Now run the platform's history through that lens: the original Apex Enterprise Patterns articles were written when Visualforce was the only UI framework Salesforce had. Aura didn't exist yet. Neither did Lightning Experience, LWC, Flow as we know it, or Agentforce. Every one of those arrived - and Visualforce effectively left - and code organized this way didn't need its business logic rewritten for any of them. Each new front door was just another thin wrapper. Meanwhile, every org that buried its business logic in Visualforce controller action methods got to rewrite it, once per platform generation.
+
+That's the durability argument in one sentence: **you can't predict the next UI framework, but you can make it cost one wrapper class instead of a rewrite.**
 
 ---
 

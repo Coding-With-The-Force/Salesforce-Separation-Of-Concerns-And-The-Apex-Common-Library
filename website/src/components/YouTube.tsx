@@ -5,7 +5,7 @@ import React, {useState} from 'react';
  *
  * Three things it fixes: the 16:9 wrapper stops it letterboxing on a phone,
  * it carries the real YouTube thumbnail, and it is a click-to-load facade so
- * seventeen chapters no longer each ship a player's worth of script on first
+ * twenty chapters no longer each ship a player's worth of script on first
  * paint.
  *
  * maxresdefault only exists for videos uploaded above 720p, so it falls back

@@ -31,14 +31,14 @@ export default {
   CodeFile,
   Takeaway,
 
-  // implementation chapters — 08, 11, 14, 17
+  // implementation chapters - 08, 11, 14, 17
   Steps,
   Step,
   Manifest,
   MFile,
   Deploy,
 
-  // pattern chapters — 03, 05, 09, 12
+  // pattern chapters - 03, 05, 09, 12
   PatternCard,
   PCell,
 
@@ -46,7 +46,7 @@ export default {
   Figure,
   LayerDiagram,
 
-  // the long ones — 04, 17
+  // the long ones - 04, 17
   AnnotatedSource,
   SourceNote,
 };

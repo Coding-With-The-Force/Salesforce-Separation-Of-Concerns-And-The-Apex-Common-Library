@@ -23,6 +23,10 @@ Since Salesforce already does that work for you, the Data Mapper Layer, just tur
 
 Whenever you need to create queries on an object you've never done queries on before, you would create a new Selector Layer Class. So for instance if you needed to create some queries for the Case object to use in your service or domain layer classes, you would create a Case Selector class. There should typically be one selector class per object you intend to query on. 
 
+:::tip A selector that extends nothing is still worth having
+If you're migrating an existing org, don't let the `fflib_SObjectSelector` base class (covered in [chapter 14](/selector-layer/implementing/)) become the barrier to starting. Simply creating classes with the `Selector` suffix and re-homing your inline SOQL into them buys you reuse and encapsulation immediately - the consistency benefits of the base class can come later, and extending it for some selectors while others remain plain classes is perfectly fine during the transition.
+:::
+
 --- 
 
 ## Selector Layer Naming Conventions
@@ -63,17 +67,21 @@ If there are queries for your object that you absolutely must have run in system
 public inherited sharing class Account_Selector 
 {
     public List<Account> selectAccountsById(Set<Id> acctIds){
-        return new Account_Selector_WithoutSharing().selectAccountsByIdElevated(acctIds);
+        return new Account_Selector_WithoutSharing().selectAccountsByIdElevated(this, acctIds);
     } 
 
-    private without sharing Account_Selector_WithoutSharing{
-        public List<Account> selectAccountsByIdElevated(Set<Id> acctIds){
+    private without sharing class Account_Selector_WithoutSharing{
+        public List<Account> selectAccountsByIdElevated(Account_Selector outerSelector, Set<Id> acctIds){
+            //The outer selector rides along so this elevated query can reuse its
+            //field lists / query building instead of hand-writing a divergent query
             return [SELECT Id FROM Account WHERE Id IN : acctIds]; 
         }
     }
 }
 
 ```
+
+Notice the inner class receives the *outer selector* as a parameter. In this bare-bones example it's just a convention, but once your selectors extend `fflib_SObjectSelector` it becomes genuinely important: the inner class can call `outerSelector.newQueryFactory()` and inherit the selector's standard field list, ordering and configuration - so your elevated query stays consistent with every other query the selector runs, instead of becoming a hand-written one-off that silently drifts as fields get added. More on `newQueryFactory` in [chapter 14](/selector-layer/implementing/).
 
 ---
 

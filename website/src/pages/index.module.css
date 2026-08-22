@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════════════════════════════════════
-   THE HOMEPAGE — The Blueprint over The Index.
+   THE HOMEPAGE - The Blueprint over The Index.
    No pitch: no hero claim, no stat counters, no "start your journey".
    The architecture states what this is faster than a paragraph could, and
    the contents sit directly underneath it.
@@ -105,7 +105,7 @@
   margin-left: auto;
 }
 /**
- * Sizing lives on .cw-diagram — it swaps between a landscape and a stacked
+ * Sizing lives on .cw-diagram - it swaps between a landscape and a stacked
  * drawing on its own container width, and this panel is a lot narrower than
  * the viewport it sits in.
  *

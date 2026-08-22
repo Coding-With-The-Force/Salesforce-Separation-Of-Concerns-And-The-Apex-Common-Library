@@ -1,9 +1,9 @@
 /* ═══════════════════════════════════════════════════════════════════════
-   BASE — the ground, the type, and the four motifs that carry the identity
+   BASE - the ground, the type, and the four motifs that carry the identity
      1. a 34px teal graph-paper grid, fixed-attachment, at 4.5%
      2. a 12px corner registration tick on every panel
      3. a 45°-rotated diamond as separator, bullet and meta divider
-     4. glow on hover — never a drop shadow
+     4. glow on hover - never a drop shadow
    ═══════════════════════════════════════════════════════════════════════ */
 
 html {
@@ -14,7 +14,7 @@ html {
 
 body {
   /* No background here. The grid is painted by the fixed layer below, so it
-     covers the viewport on every page whatever the content height — a
+     covers the viewport on every page whatever the content height - a
      background-attachment:fixed on body stops at the body box and left a
      dead band under short pages. */
   background: transparent;
@@ -264,7 +264,7 @@ main {
 }
 
 /* ═══════════════════════════════════════════════════════════════════════
-   CODE BLOCKS — dark panel, corner tick, mono bar
+   CODE BLOCKS - dark panel, corner tick, mono bar
    ═══════════════════════════════════════════════════════════════════════ */
 
 .theme-code-block {
@@ -315,7 +315,7 @@ main {
 }
 
 /* ═══════════════════════════════════════════════════════════════════════
-   ADMONITIONS — outlined, corner-ticked, mono label
+   ADMONITIONS - outlined, corner-ticked, mono label
    ═══════════════════════════════════════════════════════════════════════ */
 
 .theme-admonition {
@@ -415,9 +415,9 @@ main {
 }
 
 /**
- * The Guide dropdown carries all seventeen chapters, which is a taller menu
+ * The Guide dropdown carries all twenty chapters, which is a taller menu
  * than Infima expects. Cap it at most of the viewport and let it scroll,
- * tighten the rows, and give it the wire treatment — square, outlined, a
+ * tighten the rows, and give it the wire treatment - square, outlined, a
  * glow instead of the default drop shadow.
  */
 .navbar .dropdown__menu {
@@ -451,7 +451,7 @@ main {
   color: var(--cw-acc);
   box-shadow: inset 2px 0 0 var(--cw-acc);
 }
-/* In the mobile drawer the same items render as a collapsible menu list —
+/* In the mobile drawer the same items render as a collapsible menu list -
    same numbering, so keep the digits aligned there too. */
 .navbar-sidebar .menu__link {
   font-variant-numeric: tabular-nums;
@@ -460,7 +460,7 @@ main {
 /* Infima's .footer--dark hardcodes #303846, which is not in the palette and
    beat the :root override. Pin every footer variable here, and leave the
    background transparent so the blueprint grid runs to the bottom of the
-   page — which is what the source theme does with .cwtf-foot. */
+   page - which is what the source theme does with .cwtf-foot. */
 .footer,
 .footer--dark {
   --ifm-footer-background-color: transparent;
@@ -548,8 +548,8 @@ main {
  *
  *   · the placeholder must go. The input keeps rendering "Search" from its
  *     left edge, straight through the centred magnifying glass. It is only
- *     ever decorative here — aria-label="Search" is what actually names the
- *     field — so it is safe to make it transparent.
+ *     ever decorative here - aria-label="Search" is what actually names the
+ *     field - so it is safe to make it transparent.
  *
  *   · focus must not shove anything. The container is out of flow and
  *     anchored right, so the field grows leftward over the masthead rather
@@ -594,7 +594,7 @@ main {
   /**
    * The plugin also parks a ⌘/ctrl + K hint inside the field, absolutely
    * positioned 10px from its right edge. In a 2.4rem icon-only box that
-   * lands squarely on the magnifying glass — the other thing printing
+   * lands squarely on the magnifying glass - the other thing printing
    * through it. There is no keyboard shortcut to advertise on a phone
    * anyway, so it goes for the whole range. (The plugin drops it itself,
    * but only under 576px, which leaves the tablet widths showing it.)

@@ -11,7 +11,7 @@ hide_title: true
 
 ## What is the Domain Layer?
 
-The Domain Layer is ["an object model of the domain that incorporates both behavior and data"](https://martinfowler.com/eaaCatalog/domainModel.html). — Martin Fowler  
+The Domain Layer is ["an object model of the domain that incorporates both behavior and data"](https://martinfowler.com/eaaCatalog/domainModel.html). - Martin Fowler  
 
 In most coding languages you need to connect to the database, query for the data and then you create wrapper classes to represent each underlying table in your database(s) to allow you to define how that particular table (object) should behave. Salesforce, however, already does a lot of this for you. For instance, there is no need to connect to a database; declarative behavior for your tables (objects) is already represented and your tables (objects) already have wrapper classes pre-defined for them (Ex: `Contact cont = new Contact()`).  
 
@@ -19,7 +19,7 @@ However, the logic represented in a trigger is an exception to this rule. Apex t
 
 The Domain Layer will allow you, on an object-by-object basis, to have an object-oriented approach to centralizing your logic. Basically, logic specific to a single object will be located in one place and only one place by using the domain layer. This ensures your logic specific to a single object isn't split into a ton of different places across your org.
 
-<Figure caption={<><b>Only the Selector and the Unit of Work touch the database.</b> The Domain never does — which is exactly why a domain class can be unit tested without a single line of DML or SOQL.</>}>
+<Figure caption={<><b>Only the Selector and the Unit of Work touch the database.</b> The Domain never does - which is exactly why a domain class can be unit tested without a single line of DML or SOQL.</>}>
   <LayerDiagram highlight="domain" />
 </Figure>
 
@@ -49,7 +49,7 @@ trigger AccountTrigger on Account (before insert, after update) {
                 a.addError('Revenue is required');
             }
 
-            // SOQL inside a loop — governor limits are one release away
+            // SOQL inside a loop - governor limits are one release away
             List<Contact> cons = [
                 SELECT Id, Email FROM Contact WHERE AccountId = :a.Id
             ];
@@ -93,7 +93,7 @@ public with sharing class AccountsServiceImpl implements IAccountsService
     {
         fflib_ISObjectUnitOfWork uow = Application.UnitOfWork.newInstance();
 
-        // The factory returns the domain. No domain interface needed —
+        // The factory returns the domain. No domain interface needed -
         // fflib_SObjectDomain is already the abstraction.
         Accounts accounts =
             (Accounts) Application.Domain.newInstance(accountIds);
@@ -107,7 +107,7 @@ public with sharing class AccountsServiceImpl implements IAccountsService
 
 </CodeFile>
 
-<CodeFile name="Accounts.cls" lines="31">
+<CodeFile name="Accounts.cls" lines="34">
 
 ```apex
 public with sharing class Accounts extends fflib_SObjectDomain
@@ -118,7 +118,10 @@ public with sharing class Accounts extends fflib_SObjectDomain
         {
             if (record.AnnualRevenue == null)
             {
-                record.AnnualRevenue.addError('Revenue is required');
+                // error() registers the message in an assertable registry
+                // so tests can verify it without try/catch - see chapter 11
+                record.AnnualRevenue.addError(
+                    error('Revenue is required', record, Account.AnnualRevenue));
             }
         }
     }

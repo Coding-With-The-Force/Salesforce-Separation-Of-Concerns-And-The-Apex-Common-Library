@@ -32,7 +32,7 @@ public interface Task_Service_Interface
 
 ## The Service Layer Class
 
-This class is where things get a little confusing in my opinion, but here's the gist of it. This is the class you will actually call in your Apex controllers (or occasionally domain classes) to actually execute the code... however there are no real implementation details in it (that exists in the implementation class outlined below). The reason this class acts as a kind of middleman is that we want, no matter what business logic is actually called at run time, for our controller classes, batch classes, domain classes, etc to not need to alter the class they call to get the work done. In the Service Factory section below we'll see how that becomes a huge factor. Below is an example of the Service Layer class setup.
+This class is where things get a little confusing in my opinion, but here's the gist of it. This is the class you will actually call in your Apex controllers (or occasionally domain classes) to actually execute the code... however there are no real implementation details in it (that exists in the implementation class outlined below). The reason this class acts as a kind of middleman is that we want, no matter what business logic is actually called at run time, for our controller classes, batch classes, domain classes, etc to not need to alter the class they call to get the work done. In the Service Factory section below we'll see how that becomes a huge factor. There's also a language-level reason this stub class has to exist at all: **you can't put an interface on static methods in Apex.** Callers want the ergonomic static call style (`Task_Service.createTasks(...)`), interfaces are what make implementations swappable and mockable - the static stub delegating to a factory-resolved interface is how you get both at once. Below is an example of the Service Layer class setup.
 
 ```apex
 //This class is what every calling class will actually call to. For more information on the Application class check out the fflib_Application class
@@ -51,6 +51,10 @@ public with sharing class Task_Service
 	}
 }
 ```
+
+:::warning global is a one-way door
+The `global` modifier on `createTasks` above only belongs in a managed package that intends to expose the method to subscriber orgs - and once a `global` method ships in a managed package, its signature can **never** be changed or removed. The same one-way-door quality applies to `@AuraEnabled` and `@InvocableMethod` signatures your components and flows depend on. Keep service methods `public` until the API has settled, and only promote them deliberately.
+:::
 
 ---
 
@@ -121,7 +125,7 @@ public with sharing class Task_Service_Impl implements Task_Service_Interface
 
 The fflib_Application.ServiceFactory class... what is it and how does it fit in here. Well, if you read through all of [Chapter 04: The fflib\_Application Class](/application/fflib-application/) then you hopefully have some solid background on what it's used for and why, but it's a little trickier to conceptualize for the service class so let's go over it a bit again. Basically it leverages [The Factory Pattern](/application/factory-method-pattern/) to dynamically generate the correct code implementations at run time (when your code is actually running).  
 
-This is awesome for tons of stuff, but it's especially awesome for the service layer. Why? You'll notice that as your Salesforce instance grows, so does the number of interested parties. All of a sudden you've gone from one or two business units to 25 different business units and what happens when those businesses need the same type of functionality with differing logic? You could make tons of if else statements determining what the user type is and then calling different methods based on that user's type... but maybe there's an easier way. If you are an ISV (a managed package provider) what I'm about to show you is likely 1000 times more important for you. If your product grows and people start adopting it, you absolutely need a way to allow flexibility in your application's business logic, maybe even allow them to write their own logic and have a way for your code to execute it??
+This is awesome for tons of stuff, but it's especially awesome for the service layer. Why? You'll notice that as your Salesforce instance grows, so does the number of interested parties. All of a sudden you've gone from one or two business units to 25 different business units and what happens when those businesses need the same type of functionality with differing logic? You could make tons of if else statements determining what the user type is and then calling different methods based on that user's type... but maybe there's an easier way. If you are an ISV (a managed package provider) what I'm about to show you is likely 1000 times more important for you. If your product grows and people start adopting it, you absolutely need a way to allow flexibility in your application's business logic, maybe even allow them to write their own logic and have a way for your code to execute it?? This idea has a name, by the way - **"your application as platform"**: designing customization and integration surfaces into your app from the start, so that consumers can extend it the same way you extend Salesforce itself.
 
 Let's check out how allllllllllll these pieces come together below. 
 
@@ -222,3 +226,5 @@ Now you might be wracking your brain right now and being like... ok, so what... 
 6) Tasks are created!
 
 If you're still shook by all this, please, watch the video where we build all this together step by step and walk through everything. I promise, even if it's a bit confusing, it's worth the time to learn.
+
+One last breadcrumb: what you just built - custom metadata mapping an interface to an implementation, resolved dynamically at runtime - is a hand-rolled dependency injection container scoped to the service layer. There's a whole library in the apex-enterprise-patterns family that generalizes this exact idea to any class (plus Aura, Visualforce and Flow): [force-di, covered in chapter 18](/force-di/pattern/).

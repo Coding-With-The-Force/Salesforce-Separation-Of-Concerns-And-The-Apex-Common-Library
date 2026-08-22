@@ -12,9 +12,9 @@ import {APPLICATION_CLS} from '@site/src/snippets/application';
 ---
 ## What is the fflib_Application class?
 
-Quality question... I mean honestly wtf is this thing? Lol, sorry, let's figure it out together. The fflib_Application class is around for two primary purposes. The first is to allow you an extremely abstract way of creating new instances of your [unit of work](/unit-of-work/pattern/), [service layer](/service-layer/implementing/), [domain layer](/domain-layer/implementing/) and [selector layer](/selector-layer/implementing/) in the [Apex Common Library](/apex-common-library/) through the use of [the factory pattern](/application/factory-method-pattern/). The second is that implementing this application class is imperative if you want to leverage the Apex Mocks unit testing library. It depends on this Application Factory being implemented.
+The fflib_Application class is around for two primary purposes. The first is to allow you an abstract/flexible way of creating new instances of your [unit of work](/unit-of-work/pattern/), [service layer](/service-layer/implementing/), [domain layer](/domain-layer/implementing/) and [selector layer](/selector-layer/implementing/) in the [Apex Common Library](/apex-common-library/) through the use of [the factory pattern](/application/factory-method-pattern/). The second is that implementing this application class is imperative if you want to leverage the Apex Mocks unit testing library. It depends on this Application Factory being implemented.
 
-Most importantly though, if you understand how interfaces, inheritance and polymorphism work implementing this class allows you to write extremely abstract Salesforce implementations, which we'll discuss more in the sections below.
+Most importantly though, if you understand how interfaces, inheritance and polymorphism work implementing this class allows you to write very flexible Salesforce implementations, which we'll discuss more in the sections below.
 
 ---
 
@@ -22,9 +22,9 @@ Most importantly though, if you understand how interfaces, inheritance and polym
 
 Ok, if we ignore the fact that this is required for us to use the Apex Mocks library, understanding the power behind this class requires us to take a step back and formulate a real-world Salesforce use case for implementing it... hopefully the following one will be easy for everyone to understand.
 
-Say for instance I have a decent-sized Salesforce instance and our business has a use case to create tasks across multiple objects and the logic for creating those tasks is unique to every single object. Maybe on the Account object we create three new tasks every single time we create an account and on the Contact object we create two tasks every single time a record is created or updated in a particular way and we ideally want to call this logic on the fly from anywhere in our system. 
+Say for instance you have a decent-sized Salesforce instance and your business has a use case to create tasks across multiple objects and the logic for creating those tasks is unique to every single object. Maybe on the Account object we create three new tasks every single time we create an account and on the Contact object we create two tasks every single time a record is created or updated in a particular way and we ideally want to call this logic on the fly from anywhere in our system. 
 
-No matter what, we should probably place the task creation logic in our domain layer because it's relevant to each individual object, but pretend for a second that we have like 20 different objects we need this kind of functionality on. Maybe we need the executed logic in an abstract "task creator" button that can be placed on any lightning app builder page and maybe some overnight batch jobs need to execute the logic too. 
+No matter what, we should probably place the task creation logic in our domain layer because it's behavior relevant to an individual object, but pretend for a second that we have 20 different objects we need this kind of functionality on. Maybe we need the executed logic in an abstract "task creator" button that can be placed on any lightning app builder page and maybe some overnight batch jobs need to execute the logic too. 
 
 Well... what do we do? Let's just take the abstract "Task Creator" button we might want to place on any object in our system. We could call each individual domain layer class's task creation logic in the codebased on the object we were on (code example below), but that logic tree could get massive and it's not super ideal. 
 
@@ -97,23 +97,22 @@ public with sharing class Task_Service_Impl implements Task_Service_Interface
 
 ```
 
-You might be lookin at the two code examples right now like wuttttttttt how thooooo?? And I just wanna say, I fully understand that. The first time I saw this implemented I thought the same thing, but it's a pretty magical thing. Thanks to the `newInstance()` methods on the fflib_Application class and the `Task_Creator_Interface` we've implemented on the domain classes, you can dynamically generate the correct domain when the code runs and call the create tasks method. Pretty wyld right? Also if you're thinkin, "Yea that's kinda nifty Matt, but you had to create this Application class and that's a bunch of extra code." you need to step back even farther. This Application factory can be leveraged ANYWHERE IN YOUR ENTIRE CODEBASE! Not just locally in your service class. If you need to implement something similar to automatically generate opportunities or Accounts or something from tons of different objects you can leverage this exact same Application class there. In the long run, this ends up being wayyyyyyyyy less code. 
+You might be lookin at the two code examples right now like wuttttttttt how thooooo?? So let's figure that out together. Thanks to the `newInstance()` methods on the fflib_Application class and the `Task_Creator_Interface` we've implemented on the domain classes, you can dynamically generate the correct domain when the code runs and call the create tasks method. Pretty wyld right? Also if you're thinkin, "Yea that's kinda nifty, but you had to create this Application class and that's a bunch of extra code." you need to step back even farther. This Application factory can be leveraged ANYWHERE IN YOUR ENTIRE CODEBASE! Not just locally in your service class. If you need to implement something similar to automatically generate opportunities or Accounts or something from tons of different objects you can leverage this exact same Application class there. In the long run, if implemented appropriately this will likely result in less code that is much easier to maintain. 
 
-If you want a ton more in depth explanation on this, please watch the tutorial video. We code a live example together so I can explain this concept. It's certainly not easy to grasp at first glance.    
+If you want a ton more in depth explanation on this, please watch the tutorial video. In it, we build an example together to help explain this concept. It's certainly not easy to grasp at first glance.    
 
 ---
 
-## The whole class, line by line
+## The whole Application class, line by line
 
-All four factories written out at once. The notes walk down the file; the file
-stays where it is.
+To the right is an example of an Application class you might build in an org.
 
 <AnnotatedSource file="Application.cls" source={APPLICATION_CLS}>
 
 <SourceNote lines="1-2" label="The shell" title="It's just a class you write yourself">
 
 The first surprise is that `fflib_Application` isn't something you extend or
-instantiate. You write your *own* class — conventionally called `Application` —
+instantiate. You write your *own* class - conventionally called `NameOfYourApplication_Application` -
 and hang four static factories off it. No registration, no metadata, no setup.
 The class is the configuration.
 
@@ -121,10 +120,10 @@ The class is the configuration.
 
 <SourceNote lines="3-13" label="Unit of Work" title="The list is dependency order, not preference">
 
-The constructor takes a `List<SObjectType>` and that order is load-bearing.
-When `commitWork()` runs it inserts in exactly this sequence, which is how a
-Contact can be registered before its Account exists and still get the right
-`AccountId`.
+The constructor for the unit of work takes a `List<SObjectType>` and the order of that list is important!
+When `commitWork()` runs on your unit of work (which we will go over soon) it does object DML in the order they appear in this list, which is how a
+Contact can be registered before its Account exists in the code and still get the right
+`AccountId` when the unit of work gets committed (again we will cover this in much more detail soon).
 
 :::warning Get this wrong and
 You'll see `INVALID_CROSS_REFERENCE_KEY` at commit time, on a line that looks
@@ -134,39 +133,38 @@ a child listed above its parent here.
 
 </SourceNote>
 
-<SourceNote lines="15-22" label="Service" title="An interface pointing at an implementation">
+<SourceNote lines="15-22" label="Service" title="A home to register all the services relevant to your application">
 
-This is the seam. Everywhere in your codebase you ask for
-`Task_Service_Interface`, and this map decides what you actually get. In
-production it hands back `Task_Service_Impl`. In a test it hands back whatever
-stub you registered instead — which is the entire trick behind Apex Mocks, and
-why [chapter 17](/apex-mocks/implementing/) keeps insisting you can't skip
-this class.
+This constructor takes a map of the services that are relevant to your application. Unlike the unit of work it does not matter which order you place these in.
+Additionally, services can be mapped to themselves like this `Task_Service.class => Task_Service.class` or they can be mapped to interfaces 
+like this `Task_Service_Interface => Task_Service.class`. There is no right or wrong, it just depends on what you actually need for your code to run appropriately
+and to be able to implement the separation of concerns design principle. 
 
 </SourceNote>
 
-<SourceNote lines="24-32" label="Selector" title="SObjectType to the class that queries it">
+<SourceNote lines="24-32" label="Selector" title="A map of SObjectType to its selector class (the class that holds its SOQL)">
 
-Same idea, keyed on `SObjectType` rather than an interface. Its job is to
-answer "given a Case, who knows how to query Cases?" You'll mostly call this
-indirectly — it exists as a separate factory because the domain factory needs
-it, which is the next note.
+Selector classes are mapped to the `SObjectType` of the Salesforce object they are querying. Its job is to
+easily provide you access to the right selector for an object when you need it. Another important thing to note here is 
+that the domain factory needs this selector to be present to work. So if you add domains to your application class
+make sure you have a selector created for the object that domain represents and the selector factory declared 
+in your application class as well.
 
 </SourceNote>
 
-<SourceNote lines="34-44" label="Domain" title="Why this one takes another factory">
+<SourceNote lines="34-44" label="Domain" title="A map of SObjectType to its Domain constructor, with the help of the selector factory">
 
-Look at the first argument: `Application.selector`. The domain factory is the
-only one that receives another factory, and the reason is worth pausing on.
+Look at the first argument the DomainFactory takes: `Application.selector`. The domain factory is the
+only one that requires the existence of another factory, and we'll discuss why below.
 
-When you call `Application.domain.newInstance(recordIds)` you're handing it a
-set of ids — not records. Before it can decide which domain class to construct,
+When you call `Application.domain.newInstance(recordIds)` (which we'll discuss more soon enough) you're handing it a
+set of ids - not records. Before it can decide which domain class to construct,
 it has to **query those ids** to find out what SObject they are. So it needs a
 selector.
 
 The map values are `Constructor.class`, not the domain class itself, because
 Apex can't reflect over constructors. That inner class is the workaround, and
-[chapter 11](/domain-layer/implementing/) shows you writing one.
+[chapter 11](/domain-layer/implementing/) shows how to write one and discusses how it all works in more detail.
 
 </SourceNote>
 
@@ -361,9 +359,9 @@ public static final fflib_Application.ServiceFactory service =
 
 After creating this service variable above ^ in your Application class [example here](https://github.com/Coding-With-The-Force/Salesforce-Separation-Of-Concerns-And-The-Apex-Common-Library/blob/main/src/classes/Apex_Common_Abstract_Task_Factory_Pattern_Example/Application.cls) there is one important new instance method you can leverage to generate a new service class instance:
 
-1) _**[newInstance(Type serviceInterfaceType)](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_Application.cls#L151)**_ - This method sends back an instance of your service implementation class based on the interface you send in to it.
+1) _**[newInstance(Type serviceClassType)](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_Application.cls#L151)**_ - This method sends back an instance of your service implementation class based on the interface you send in to it.
 
-_**newInstance(Type serviceInterfaceType) Example method call:**_
+_**newInstance(Type serviceClassType) Example method call:**_
 ```apex
 //This is using the service variable above that we would've created in our Application class
 Application.service.newInstance(Task_Service_Interface.class);
@@ -475,6 +473,50 @@ Application.domain.newInstance(accountList, Account.SObjectType);
 ```
 ---
 
+## The Convenience newInstance() Helpers
+
+One thing you'll notice quickly when using the factories: every call site has to cast. `Application.domain.newInstance(caseIds)` hands you back an `fflib_ISObjectDomain`, and `Application.selector.newInstance(Case.SObjectType)` hands you an `fflib_ISObjectSelector`, so any time you want to call one of *your* methods you're writing `(Cases)` or `(Case_Selector)` in front of it. Multiply that by every call site in the org and it gets old.
+
+The near-universal convention in real fflib codebases is to add a static `newInstance()` helper to each domain and selector class that does the factory call and the cast in one place:
+
+```apex
+//In your Cases domain class
+public static Cases newInstance(List<Case> records){
+    return (Cases) Application.domain.newInstance(records);
+}
+
+public static Cases newInstance(Set<Id> recordIds){
+    return (Cases) Application.domain.newInstance(recordIds);
+}
+```
+
+```apex
+//In your Case_Selector class
+public static Case_Selector newInstance(){
+    return (Case_Selector) Application.selector.newInstance(Case.SObjectType);
+}
+```
+
+Which turns every call site from this:
+
+```apex
+Cases cases = (Cases) Application.domain.newInstance(caseIds);
+List<Case> cases = ((Case_Selector) Application.selector.newInstance(Case.SObjectType)).selectOpenCases();
+```
+
+Into this:
+
+```apex
+Cases cases = Cases.newInstance(caseIds);
+List<Case> cases = Case_Selector.newInstance().selectOpenCases();
+```
+
+Critically, these helpers still route through the Application factories - so `setMock` (below) still works, and every benefit of factory-created instances is preserved. It's purely a readability win, and it's one your whole team will thank you for.
+
+---
+
 ## The setMock Methods
 
-In every factory class inside the fflib_Application class there is a [setMock method](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_Application.cls#L114). These methods are used to pass in mock/fake versions of your classes for [unit testing purposes](/apex-mocks/unit-vs-integration-tests/). Make sure to leverage this method if you are planning to do unit testing. Leveraging this method eliminates the need to use [dependency injection](https://en.wikipedia.org/wiki/Dependency_injection) in your classes to allow for mocking. There are examples of how to leverage this method in the [Implementing Mock Unit Tests with the Apex Mocks Library](/apex-mocks/implementing/) chapter of this guide.
+In every factory class inside the fflib_Application class there is a [setMock method](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_Application.cls#L114). These methods are used to pass in mock/fake versions of your classes for [unit testing purposes](/apex-mocks/unit-vs-integration-tests/). Make sure to leverage this method if you are planning to do unit testing.
+
+A point of precision worth making here: you'll sometimes hear that the factory approach "eliminates the need for [dependency injection](https://en.wikipedia.org/wiki/Dependency_injection)". It's more accurate to say the Application class **is** your dependency injection mechanism - it's *factory* injection rather than the *constructor* injection you may know from other languages. Your classes ask the factory for their dependencies instead of receiving them through constructor parameters, and `setMock` is the seam through which tests swap in fakes. The trade-off versus constructor injection: the factories are well-known and shared across the whole codebase (no constructor-parameter plumbing on every class), and the factory can do polymorphic instantiation tricks (like the domain factory routing by SObjectType) that constructors can't. There are examples of how to leverage this method in the [Implementing Mock Unit Tests with the Apex Mocks Library](/apex-mocks/implementing/) chapter of this guide. And if the "the Application class is really a DI container" framing intrigues you, [chapter 18](/force-di/pattern/) takes that idea to its logical conclusion with the force-di library.

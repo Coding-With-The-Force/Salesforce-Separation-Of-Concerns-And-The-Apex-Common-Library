@@ -1,0 +1,111 @@
+---
+title: "Dependency Injection and Inversion of Control"
+slug: /force-di/pattern/
+sidebar_position: 18
+hide_title: true
+---
+
+<YouTube id="oce2QO-E_3k" title="Understanding the Value of Dependency Injection in the Lightning Platform" duration="21:07" />
+
+<PatternCard>
+  <PCell title="Intent" big>Ask for the interface. Let configuration decide the class.</PCell>
+  <PCell title="Also known as">
+    Inversion of Control (IoC). "The runtime glue between two points - the bit in the middle."
+  </PCell>
+  <PCell title="Use it when">
+    - The implementation genuinely needs to vary - per org, per package, per user, per config
+    - You're decomposing one big org codebase into multiple DX packages
+    - You're an ISV whose customers must plug in their own logic
+  </PCell>
+  <PCell title="Participants">
+    - `di_Injector` - resolves a request for an interface into an instance
+    - `di_Binding__mdt` - the custom metadata that maps interface to class
+    - `di_Module` - programmatic (code-driven) binding configuration
+    - `di_Binding.Provider` - hook for non-default construction
+  </PCell>
+  <PCell title="You'll meet it in">
+    - [Chapter 19 - Implementing Force DI](/force-di/implementing/)
+    - [Chapter 20 - TDD and Mocking with Force DI](/force-di/testing/)
+    - You already met a hand-rolled version in [chapter 8](/service-layer/implementing/)
+  </PCell>
+  <PCell title="Cost">
+    Indirection - you can no longer see the implementation from the call site,
+    and a missing binding is a runtime `InjectorException`, not a compile error.
+  </PCell>
+</PatternCard>
+
+---
+
+## What is Dependency Injection?
+
+Dependency Injection is a form of [Inversion of Control](https://en.wikipedia.org/wiki/Inversion_of_control) - and if that definition has always felt like jargon soup to you, here's the version that actually sticks: **DI is the runtime glue between two points; it's the bit in the middle.** Your code declares *what* it needs (an interface, a capability); something else - configuration - decides *which concrete class* satisfies that need at runtime. The one iron rule at the point of consumption: **forgo the `new` operator.**
+
+Here's the anti-example. Say your app processes payments:
+
+```apex
+PaymentEngine engine = new PayPal();
+```
+
+That single innocent `new` has quietly made three big decisions for you:
+
+1) **Everything deploys together.** Whatever `PayPal` references - its API classes, its config objects - must live in the same deployment unit as every class that news it up. Say goodbye to decomposing your org into packages along that seam.
+
+2) **The set of supported engines is hardcoded and finite.** Adding Stripe means editing this code, and every place like it.
+
+3) **Extensibility is gone.** A customer, admin or partner can never introduce their own payment engine without you shipping new code.
+
+Now the same line with dependency injection, using [Force DI](https://github.com/apex-enterprise-patterns/force-di):
+
+```apex
+PaymentEngine engine = (PaymentEngine) di_Injector.Org.getInstance(PaymentEngine.class);
+```
+
+The calling code no longer knows or cares which class it received. It asked for the capability; the *binding configuration* decided the class.
+
+---
+
+## So How Does It Know Which Class to Instantiate?
+
+The injector consults its **bindings** - a mapping from a binding name (or interface, or SObjectType) to a concrete class. What makes this powerful is where bindings can come from:
+
+1) **Admin controlled** - a `di_Binding__mdt` custom metadata record, editable in Setup. Your admin (or a consultant, or you at 2am without a deploy) can repoint an interface at a different implementation.
+
+2) **Packaged** - a binding record shipped inside another package. Install the "PayPal package" and it *brings its own binding* with it, registering itself with your app. This is the mechanism that makes package-based org decomposition real: the point of injection and the implementation can live on opposite sides of a package boundary.
+
+3) **Defined dynamically in code** - a `di_Module` subclass that constructs bindings programmatically, including conditionally (bind this user's preferred payment engine, bind by feature flag, whatever you can compute).
+
+Either way, the goal is the same: **calling code is not concerned with how an instance is obtained - only with what it does with it.**
+
+---
+
+## Where Does It Fit into Separation of Concerns?
+
+Everywhere the layers meet. The entire guide up to this point has been about drawing boundaries between concerns - and every boundary implies the question "so how does the code on one side get an instance of the other side?" Answering that with `new` couples the layers back together exactly where you just separated them. Answering it with a factory or injector keeps the boundary real: the service layer asks for *a* selector, not *that* selector; a test asks for *a* unit of work and receives a mock.
+
+DI also extends the reach of SoC beyond Apex. Dependencies on this platform aren't only formed in code - they're formed **declaratively** too: a Lightning page references a specific component, an action override references a specific implementation, a layout embeds a specific Visualforce page. Force DI applies the same "bit in the middle" trick to those (chapter 19 shows how), which is something no amount of Apex-only factory discipline can do.
+
+---
+
+## Plot Twist: You've Been Doing DI This Whole Time
+
+Here's the part that should make this chapter feel familiar rather than new. Look at what this guide has already had you build:
+
+- The **`fflib_Application` factories** from [chapter 4](/application/fflib-application/) - a compile-time `Map<Type, Type>` (or `Map<SObjectType, Type>`) resolving an interface to an implementation, with `setMock` as the test-time override. That *is* dependency injection - factory-style, with a hardcoded binding table.
+
+- The custom **`ServiceFactory`** from [chapter 8](/service-layer/implementing/) - which went a step further and moved the binding table into a **custom metadata type** (`Service_By_User_Type__mdt`), choosing implementations at runtime based on the user's custom permissions. That is, quite literally, a hand-built Force DI scoped to one layer: custom metadata → class name → `Type.forName(...).newInstance()`, keyed by an interface.
+
+Force DI is what you get when you take that exact move and generalize it: one library-grade injector for *any* interface (not just services), bindings manageable by admins and shippable in packages, conditional programmatic modules, provider hooks for complex construction - and injection surfaces for Aura components, Visualforce and Flow that `fflib_Application` never attempts. If chapter 8's ServiceFactory made sense to you, you already understand Force DI. The next two chapters are just the tour.
+
+---
+
+## What Exactly is Force DI?
+
+[Force DI](https://github.com/apex-enterprise-patterns/force-di) is an open source (BSD-3-Clause) dependency injection library for the Lightning Platform, originally created by Andrew Fawcett (inspired by Java's [Guice](https://github.com/google/guice)) with John Daniel and Doug Ayers contributing to its early development. It lives in the same [apex-enterprise-patterns](https://github.com/apex-enterprise-patterns) GitHub organization as Apex Common and Apex Mocks, and it supports injecting **Apex classes, Aura components, Visualforce pages/components, and Flows**.
+
+A few honest facts to calibrate expectations before you dive into implementation:
+
+- **There is no published package.** You deploy it from source into your org (chapter 19 covers this). 
+- **There is no LWC injector.** The declarative injection components are Aura and Visualforce; if your world is LWC-only, Force DI's value to you is on the Apex and Flow side.
+- **Missing bindings fail at runtime**, not compile time - `di_Injector` throws an `InjectorException` when nothing matches. That's the tax on all this flexibility, and it's why the mocking and testing story in [chapter 20](/force-di/testing/) matters so much.
+
+Ready to wire one up? On to [chapter 19](/force-di/implementing/).

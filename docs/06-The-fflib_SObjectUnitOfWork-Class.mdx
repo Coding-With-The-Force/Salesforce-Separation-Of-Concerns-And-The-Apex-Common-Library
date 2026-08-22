@@ -29,38 +29,23 @@ Additionally, there are three reasons it is important to leverage this class (or
 Think about those last two for a second... how many lines of code in your org insert, update, upsert (etc) records in your org? Then think about how much code also error handles those transactions and (if you're doing things right) how much code goes into savepoint rollbacks. That all adds up over time to a ton of code. This class houses it all in one centralized Apex class. You'll never have to re-write all that logic again.
 
 ---
-## How to Register a Callback Method for an Apex Common UOW
 
-The following code example shows you how to set up a callback method for your units of work using the [fflib_SObjectUnitOfWork.IDoWork interface](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_SObjectUnitOfWork.cls#L82), should you need them.
+## How registerRelationship Sees into the Future
 
-```apex
-public inherited sharing class HelpDeskAppPostCommitLogic implements fflib_SObjectUnitOfWork.IDoWork{
-    List<Task> taskList;
-    
-    public HelpDeskAppPostCommitLogic(List<Task> taskList){
-        this.taskList = taskList; 
-    }
-    
-    public void doWork(){
-        //write callback code here
-    }
-}
-```
-
-The code below shows you how to actually make sure your unit of work calls your callback method.
+Before we get into limitations and extension points, it's worth understanding the single cleverest thing this class does. The `registerNew` and `registerRelationship` methods let you relate records to each other **before any of them have Ids**. You hand the method the relationship field and the related record - even though that record hasn't been inserted yet - and by the time the unit of work gets around to inserting the child during `commitWork()`, the parent *will* have an Id (because the object list you constructed the UOW with is in dependency order, so parents always insert first). At that point it stamps the parent's freshly-minted Id onto the relationship field for you, and then inserts the child.
 
 ```apex
-fflib_ISObjectUnitOfWork uow = Helpdesk_Application.helpDeskUOW.newInstance();
-//code to create some tasks
-uow.registerNew(newTasks);
-uow.registerWork(new HelpDeskAppPostCommitLogic(newTasks));
-uow.commitWork();    
+//Neither the pricebook entry nor the product have Ids yet - doesn't matter
+uow.registerNew(pbe, PricebookEntry.Product2Id, product);
 ```
+
+That's the entire trick that makes the "no maps at all" comparison from [the previous chapter](/unit-of-work/pattern/) possible: delegating the Id-stitching to the unit of work is what deletes all those parallel lists and index counters from your code.
+
 ---
 
 ## Apex Common Unit of Work Limitations
 
-1) Records within the same object that have lookups to each other are currently not supported. For example, if the Account object has a Lookup to itself, that relationship cannot be registered.
+1) Records within the same object that have lookups to each other are currently not supported. For example, if the Account object has a Lookup to itself, that relationship cannot be registered. The same problem bites when two *different* objects have lookups pointing at each other (a cyclic dependency) - there's no valid insertion order for the UOW's dependency list. In either case the workaround is to use two separate unit of work instances committed in sequence, handle that one relationship with direct DML, or register the fix-up as custom work (see `registerWork` below).
 
 2) You cannot do all or none false database transactions without creating a custom IDML implementation.
 
@@ -71,7 +56,118 @@ Database.insert(acctList, false);
 
 4) It does not manage FLS and CRUD without implementing a custom class that implements the IDML interface and does that for you. 
 
-To do these things in your own way you would need to make a new class that implements the [fflib_SObjectUnitOfWork's IDML interface](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_SObjectUnitOfWork.cls#L87), which we'll cover below.
+To do these things in your own way you would need to make a new class that implements the [fflib_SObjectUnitOfWork's IDML interface](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_SObjectUnitOfWork.cls#L90), which we'll cover below.
+
+:::note One guarantee that used to be a limitation
+Registering the same record twice is safe. Early versions of the class backed the register methods with a List, so complex code paths that happened to register a record a second time blew up. The register methods de-duplicate now - you don't need to defensively track what you've already registered.
+:::
+
+A quick note on external Ids while we're here: the `registerRelationship` overload that takes an external Id field is another way around relationship-stitching problems, but lean on it sparingly. External Id fields come with their own costs (indexes, integration ownership questions) and you can't always add them to every object.
+
+---
+
+## The Escape Hatch: registerWork and the IDoWork Interface
+
+Here's the thing about the limitations list above: most of it has the same answer. The [fflib_SObjectUnitOfWork.IDoWork interface](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_SObjectUnitOfWork.cls#L82) is the unit of work's general-purpose extension point: work you register through it runs *during* `commitWork()`, inside the same transaction and savepoint, **after all the registered insert/update/delete DML has been processed**. That ordering guarantee matters - your callback can rely on every registered record having an Id and being committed-so-far. The classic use cases:
+
+- **Work that should only happen if the whole unit succeeds** - like sending a notification once everything else committed.
+- **Database class methods** - `Database.convertLead`, or an insert with `allOrNothing` set to `false` for partial-success handling.
+- **Self-referencing objects** - the fix-up update for limitation #1 above.
+- **Anything else** - the `doWork()` method is yours; the unit of work just guarantees when it runs.
+
+(Historical footnote: upsert and recycle-bin emptying used to be on this list too. They've since been promoted to native `registerUpsert` / `registerPermanentlyDeleted` methods - see the cheat sheet below. And `registerEmail` from limitation #3? It's implemented internally as a `SendEmailWork` class that implements `IDoWork` - the library eats its own dog food here.)
+
+The interface itself is one method: `void doWork();`. Here's an implementation that brings partial-success upserts into a unit of work - note the public `Results` property, which is the pattern's real payoff:
+
+```apex
+public inherited sharing class UpsertUnitOfWorkHelper implements fflib_SObjectUnitOfWork.IDoWork{
+
+    public Database.UpsertResult[] Results {get; private set;}
+
+    private List<Account> records;
+
+    public UpsertUnitOfWorkHelper(){
+        this.records = new List<Account>();
+    }
+
+    public void registerAccountUpsert(Account record){
+        this.records.add(record);
+    }
+
+    public void doWork(){
+        //Runs during commitWork, after all registered DML has been processed
+        this.Results = Database.upsert(this.records, false);
+    }
+}
+```
+
+And here's the usage. **Hold your work object in a variable** rather than constructing it inline inside the `registerWork` call - that reference is how you read the results back out after the commit:
+
+```apex
+fflib_ISObjectUnitOfWork uow = Application.UnitOfWork.newInstance();
+
+//Register the custom work
+UpsertUnitOfWorkHelper myUpsertWork = new UpsertUnitOfWorkHelper();
+uow.registerWork(myUpsertWork);
+
+//Register standard work as usual
+uow.registerNew(newTasks);
+
+//Feed the custom work its records
+myUpsertWork.registerAccountUpsert(accountToUpsert);
+
+//Commit as normal - doWork() runs after the registered DML
+uow.commitWork();
+
+//And now the results are sitting right there
+List<Database.UpsertResult> results = myUpsertWork.Results;
+```
+
+:::caution Nesting units of work
+Technically you *could* use an `IDoWork` implementation to call another unit of work's `commitWork()` from inside the first - it's generally not recommended though. Two transactions' worth of savepoint logic tangled together is exactly the kind of complexity this pattern exists to remove.
+:::
+
+---
+
+## Extending the Unit of Work: The Eventing Hooks
+
+`registerWork` covers "run *my object's* code during the commit". There's a second, different extension mechanism: **subclass `fflib_SObjectUnitOfWork` itself** and override its virtual eventing methods. Where `IDoWork` registers a callback object per unit of work instance, the eventing hooks bake behavior into your subclass for *every* commit it ever performs - cross-cutting concerns like logging, timing, or validation that can only run once everything has been written but before the request ends.
+
+The [hooks available to override](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_SObjectUnitOfWork.cls#L197) trace the full lifecycle of `commitWork()`:
+
+```apex
+public inherited sharing class AuditedUnitOfWork extends fflib_SObjectUnitOfWork{
+
+    public AuditedUnitOfWork(List<Schema.SObjectType> types){
+        super(types);
+    }
+
+    public override void onCommitWorkStarting(){
+        //Runs before anything is published or written
+    }
+
+    public override void onDMLStarting(){
+        //Runs just before the insert/update/delete DML begins
+    }
+
+    public override void onDMLFinished(){
+        //Runs after all registered DML has been processed
+    }
+
+    public override void onCommitWorkFinishing(){
+        //Runs after DML and IDoWork registrations, before the commit completes
+    }
+
+    public override void onCommitWorkFinished(Boolean wasSuccessful){
+        //Always runs, and tells you whether the commit succeeded - the natural
+        //home for logging and cleanup
+    }
+}
+```
+
+There are additional hooks bracketing each phase (`onPublishBeforeEventsStarting`/`Finished`, `onDoWorkStarting`/`Finished`, `onPublishAfterSuccessEventsStarting`/`Finished`, `onPublishAfterFailureEventsStarting`/`Finished`, and `onRegisterType`) if you need finer granularity - see the [source](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_SObjectUnitOfWork.cls#L197) for the full set.
+
+A neat real-world example of why these exist: an org's email deliverability setting ("Access Level" not set to "All Email") used to make any Apex test touching `registerEmail` fail. The community fix used exactly this extensibility seam - a subclass overriding the email-sending behavior in tests - without losing any code coverage.
 
 ---
 
@@ -102,11 +198,57 @@ public with sharing class IDML_Example implements fflib_SObjectUnitOfWork.IDML
 }
 ```
 
+So what does the CRUD/FLS enforcement actually look like inside those methods? The library has you covered there too - and this is a class far too few people know ships with Apex Commons: [fflib_SecurityUtils](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_SecurityUtils.cls). It checks object-level CRUD and field-level security in one call each (or per-field if you want granularity) and throws a descriptive Apex exception when the running user doesn't have access - replacing the notoriously verbose `Schema.DescribeSObjectResult` boilerplate Salesforce's docs would otherwise have you write:
+
+```apex
+public with sharing class SecureDML implements fflib_SObjectUnitOfWork.IDML
+{
+    public void dmlInsert(List<SObject> objList){
+        if(!objList.isEmpty()){
+            //One call checks object CRUD, one call checks FLS for the fields -
+            //both throw a descriptive exception if the user lacks access
+            fflib_SecurityUtils.checkObjectIsInsertable(Account.SObjectType);
+            fflib_SecurityUtils.checkInsert(
+                Account.SObjectType,
+                new List<Schema.SObjectField>{ Account.Name, Account.ParentId });
+        }
+        insert objList;
+    }
+    //...dmlUpdate with fflib_SecurityUtils.checkUpdate, and so on
+}
+```
+
+:::note The platform has caught up some since this class was written
+`fflib_SecurityUtils` predates `WITH USER_MODE` in SOQL, the `as user` DML keyword, and `Security.stripInaccessible()`. Those native options are absolutely worth considering (and preferring, for new code) - but `fflib_SecurityUtils` remains the right tool when you want a *check-and-throw* behavior rather than silent field stripping, when you're on an older API version, or when you want the security check decoupled from the DML statement itself.
+:::
+
+---
+
+## Publishing Platform Events from the Unit of Work
+
+If you think of the platform events your code emits as logically part of the unit of work - and you should - the class has first-class support for registering them, with three different transaction-phase behaviors. Each method also has a bulkified `List<SObject>` overload:
+
+1) **[registerPublishBeforeTransaction(SObject record)](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_SObjectUnitOfWork.cls#L631) -** Publishes the event at the *start* of `commitWork()`, before any DML runs. Use this for "the process is beginning" style signals that should fire regardless of the outcome.
+
+2) **[registerPublishAfterSuccessTransaction(SObject record)](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_SObjectUnitOfWork.cls#L659) -** Publishes the event only if `commitWork()` completes successfully. This is the one you want most of the time - downstream subscribers only hear about work that actually committed.
+
+3) **[registerPublishAfterFailureTransaction(SObject record)](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_SObjectUnitOfWork.cls#L686) -** Publishes the event only if `commitWork()` fails. Here's the subtle superpower: platform events published this way survive even though all the DML **rolled back** - which makes this the clean way to emit an error/alerting event about a failed transaction. (Remember, an `Error_Log__c` record registered in the same unit of work would be rolled back along with everything else.)
+
+```apex
+fflib_ISObjectUnitOfWork uow = Application.UnitOfWork.newInstance();
+uow.registerNew(newCases);
+//Tell the world, but only if the cases actually made it in
+uow.registerPublishAfterSuccessTransaction(new Case_Created_Event__e());
+//And leave a trail if they didn't
+uow.registerPublishAfterFailureTransaction(new Case_Creation_Failed_Event__e());
+uow.commitWork();
+```
+
 ---
 
 ## The fflib_SObjectUnitOfWork Class Methods Cheat Sheet
 
-This does not encompass all methods in the [fflib_SObjectUnitOfWork class](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_SObjectUnitOfWork.cls), however it does cover the most commonly used methods. There are also methods in this class to publish platform events should you need them but they aren't covered below.
+This does not encompass all methods in the [fflib_SObjectUnitOfWork class](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_SObjectUnitOfWork.cls), however it does cover the most commonly used methods.
 
 1) _**[registerNew(SObject record)](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_SObjectUnitOfWork.cls#L243) -**_ Registers a single record as a new record that needs to be inserted.  
 2) **_[registerNew(List&lt;SObject> records)](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_SObjectUnitOfWork.cls#L253) -_** Registers a list of records as new records that need to be inserted.  
@@ -119,14 +261,19 @@ This does not encompass all methods in the [fflib_SObjectUnitOfWork class](https
 9) **_[`registerDirty(SObject record, List<SObjectField> dirtyFields)`](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_SObjectUnitOfWork.cls#L366) -_** This method should be used if you believe you've already registered a record to be updated by your unit of work and some of that record's fields have been updated. This basically merges those new field updates into your already registered record.  
 10) **_[registerDirty(SObject record, Schema.SObjectField relatedToParentField, SObject relatedToParentRecord)](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_SObjectUnitOfWork.cls#L402) -_** This method is used to register an update to a record while also registering a new relationship to another record that has been registered as a new record in the same unit of work.   
 11) **_[registerDirty(List&lt;SObject> records)](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_SObjectUnitOfWork.cls#L421) -_** This method is used to register a list of records to be updated.  
-12) **_[registerUpsert(SObject record)](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_SObjectUnitOfWork.cls#L434) -_** This method is used to register a single record to be upserted.
-13) **_[registerUpsert(List&lt;SObject> records)](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_SObjectUnitOfWork.cls#L451) -_** This method is used to register a list of records for an upsert.
+12) **_[registerUpsert(SObject record)](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_SObjectUnitOfWork.cls#L475) -_** This method is used to register a single record to be upserted. Whether it gets inserted or updated is determined by whether the record has an Id populated: no Id means insert, Id means update.
+13) **_[registerUpsert(List&lt;SObject> records)](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_SObjectUnitOfWork.cls#L492) -_** This method is used to register a list of records for an upsert. The list can freely mix new records (no Id) and existing records (Id populated).
 14) _**[registerDeleted(SObject record)](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_SObjectUnitOfWork.cls#L464) -**_ Registers a single record to be deleted.  
 15) **_[registerDeleted(List&lt;SObject> records)](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_SObjectUnitOfWork.cls#L481) -_** Registers a list of records to be deleted.  
 16) **_[registerPermanentlyDeleted(List&lt;SObject> records)](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_SObjectUnitOfWork.cls#L494) -_** Registers a list of records to be permanently deleted. Basically it deletes records and then removes them from the recycle bin as well.  
 17) **_[registerPermanentlyDeleted(SObject record)](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_SObjectUnitOfWork.cls#L505) -_** Registers a record to be permanently deleted from the org. Basically it deletes records and then removes them from the recycle bin as well.  
 18) **_[registerEmptyRecycleBin(SObject record)](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_SObjectUnitOfWork.cls#L217) -_** This registers a record to be permanently deleted from the system by both deleting it and emptying it from the recycle bin.
 19) **_[public void registerEmptyRecycleBin(List&lt;SObject> records)](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_SObjectUnitOfWork.cls#L230)-_** This takes a list of records and permanently deletes them from the system.
-20) _**[registerEmail(Messaging.Email email)](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_SObjectUnitOfWork.cls#L207) -**_ Registers an email message to be sent.
-21) _**[registerWork(IDoWork work)](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_SObjectUnitOfWork.cls#L199) -**_ Registers a callback method to be called after your work has been committed to the database.
-22) _**[commitWork()](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_SObjectUnitOfWork.cls#L597) -**_ Commits your unit of work (records registered) to the database. This should always be called last.
+20) _**[registerEmail(Messaging.Email email)](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_SObjectUnitOfWork.cls#L255) -**_ Registers an email message to be sent.
+21) _**[registerWork(IDoWork work)](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_SObjectUnitOfWork.cls#L247) -**_ Registers a callback method to be called after your work has been committed to the database (see the registerWork section above).
+22) _**[registerPublishBeforeTransaction / registerPublishAfterSuccessTransaction / registerPublishAfterFailureTransaction](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_SObjectUnitOfWork.cls#L631) -**_ Register platform events to publish before the DML, only after a successful commit, or only after a failed commit respectively (each with single-record and List overloads - see the platform events section above).
+23) _**[commitWork()](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_SObjectUnitOfWork.cls#L714) -**_ Commits your unit of work (records registered) to the database. This should always be called last.
+
+:::warning Email tests depend on org configuration
+If your org's email deliverability "Access Level" (Setup → Email Deliverability) is set to anything other than "All Email", Apex tests that exercise `registerEmail` can fail with a `SendEmail` error even though nothing is wrong with your code. If you hit this, the eventing-hooks section above is the fix - a test subclass of the unit of work that overrides the email-sending behavior keeps your coverage intact without depending on org config.
+:::

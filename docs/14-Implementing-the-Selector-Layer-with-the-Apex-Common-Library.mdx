@@ -79,7 +79,11 @@ public inherited sharing class Contact_Selector extends fflib_SObjectSelector
 
 ```
 
-Note that this is completely optional — if you like the default behavior listed above, just don't bother calling the super method and overriding it!
+Note that this is completely optional - if you like the default behavior listed above, just don't bother calling the super method and overriding it!
+
+:::tip Bake your org's standard combination in once
+If you find yourself passing the same three or four booleans at every place a selector gets constructed, that's the signal to set your preferred combination inside your own selector's default (no-argument) constructor - like the example above does - and let every call site construct the selector plainly. Decide your org's defaults once, in one place per selector, instead of re-deciding them at every call site.
+:::
 
 ---
 
@@ -138,7 +142,20 @@ public override String getOrderBy(){
 
 ## The fflib_QueryFactory class and Custom Queries
 
-Chances are you're gonna wanna query something that's not immediately available via the fflib_SObjectSelector class, well, lucky for you, the fflib_QueryFactory class is here just for that! Here is an example of a custom query via the use of the fflib_QueryFactory class (a list of all available query factory methods is at the bottom of this chapter).
+Chances are you're gonna wanna query something that's not immediately available via the fflib_SObjectSelector class, well, lucky for you, the fflib_QueryFactory class is here just for that! To appreciate what it's saving you from, here's what dynamic SOQL looks like the traditional way - string concatenation, manual comma management, quoting bugs waiting to happen, and zero security enforcement:
+
+```apex
+//The old way: fragile string assembly
+String soql = 'SELECT ';
+for(Schema.SObjectField field : fieldList){
+    soql += field + ', ';
+}
+soql = soql.substring(0, soql.length() - 2);
+soql += String.isNotBlank(conditions) ? ' FROM Case WHERE ' + conditions : ' FROM Case';
+List<Case> results = Database.query(soql);
+```
+
+And here's the same idea through the query factory - fluent, readable, and (because `newQueryFactory()` is pre-configured with your selector's object, default fields, ordering and field sets) already consistent with every other query your selector runs (a list of all available query factory methods is at the bottom of this chapter):
 
 ```apex
 //This allows us to select all new cases in the system using the QueryFactory in fflib_SObjectSelector
@@ -151,6 +168,16 @@ public List<Case> selectNewCases(){
 }
 ```
 There are also tons of other methods that allow you to add offsets, subselects, set ordering and more (outlined in the method cheat sheet section).
+
+A variant you'll want constantly in Batch Apex - a custom `Database.QueryLocator` with a condition:
+
+```apex
+//Perfect for a batch class's start method
+public Database.QueryLocator queryLocatorReadyToInvoice(){
+    return Database.getQueryLocator(
+        newQueryFactory().setCondition('Invoiced_Status__c = \'Ready\'').toSOQL());
+}
+```
 
 ---
 
@@ -225,7 +252,7 @@ While there are many other methods within the [fflib_SObjectSelector class](http
 
 While there are many other methods within the [fflib_QueryFactory class](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_QueryFactory.cls) below are the methods most commonly utilized in implementations.
 
-1) **_[assertIsAccessible()](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_QueryFactory.cls#L174)_** - This method checks to see if the running user can actually read the object this selector was built for.
+1) **_[assertIsAccessible()](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_QueryFactory.cls#L174)_** - This method checks to see if the running user can actually read the object this selector was built for. Note: you generally should *not* need to hand-call this as the first line of your custom selector methods - that's a habit from before `newQueryFactory()` existed. The factory is pre-configured with the selector's object and security settings, so the read-access check happens as part of building the query.
 
 2) **_[setEnforceFLS(Boolean enforce)](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_QueryFactory.cls#L185)_** - This method determines whether or not to enforce field level security on the query you are running.
 
