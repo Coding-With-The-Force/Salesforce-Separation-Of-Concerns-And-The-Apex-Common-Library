@@ -53,10 +53,11 @@ export default function Home(): JSX.Element {
           <span className="cw-eyebrow">
             Separation of Concerns on the Salesforce platform
           </span>
-          <h1>The library that will allow your Salesforce org to scale however you need it to.</h1>
+          <h1>The libraries that will allow your Salesforce org to scale however you need it to.</h1>
           <p>
             Twenty chapters on how to implement{' '}
-            <strong><a href="https://github.com/apex-enterprise-patterns/fflib-apex-common">The Apex Common Library</a></strong> and{' '}
+            <strong><a href="https://github.com/apex-enterprise-patterns/fflib-apex-common">The Apex Common Library</a></strong>, {' '} 
+            <strong><a href="https://github.com/apex-enterprise-patterns/fflib-apex-mocks">The Apex Mocks Library</a></strong> and {' '}
             <strong><a href="https://github.com/apex-enterprise-patterns/force-di">Force DI</a></strong> in your Salesforce org.
             Every chapter has a video.
             Everything here is open source forever.
