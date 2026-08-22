@@ -21,10 +21,10 @@ It also follows bulkification best practices to make your life even easier deali
 
 This class is utilized so that you can have super fine control over your database transactions and so that you only do DML transactions when every single record is prepped and ready to be inserted, updated, etc.
 
-Additionally there are two reasons it is important to leverage this class (or a class like it):
+Additionally there are three reasons it is important to leverage this class (or a class like it):
 1) To allow for DML mocking in your test classes.
 2) To massively reduce duplicate code for DML transactions in your org.
-3) To make DML transaction management consistent
+3) To make DML transaction management consistent.
 
 Think about those last two for a second... how many lines of code in your org insert, update, upsert (etc) records in your org? Then think about how much code also error handles those transaction and (if you're doing things right) how much code goes into savepoint rollbacks. That all adds up over time to a ton of code. This class houses it all in one centralized apex class. You'll never have to re-write all that logic again.
 
