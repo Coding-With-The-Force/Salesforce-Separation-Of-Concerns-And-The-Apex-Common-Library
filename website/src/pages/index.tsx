@@ -55,7 +55,7 @@ export default function Home(): JSX.Element {
           </span>
           <h1>The library that will allow your Salesforce org to scale however you need it to.</h1>
           <p>
-            Seventeen chapters on how to implement the {' '}
+            Seventeen chapters on how to implement{' '}
             <strong><a href="https://github.com/apex-enterprise-patterns/fflib-apex-common">The Apex Common Library</a></strong> in your Salesforce org. 
             Every chapter has a video.
             Everything here is open source forever. 
@@ -117,7 +117,7 @@ export default function Home(): JSX.Element {
           <span className="cw-eyebrow">All seventeen chapters</span>
           <h2>Read it in order, or jump to the layer you're interested in.</h2>
           <p>
-            Find out exactly what you need to implement the apex common library fast.
+            Find out exactly what you need to implement the Apex Common Library, fast.
           </p>
         </div>
 
