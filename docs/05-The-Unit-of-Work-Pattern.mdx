@@ -13,7 +13,7 @@ hide_title: true
 
 A [Unit of Work](https://martinfowler.com/eaaCatalog/unitOfWork.html), "Maintains a list of objects affected by a business transaction and coordinates the writing out of changes and the resolution of concurrency problems".
 
-The goal of the unit of work pattern is to simplify DML in your code and only commit changes to the database/objects when it's truly time to commit. Considering the many limits around DML in Salesforce, it's important to employ this pattern in your org in some way. It's also important to note that this, "maintains a list of objects affected by a business transaction", which indicates that the UOW pattern should be prevalent in your service layer (The service layer houses business logic). 
+The goal of the unit of work pattern is to simplify DML in your code and only commit changes to the database/objects when it's truly time to commit. Considering the many limits around DML in Salesforce, it's important to employ this pattern in your org in some way. It's also important to note that it "maintains a list of objects affected by a business transaction", which indicates that the UOW pattern should be prevalent in your service layer (The service layer houses business logic). 
 
 The UOW pattern also ensures we don't have data inconsistencies in our Salesforce instance. It does this by only committing work when all the DML operations complete successfully. It rolls back our transactions when any DML fails in our unit of work.
 
@@ -27,7 +27,7 @@ There are several, but here are the biggest of them all... massive amounts of co
 
 **_The Code Reduction and Consistency_**
 
-Think about all the places in your codebase where you insert records, error handle the inserting of your records and manage the transactional state of your records (Savepoints). Maybe if your org is new there's not a ton happening yet, but as it grows the amount of code dealing with that can become enormous and, even worse, inconsistent. I've worked in 12 year old orgs that had 8000+ lines of code just dedicated to inserting records throughout the system and with every dev who wrote the code a new variety of transaction management took place, different error handling (or none at all), etc. 
+Think about all the places in your codebase where you insert records, error handle the inserting of your records and manage the transactional state of your records (Savepoints). Maybe if your org is new there's not a ton happening yet, but as it grows the amount of code dealing with that can become enormous and, even worse, inconsistent. I've worked in 12-year-old orgs that had 8000+ lines of code just dedicated to inserting records throughout the system and with every dev who wrote the code a new variety of transaction management took place, different error handling (or none at all), etc. 
 
 **_Code Bulkification_**
 

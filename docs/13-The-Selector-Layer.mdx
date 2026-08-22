@@ -21,13 +21,13 @@ Since Salesforce already does that work for you, the Data Mapper Layer, just tur
 
 ## When to make a new Selector Layer Class
 
-Whenever you need to create queries on an object you've never done queries on before, you would create a new Selector Layer Class. So for instance if you needed to create some queries for the case object to use in your service or domain layer classes, you would create a Case Selector class. There should typically be one selector class per object you intend to query on. 
+Whenever you need to create queries on an object you've never done queries on before, you would create a new Selector Layer Class. So for instance if you needed to create some queries for the Case object to use in your service or domain layer classes, you would create a Case Selector class. There should typically be one selector class per object you intend to query on. 
 
 --- 
 
 ## Selector Layer Naming Conventions
 
-**_Class Names_** - Your classes should ideally follow the naming conventions of the domain layer just with Selector appended to the end of them, unless you have common cross object queries then it's a bit different.
+**_Class Names_** - Your classes should ideally follow the naming conventions of the domain layer just with Selector appended to the end of them, unless you have common cross-object queries then it's a bit different.
 
 _Selector Class Naming Examples (Note that I prefer underscores in names, this is personal preference):_  
 
@@ -100,6 +100,6 @@ To find out how to implement the Selector Layer using Apex Commons, continue rea
 
 [Task Object Selector Example](https://github.com/Coding-With-The-Force/Salesforce-Separation-Of-Concerns-And-The-Apex-Common-Library/blob/main/src/classes/Apex_Common_Abstract_Task_Factory_Pattern_Example/Task_Selector.cls)
 
-**_Non Apex Common Examples_** 
+**_Non-Apex Common Examples_** 
 
 [Case Object Selector Simple Example](https://github.com/Coding-With-The-Force/Salesforce-Separation-Of-Concerns-And-The-Apex-Common-Library/blob/main/src/classes/Simple_SoC_Layer_Examples/Case_Selector_Simple.cls)

@@ -18,11 +18,11 @@ In the Salesforce Ecosystem there are three major areas of concern to separate o
 
 _**The Service Layer:**_
 
-[The Service Layer](/service-layer/) should house 100% of your non-object specific business logic (object specific logic is most often handled by the domain layer). This is, the logic that is specific to your organizations specific business rules. Say for instance you have a part of your Salesforce App that focuses on Opportunity Sales Projections and the Opportunity Sales Projection App looks at the Opportunity, Quote, Product and Account objects. You might make an OpportunitySalesProjection_Service apex class that houses methods that have business logic that is specific to your Opportunity Sales Projection App. More information on the [Service Layer here.](/service-layer/)
+[The Service Layer](/service-layer/) should house 100% of your non-object-specific business logic (object-specific logic is most often handled by the domain layer). That is, the logic that is specific to your organization's business rules. Say for instance you have a part of your Salesforce App that focuses on Opportunity Sales Projections and the Opportunity Sales Projection App looks at the Opportunity, Quote, Product and Account objects. You might make an OpportunitySalesProjection_Service Apex class that houses methods that have business logic that is specific to your Opportunity Sales Projection App. More information on the [Service Layer here.](/service-layer/)
 
 _**The Domain Layer:**_
 
-[The Domain Layer](/domain-layer/) houses your individual objects (database tables) trigger logic. It also houses object specific validation logic, logic that should always be applied on the insert of every record for an object and object specific business logic (like how a task may be created for a specific object type, etc). If you used the Account object in your org you should create a Domain class equivalent for the Account object through the use of a trigger handler class of some sort. More information on the [Domain Layer here](/domain-layer/). 
+[The Domain Layer](/domain-layer/) houses the trigger logic for your individual objects (database tables). It also houses object-specific validation logic, logic that should always be applied on the insert of every record for an object and object-specific business logic (like how a task may be created for a specific object type, etc). If you used the Account object in your org you should create a Domain class equivalent for the Account object through the use of a trigger handler class of some sort. More information on the [Domain Layer here](/domain-layer/). 
 
 _**The Selector Layer:**_
 
@@ -38,7 +38,7 @@ There are many benefits to implementing SoC, most of which were outlined above, 
 
 2) Helps improve code navigation and reduces the amount of code sprawl in your org by centralizing your logic into different containers. For instance, maybe you currently have 13 different apex controllers that house similar case business logic. If you placed that business logic into a service class and had all 13 apex controllers call that service class instead your life would be a whole lot simpler. 
 
-3) Separation of Concerns lends itself to writing well done and comprehensive Unit Tests. It allows for easy [dependency injection](https://en.wikipedia.org/wiki/Dependency_injection) which allows you to, in test classes, mock a classes dependent classes. We'll go over this more when we get to the Unit testing and Apex Mocks section of this tutorial, but if you want a quick and easy explanation, please feel free to take a look at this video covering [dependency injection and mocking in apex](https://youtu.be/-esf8Q_Vp7U).
+3) Separation of Concerns lends itself to writing well done and comprehensive Unit Tests. It allows for easy [dependency injection](https://en.wikipedia.org/wiki/Dependency_injection) which allows you to, in test classes, mock a class's dependent classes. We'll go over this more when we get to the Unit testing and Apex Mocks section of this tutorial, but if you want a quick and easy explanation, please feel free to take a look at this video covering [dependency injection and mocking in Apex](https://youtu.be/-esf8Q_Vp7U).
 
 ---
 

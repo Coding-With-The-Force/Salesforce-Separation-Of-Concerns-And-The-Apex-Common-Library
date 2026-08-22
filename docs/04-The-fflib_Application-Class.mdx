@@ -20,11 +20,11 @@ Most importantly though, if you understand how interfaces, inheritance and polym
 
 ## Why is this class used?
 
-Ok, if we ignore the fact that this is required for us to use the Apex Mocks library, understanding the power behind this class requires us to take a step back and formulate a real world Salesforce use case for implementing it... hopefully the following one will be easy for everyone to understand.
+Ok, if we ignore the fact that this is required for us to use the Apex Mocks library, understanding the power behind this class requires us to take a step back and formulate a real-world Salesforce use case for implementing it... hopefully the following one will be easy for everyone to understand.
 
-Say for instance I have a decent sized Salesforce instance and our business has a use case to create tasks across multiple objects and the logic for creating those tasks is unique to every single object. Maybe on the Account object we create three new tasks every single time we create an account and on the Contact object we create two tasks every single time a record is created or updated in a particular way and we ideally want to call this logic on the fly from anywhere in our system. 
+Say for instance I have a decent-sized Salesforce instance and our business has a use case to create tasks across multiple objects and the logic for creating those tasks is unique to every single object. Maybe on the Account object we create three new tasks every single time we create an account and on the Contact object we create two tasks every single time a record is created or updated in a particular way and we ideally want to call this logic on the fly from anywhere in our system. 
 
-No matter what we should probably place the task creation logic in our domain layer because it's relevant to each individual object, but pretend for a second that we have like 20 different objects we need this kind of functionality on. Maybe we need the executed logic in an abstract "task creator" button that can be placed on any lightning app builder page and maybe some overnight batch jobs need to execute the logic too. 
+No matter what, we should probably place the task creation logic in our domain layer because it's relevant to each individual object, but pretend for a second that we have like 20 different objects we need this kind of functionality on. Maybe we need the executed logic in an abstract "task creator" button that can be placed on any lightning app builder page and maybe some overnight batch jobs need to execute the logic too. 
 
 Well... what do we do? Let's just take the abstract "Task Creator" button we might want to place on any object in our system. We could call each individual domain layer class's task creation logic in the code based on the object we were on (code example below), but that logic tree could get massive and it's not super ideal. 
 
@@ -402,7 +402,7 @@ Application.selector.newInstance(Case.SObjectType);
 
 ---
 
-2) _**[selectById(Set&lt;Id> recordIds)](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_Application.cls#L221)**_ - This method, based on the ids you pass will automatically call your registered selector layer class for the set of ids object type. It will then call the selectSObjectById method that all Selector classes must implement and return a list of sObjects to you.
+2) _**[selectById(Set&lt;Id> recordIds)](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_Application.cls#L221)**_ - This method, based on the ids you pass will automatically call your registered selector layer class for the object type of the set of ids. It will then call the selectSObjectById method that all Selector classes must implement and return a list of sObjects to you.
 
 _**selectById(Set&lt;Id> recordIds) Example method call:**_
 

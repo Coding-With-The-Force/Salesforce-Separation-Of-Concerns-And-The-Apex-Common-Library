@@ -13,9 +13,9 @@ hide_title: true
 
 The Service Layer, "Defines an application's boundaries with a layer of services that establishes a set of available operations and coordinates the application's response in each operation". - Martin Fowler
 
-This essentially just means that the service layer should house your business logic. It should be a centralized place that holds code that represents business logic for each object (database table) or the service layer logic for a custom built app in your org (more common when building managed packages).
+This essentially just means that the service layer should house your business logic. It should be a centralized place that holds code that represents business logic for each object (database table) or the service layer logic for a custom-built app in your org (more common when building managed packages).
 
-_Difference between the Service Layer and Domain Layer -_ People seem to often confuse this layer with the Domain layer. The Domain layer is only for object specific default operations (triggers, validations, updates that should always execute on a database transaction, etc). The Service layer is for business logic for major modules/applications in your org. Sometimes that module is represented by an object, sometimes it is represented by a grouping of objects. Domain layer logic is specific to each individual object whereas services often are not.
+_Difference between the Service Layer and Domain Layer -_ People seem to often confuse this layer with the Domain layer. The Domain layer is only for object-specific default operations (triggers, validations, updates that should always execute on a database transaction, etc). The Service layer is for business logic for major modules/applications in your org. Sometimes that module is represented by an object, sometimes it is represented by a grouping of objects. Domain layer logic is specific to each individual object whereas services often are not.
 
 ---
 
@@ -131,7 +131,7 @@ catch(Exception e){
 
 ## Implementing the Service Layer
 
-To find out how to implement the Service Layer using the Apex Common Library, continue reading here: [Implementing the Service Layer with the Apex Common Library](/service-layer/implementing/). If you're not interested in utilizing the Apex Common Library, no worries, there are really no frameworks to implement a Service Layer (to my knowledge) because this is literally just a business logic layer so every single orgs service layer will be different. The only thing Apex Common assists with here is abstracting the service layer to assist with Unit Test mocking and to make your service class instantiations more dynamic.
+To find out how to implement the Service Layer using the Apex Common Library, continue reading here: [Implementing the Service Layer with the Apex Common Library](/service-layer/implementing/). If you're not interested in utilizing the Apex Common Library, no worries, there are really no frameworks to implement a Service Layer (to my knowledge) because this is literally just a business logic layer so every single org's service layer will be different. The only thing Apex Common assists with here is abstracting the service layer to assist with Unit Test mocking and to make your service class instantiations more dynamic.
 
 **_Libraries That Could Be Used for the Service Layer_**
 
