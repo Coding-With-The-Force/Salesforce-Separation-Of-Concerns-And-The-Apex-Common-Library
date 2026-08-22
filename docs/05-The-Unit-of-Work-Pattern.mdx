@@ -9,30 +9,248 @@ hide_title: true
 
 ---
 
-## What is the Unit of Work Pattern (UOW) 
+## What is the Unit of Work Pattern (UOW)?
 
-A [Unit of Work](https://martinfowler.com/eaaCatalog/unitOfWork.html), "Maintains a list of objects affected by a business transaction and coordinates the writing out of changes and the resolution of concurrency problems".
+A [Unit of Work](https://martinfowler.com/eaaCatalog/unitOfWork.html) "maintains a list of objects affected by a business transaction and coordinates the writing out of changes and the resolution of concurrency problems". - Martin Fowler
 
-The goal of the unit of work pattern is to simplify DML in your code and only commit changes to the database/objects when it's truly time to commit. Considering the many limits around DML in Salesforce, it's important to employ this pattern in your org in some way. It's also important to note that this, "maintains a list of objects affected by a business transaction", which indicates that the UOW pattern should be prevalent in your service layer (The service layer houses business logic). 
+The goal of the unit of work pattern is to simplify DML in your code and only commit changes to the database/objects when it's truly time to commit. Considering the many limits around DML in Salesforce, it's important to employ this pattern in your org in some way. It's also important to note that it "maintains a list of objects affected by a business transaction", which indicates that the UOW pattern should be prevalent in your service layer (The service layer houses business logic). 
 
 The UOW pattern also ensures we don't have data inconsistencies in our Salesforce instance. It does this by only committing work when all the DML operations complete successfully. It rolls back our transactions when any DML fails in our unit of work.
 
 
 ---
 
-## Benefits of the using the Unit of Work Pattern in Salesforce
+## Benefits of Using the Unit of Work Pattern in Salesforce
 
 There are several, but here are the biggest of them all... massive amounts of code reduction, having consistency with your DML transactions, doing the minimal DML statements feasible (bulkification) and DML mocking in unit tests. Let's figure out how we reduce the code and make it more consistent first.
 
 
 **_The Code Reduction and Consistency_**
 
-Think about all the places in your codebase where you insert records, error handle the inserting of your records and manage the transactional state of your records (Savepoints). Maybe if your org is new there's not a ton happening yet, but as it grows the amount of code dealing with that can become enormous and, even worse, inconsistent. I've worked in 12 year old orgs that had 8000+ lines of code just dedicated to inserting records throughout the system and with every dev who wrote the code a new variety of transaction management took place, different error handling (or none at all), etc. 
+Think about all the places in your codebase where you insert records, error handle the inserting of your records and manage the transactional state of your records (Savepoints). Maybe if your org is new there's not a ton happening yet, but as it grows the amount of code dealing with that can become enormous and, even worse, inconsistent. I've worked in 12-year-old orgs that had 8000+ lines of code just dedicated to inserting records throughout the system and with every dev who wrote the code a new variety of transaction management took place, different error handling (or none at all), etc. 
 
 **_Code Bulkification_**
 
-The unit of work pattern also helps a great deal with code bulkification. It encourages you to to finish creating and modifying 100% of your records in your transaction prior to actually committing them (doing the dml transactions) to the database (objects). It makes sure that you are doing that absolute minimal transactions necessary to be successful. For instance, maybe for some reason in your code you are updating cases in one method, and when you're done you call another method and it updates those same cases... why do that? You could register all those updates and update all those cases at once with one DML statement. Whether you realize it at the time or not, even dml statement counts... use them sparingly.
+The unit of work pattern also helps a great deal with code bulkification. It encourages you to finish creating and modifying 100% of your records in your transaction prior to actually committing them (doing the dml transactions) to the database (objects). It makes sure that you are doing that absolute minimal transactions necessary to be successful. For instance, maybe for some reason in your code you are updating cases in one method, and when you're done you call another method and it updates those same cases... why do that? You could register all those updates and update all those cases at once with one DML statement. Whether you realize it at the time or not, every DML statement counts... use them sparingly.
 
 **_DML Mocking for Unit Tests_**
 
-If you're not sure what mocking and unit test are, then definitely check out [my section on that in the wiki here](/apex-mocks/unit-vs-integration-tests/). Basically, in an ideal scenario you would like to do unit testing, but unit testing depends on you having the ability to mock classes for you tests (basically creating fake versions of your class you have complete control over in your tests). Creating this layer that handles your dml transactions allows you to mock that layer in your classes when doing unit tests... If this is confusing, no worries, we'll discuss it a bunch more later in the last three sections of this wiki.
+If you're not sure what mocking and unit tests are, then definitely check out [my chapter on that here](/apex-mocks/unit-vs-integration-tests/). Basically, in an ideal scenario you would like to do unit testing, but unit testing depends on you having the ability to mock classes for your tests (basically creating fake versions of your class that you have complete control over in your tests). Creating this layer that handles your DML transactions allows you to mock that layer in your classes when doing unit tests... If this is confusing, no worries, we'll discuss it a bunch more later in the last three chapters of this guide.
+
+---
+
+## The difference it makes in real code
+
+Talk is cheap, so let's look at the same job done both ways. The task: create ten Opportunities, each with a variable number of Products, PricebookEntries and OpportunityLineItems - a chain of four objects that have to be inserted in dependency order, with each child stitched to a parent Id that doesn't exist until the previous insert finishes.
+
+<BeforeAfter label="Create Opportunities with Products, PricebookEntries and Line Items">
+
+<Without lines="64" files="1" testable="0%">
+
+<CodeFile name="Traditional approach" lines="64">
+
+```apex
+List<Opportunity> opps = new List<Opportunity>();
+List<List<Product2>> productsByOpp = new List<List<Product2>>();
+List<List<PricebookEntry>> entriesByOpp = new List<List<PricebookEntry>>();
+List<List<OpportunityLineItem>> linesByOpp = new List<List<OpportunityLineItem>>();
+
+for(Integer o = 0; o < 10; o++){
+    Opportunity opp = new Opportunity();
+    opp.Name = 'Opportunity ' + o;
+    opp.StageName = 'Open';
+    opp.CloseDate = System.today();
+    opps.add(opp);
+
+    List<Product2> products = new List<Product2>();
+    List<PricebookEntry> pricebookEntries = new List<PricebookEntry>();
+    List<OpportunityLineItem> oppLineItems = new List<OpportunityLineItem>();
+    for(Integer i = 0; i < o + 1; i++){
+        Product2 product = new Product2();
+        product.Name = opp.Name + ' : Product : ' + i;
+        products.add(product);
+
+        PricebookEntry pbe = new PricebookEntry();
+        pbe.UnitPrice = 10;
+        pbe.IsActive = true;
+        pbe.UseStandardPrice = false;
+        pbe.Pricebook2Id = standardPricebookId;
+        pricebookEntries.add(pbe);
+
+        OpportunityLineItem oppLineItem = new OpportunityLineItem();
+        oppLineItem.Quantity = 1;
+        oppLineItem.TotalPrice = 10;
+        oppLineItems.add(oppLineItem);
+    }
+    productsByOpp.add(products);
+    entriesByOpp.add(pricebookEntries);
+    linesByOpp.add(oppLineItems);
+}
+
+insert opps;
+
+List<Product2> allProducts = new List<Product2>();
+for(List<Product2> products : productsByOpp){
+    allProducts.addAll(products);
+}
+insert allProducts;
+
+Integer oppIdx = 0;
+List<PricebookEntry> allEntries = new List<PricebookEntry>();
+for(List<PricebookEntry> pricebookEntries : entriesByOpp){
+    List<Product2> products = productsByOpp[oppIdx++];
+    Integer lineIdx = 0;
+    for(PricebookEntry pricebookEntry : pricebookEntries){
+        pricebookEntry.Product2Id = products[lineIdx++].Id;
+    }
+    allEntries.addAll(pricebookEntries);
+}
+insert allEntries;
+
+oppIdx = 0;
+List<OpportunityLineItem> allLines = new List<OpportunityLineItem>();
+for(List<OpportunityLineItem> oppLines : linesByOpp){
+    List<PricebookEntry> pricebookEntries = entriesByOpp[oppIdx];
+    Integer lineIdx = 0;
+    for(OpportunityLineItem oppLine : oppLines){
+        oppLine.OpportunityId = opps[oppIdx].Id;
+        oppLine.PricebookEntryId = pricebookEntries[lineIdx++].Id;
+    }
+    allLines.addAll(oppLines);
+    oppIdx++;
+}
+insert allLines;
+```
+
+</CodeFile>
+
+<Takeaway bad title="Index bookkeeping">Three parallel list-of-lists correlated by position. One ordering mistake and children stitch to the wrong parents - silently.</Takeaway>
+<Takeaway bad title="Half the code is plumbing">The flattening and stitching blocks say nothing about the business goal; they exist purely to bulkify the inserts.</Takeaway>
+<Takeaway bad title="Four bare inserts">If insert number three fails, the first two are already committed and nothing rolls them back.</Takeaway>
+
+</Without>
+
+<With lines="26" files="1" testable="100%">
+
+<CodeFile name="Unit of Work approach" lines="26">
+
+```apex
+fflib_SObjectUnitOfWork uow = new fflib_SObjectUnitOfWork(MY_SOBJECTS);
+
+for(Integer o = 0; o < 10; o++){
+    Opportunity opp = new Opportunity();
+    opp.Name = 'Opportunity ' + o;
+    opp.StageName = 'Open';
+    opp.CloseDate = System.today();
+    uow.registerNew(opp);
+
+    for(Integer i = 0; i < o + 1; i++){
+        Product2 product = new Product2();
+        product.Name = opp.Name + ' : Product : ' + i;
+        uow.registerNew(product);
+
+        PricebookEntry pbe = new PricebookEntry();
+        pbe.UnitPrice = 10;
+        pbe.IsActive = true;
+        pbe.UseStandardPrice = false;
+        pbe.Pricebook2Id = standardPricebookId;
+        uow.registerNew(pbe, PricebookEntry.Product2Id, product);
+
+        OpportunityLineItem oppLineItem = new OpportunityLineItem();
+        oppLineItem.Quantity = 1;
+        oppLineItem.TotalPrice = 10;
+        uow.registerRelationship(oppLineItem, OpportunityLineItem.PricebookEntryId, pbe);
+        uow.registerNew(oppLineItem, OpportunityLineItem.OpportunityId, opp);
+    }
+}
+
+uow.commitWork();
+```
+
+</CodeFile>
+
+<Takeaway title="No maps at all">The index-correlation problem doesn't get solved - it disappears. You relate records to each other directly, before any of them have Ids.</Takeaway>
+<Takeaway title="Reads like the business goal">Every line either builds a record or registers it. The plumbing is the library's job.</Takeaway>
+<Takeaway title="One commit, one transaction">All the DML happens inside <code>commitWork()</code>, in dependency order, wrapped in a savepoint.</Takeaway>
+
+</With>
+
+</BeforeAfter>
+
+The unit of work knows what order to insert things in because it's handed a list of SObjectTypes in dependency order when it's constructed. Typically you define this list exactly once for your whole org (and as you'll see in [the fflib_Application chapter](/application/fflib-application/), that's precisely what the Application class does for you):
+
+```apex
+//SObjects, in order of dependency
+private static List<Schema.SObjectType> MY_SOBJECTS =
+    new Schema.SObjectType[]{
+        Product2.SObjectType,
+        PricebookEntry.SObjectType,
+        Opportunity.SObjectType,
+        OpportunityLineItem.SObjectType };
+```
+
+---
+
+## Why you can't just rely on Apex rolling back for you
+
+"But wait," I hear you say, "Salesforce already rolls back my transaction when something fails. Why do I need a savepoint at all?" Here's the trap: **the platform's automatic rollback only happens when the request fails - and the moment you write a try/catch, you're preventing the request from failing.**
+
+Look at this method. It has a deliberate bug in the middle, and a perfectly reasonable-looking catch block that returns a friendly error to the Lightning component that called it:
+
+```apex
+@AuraEnabled
+public static String doSomeWork(){
+    try{
+        Opportunity opp = new Opportunity();
+        opp.Name = 'My New Opportunity';
+        opp.StageName = 'Open';
+        opp.CloseDate = System.today();
+        insert opp;
+
+        Product2 product = new Product2();
+        product.Name = 'My New Product';
+        insert product;
+
+        PricebookEntry pbe = new PricebookEntry();
+        pbe.UnitPrice = 10;
+        pbe.IsActive = true;
+        pbe.UseStandardPrice = false;
+        pbe.Pricebook2Id = [SELECT Id FROM Pricebook2 WHERE IsStandard = true].Id;
+        pbe.Product2Id = product.Id;
+        insert pbe;
+
+        //Something goes wrong
+        Integer x = 42 / 0;
+
+        //This insert never runs
+        OpportunityLineItem oppLineItem = new OpportunityLineItem();
+        oppLineItem.Quantity = 1;
+        oppLineItem.TotalPrice = 10;
+        oppLineItem.PricebookEntryId = pbe.Id;
+        insert oppLineItem;
+
+        return 'Success!';
+    }
+    catch(Exception e){
+        //Returning a friendly error message instead of blowing up...
+        //...seems considerate, right?
+        return 'Something went wrong: ' + e.getMessage();
+    }
+}
+```
+
+Per [Salesforce's own transaction control documentation](https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/langCon_apex_transaction_control.htm), changes are only rolled back "if the request does not complete successfully". By catching the exception and returning normally, this method makes the request complete successfully - so the Apex runtime happily commits everything that ran before the error. The user gets a polite error message, and the database gets an Opportunity with a Product and PricebookEntry but no line items. Congratulations, your good error-handling manners just corrupted your data.
+
+The fix is a `Database.setSavepoint()` before the work starts and a `Database.rollback()` in the error path - which every developer has to remember, in every method, forever. Or you use a unit of work: `commitWork()` sets a savepoint before it touches the database, rolls back to it if anything fails, and then **re-throws the exception** so your calling code can still do its own error handling and reporting. You get consistent transactional behavior no matter how the calling code handles its errors.
+
+:::warning Rollback does not reset Ids
+Whether it's `commitWork()` or your own savepoint logic doing the rolling back, the Ids already stamped onto your in-memory sObject variables are **not** cleared by a rollback. Don't try to re-insert those same object instances afterward - the runtime will reject records that already have an Id.
+:::
+
+---
+
+## The honest cost
+
+It's only fair to acknowledge the trade: a generic library doing your DML is never going to be quite as optimal as code you hand-tuned for one specific scenario. `commitWork()` has its own processing overhead, and in extremely high-volume contexts (large Batch Apex jobs, say) that overhead is worth measuring before you commit to it.
+
+But statement count is just one thing on the scale. Weigh it against query count, DML count, transactional consistency and overall code complexity - because smaller, simpler codebases generally contain fewer bugs, and the maintenance cost of a thousand hand-rolled stitching loops is very real. For the vast majority of business logic, the unit of work wins that trade easily. Just make the decision on balance rather than on reflex.

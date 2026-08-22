@@ -1,6 +1,6 @@
 /* ═══════════════════════════════════════════════════════════════════════
    THE CWTF WIRE DESIGN SYSTEM
-   Lifted from codingwiththeforce.com — wp-content/themes/cwtf/assets/css/
+   Lifted from codingwiththeforce.com - wp-content/themes/cwtf/assets/css/
    cwtf-theme.css, the blog (.cwtf-wire) system rather than the rounded
    landing-page one.
 
@@ -8,7 +8,7 @@
    to #1f6b60 so links clear 4.5:1 on a light ground, since #81ccc2 does not.
 
    Code panels stay dark in both themes so the CWTF syntax palette survives
-   untouched — see src/theme/prismTheme.ts.
+   untouched - see src/theme/prismTheme.ts.
    ═══════════════════════════════════════════════════════════════════════ */
 
 :root,
@@ -46,7 +46,7 @@
   color-scheme: dark;
 }
 
-/* Derived, not brand — CWTF is dark-only. A drafting-paper tone rather than
+/* Derived, not brand - CWTF is dark-only. A drafting-paper tone rather than
    a white one: the teal is darkened until it clears 4.5:1 on this ground,
    and the grid is strengthened so it still reads. */
 [data-theme='light'] {
@@ -111,7 +111,7 @@
   /* Two content measures, both ~40% wider than the original 74ch/82ch so the
      article uses the column the shell actually gives it instead of leaving a
      third of it empty. --cw-read is prose; --cw-wide is anything with its own
-     internal structure — code, comparisons, figures, the pager. */
+     internal structure - code, comparisons, figures, the pager. */
   --cw-read: 104ch;
   --cw-wide: 115ch;
 

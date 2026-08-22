@@ -1,7 +1,7 @@
 import type {SidebarsConfig} from '@docusaurus/plugin-content-docs';
 
 /**
- * The sidebar is never rendered — the ruler strip handles chapter navigation
+ * The sidebar is never rendered - the ruler strip handles chapter navigation
  * and the pager comes from src/data/chapters.ts. It exists only because the
  * docs plugin requires one.
  *

@@ -46,7 +46,7 @@ export default function Home(): JSX.Element {
   return (
     <Layout
       title="The complete guide to the Apex Common Library"
-      description="Seventeen chapters on Separation of Concerns in Salesforce and implementing it with fflib-apex-common. Every chapter has a video. Free, forever.">
+      description="Twenty chapters on Separation of Concerns in Salesforce and implementing it with fflib-apex-common and force-di. Every chapter has a video. Free, forever.">
       <div className={styles.shell}>
         {/* ── masthead ── */}
         <div className={styles.mast}>
@@ -55,10 +55,11 @@ export default function Home(): JSX.Element {
           </span>
           <h1>The library that will allow your Salesforce org to scale however you need it to.</h1>
           <p>
-            Seventeen chapters on how to implement the {' '}
-            <strong><a href="https://github.com/apex-enterprise-patterns/fflib-apex-common">The Apex Common Library</a></strong> in your Salesforce org. 
+            Twenty chapters on how to implement{' '}
+            <strong><a href="https://github.com/apex-enterprise-patterns/fflib-apex-common">The Apex Common Library</a></strong> and{' '}
+            <strong><a href="https://github.com/apex-enterprise-patterns/force-di">Force DI</a></strong> in your Salesforce org.
             Every chapter has a video.
-            Everything here is open source forever. 
+            Everything here is open source forever.
           </p>
           <ul className={styles.facts}>
             <li>Written for Apex developers and architects</li>
@@ -114,10 +115,10 @@ export default function Home(): JSX.Element {
 
         {/* ── the index ── */}
         <div className={styles.idxHead}>
-          <span className="cw-eyebrow">All seventeen chapters</span>
+          <span className="cw-eyebrow">All twenty chapters</span>
           <h2>Read it in order, or jump to the layer you're interested in.</h2>
           <p>
-            Find out exactly what you need to implement the apex common library fast.
+            Find out exactly what you need to implement the Apex Common Library, fast.
           </p>
         </div>
 
@@ -145,7 +146,7 @@ export default function Home(): JSX.Element {
               </button>
             ))}
           </div>
-          <span className={styles.count}>{shown} of 17 chapters</span>
+          <span className={styles.count}>{shown} of 20 chapters</span>
         </div>
 
         {groups.map(({part: p, chapters}) => (
@@ -197,7 +198,7 @@ export default function Home(): JSX.Element {
             <div className={styles.tailH}>Related</div>
             <div className={styles.tailT}>The videos, as one course</div>
             <div className={styles.tailS}>
-              All seventeen walkthroughs in order, {totalVideoTime()} in total.
+              All twenty walkthroughs in order, {totalVideoTime()} in total.
             </div>
           </Link>
           <a href="https://github.com/Coding-With-The-Force/Salesforce-Separation-Of-Concerns-And-The-Apex-Common-Library/tree/main/src">
@@ -211,7 +212,7 @@ export default function Home(): JSX.Element {
             <div className={styles.tailH}>Something wrong?</div>
             <div className={styles.tailT}>Open an issue</div>
             <div className={styles.tailS}>
-              Missing detail, unclear section, or an outright mistake — tell me
+              Missing detail, unclear section, or an outright mistake - tell me
               and I'll fix it.
             </div>
           </a>

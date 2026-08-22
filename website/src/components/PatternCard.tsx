@@ -4,12 +4,12 @@ import React from 'react';
  * The catalogue entry at the top of a pattern chapter (03, 05, 09, 12).
  *
  * These really are catalogued design patterns, so the structural device
- * encodes something true — they have an intent, participants and a cost.
+ * encodes something true - they have an intent, participants and a cost.
  *
  *   <PatternCard>
  *     <PCell title="Intent" big>Fix the order. Vary the steps.</PCell>
  *     <PCell title="Participants">
- *       - **fflib_SObjectDomain** — abstract, owns the sequence
+ *       - **fflib_SObjectDomain** - abstract, owns the sequence
  *     </PCell>
  *   </PatternCard>
  */

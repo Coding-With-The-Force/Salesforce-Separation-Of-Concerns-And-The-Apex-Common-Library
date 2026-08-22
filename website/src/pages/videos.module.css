@@ -4,7 +4,7 @@
   padding-bottom: var(--cw-sp-section);
 }
 
-/* matches the homepage masthead — grows with the viewport, each line capped */
+/* matches the homepage masthead - grows with the viewport, each line capped */
 .mast {
   padding-block: var(--cw-sp-section) var(--cw-sp-gap);
   max-width: none;

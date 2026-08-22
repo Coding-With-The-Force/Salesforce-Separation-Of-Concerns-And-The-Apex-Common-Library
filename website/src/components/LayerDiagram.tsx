@@ -37,7 +37,7 @@ const ARIA =
 interface Props {
   /** The layer being discussed. Its box and its edges are emphasised. */
   highlight?: LayerKey;
-  /** Called when a box is clicked — used by the homepage blueprint. */
+  /** Called when a box is clicked - used by the homepage blueprint. */
   onPick?: (key: LayerKey) => void;
   interactive?: boolean;
 }
@@ -50,7 +50,7 @@ interface Props {
  * be unit tested without a line of DML.
  *
  * Two layouts, not one. A single wide drawing scaled down to a phone renders
- * its labels at about 4px, and no amount of repositioning fixes that — so
+ * its labels at about 4px, and no amount of repositioning fixes that - so
  * there is a 760-unit landscape version and a 460-unit stacked version, and
  * a CONTAINER query picks between them. Container, not viewport: this figure
  * sits in the article column on a chapter page and in a much narrower
@@ -59,7 +59,7 @@ interface Props {
  *
  * Every label is sized against the box or the gap it sits in, assuming the
  * widest plausible monospace advance. Labels are one or two words for the
- * same reason — the nuance belongs in the caption, not in the drawing.
+ * same reason - the nuance belongs in the caption, not in the drawing.
  */
 export default function LayerDiagram({
   highlight = 'domain',

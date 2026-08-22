@@ -11,15 +11,15 @@ hide_title: true
 
 ## What is Apex Mocks?
 
-[Apex Mocks](https://github.com/apex-enterprise-patterns/fflib-apex-mocks) is unit test mocking framework for Apex that was inspired by the very popular [Java Mockito framework](https://site.mockito.org/). The Apex Mocks framework is also built using [Salesforce's Stub API](https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_testing_stub_api.htm) which is a good thing, there are mocking frameworks in existence that do not leverage the Stub API... you shouldn't use them as they are considerably less performant. In fact, as a remnant of the past, Apex Mocks still has an option to not use the Stub API, don't use it.
+[Apex Mocks](https://github.com/apex-enterprise-patterns/fflib-apex-mocks) is a unit test mocking framework for Apex that was inspired by the very popular [Java Mockito framework](https://site.mockito.org/). The Apex Mocks framework is also built using [Salesforce's Stub API](https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_testing_stub_api.htm) which is a good thing - there are mocking frameworks in existence that do not leverage the Stub API... you shouldn't use them as they are considerably less performant. In fact, as a remnant of the past, Apex Mocks still has an option to not use the Stub API. Don't use it. (Related archaeology note: if you ever open a legacy org and find a giant generated `Mocks.cls` full of hand-built mock inner classes, that's the output of the old "ApexMocks Generator" tool from the pre-Stub-API era - `fflib_SObjectMocks` classes fall in the same bucket. Recognize it for what it is, and don't perpetuate the pattern; `mocks.mock(MyClass.class)` replaced all of it.)
 
-To make this super simple, Apex Mocks is an excellent framework that allows you to not only create mock (fake) versions of your classes for tests, but also allows you to do a number of other things like create mock (fake) records, verify the amount of times a method was called, verify method call order and lots more. There is not another mocking framework for the Apex language that is anywhere near as robust.  
+To make this super simple, Apex Mocks is an excellent framework that allows you to not only create mock (fake) versions of your classes for tests, but also allows you to do a number of other things like create mock (fake) records, verify the number of times a method was called, verify method call order and lots more. There is not another mocking framework for the Apex language that is anywhere near as robust.  
 
 ---
 
 ## Do you have to use the Apex Common Library to use Apex Mocks?
 
-While you don't have to use the Apex Common Library to use Apex Mocks, they are built to work extremely well together. Without the use of the Apex Common Library you will need to ensure that all of your classes utilize [dependency injection](https://en.wikipedia.org/wiki/Dependency_injection). While this isn't a massive feat, it's something you have to be cognizant of. If you decide to use the Apex Common library and leverage [the fflib\_Application class factory](/application/fflib-application/) you can leverage the [setMock methods](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_Application.cls#L114) to avoid needing to setup all your classes using dependency injection. It's pretty convenient and makes the whole situation a bit easier. We'll take a look at both methods below: 
+While you don't have to use the Apex Common Library to use Apex Mocks, they are built to work extremely well together. What you're really choosing between here is two flavors of [dependency injection](https://en.wikipedia.org/wiki/Dependency_injection). Without the Apex Common Library, every class needs **constructor injection** - a `@TestVisible` constructor accepting its dependencies, on every single class. With the library, the [fflib\_Application factory](/application/fflib-application/) *is* your injection mechanism - **factory injection** - and its [setMock methods](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_Application.cls#L114) are the seam tests use to swap in fakes. The trade-off: constructor injection makes each class's dependencies explicit in its signature, but you pay the constructor-plumbing tax everywhere; the factory is shared knowledge across the whole codebase, adds polymorphic-instantiation tricks constructors can't do, and means one `setMock` call replaces a class everywhere it's resolved. We'll take a look at both methods below: 
 
 _**Using Apex Mocks without Apex Common Example**_
 
@@ -214,12 +214,36 @@ public with sharing class Task_Service_Impl_Test
 	}
 }
 ```
-As you can see, in this example we no longer leverage dependency injection to get our mock unit tests up and running. Instead we use the setMock method available on all of the inner factory classes in [the fflib\_Application class](/application/fflib-application/) to setup our mock class for our unit test. It makes things a bit easier in the long run.
+As you can see, in this example we no longer leverage dependency injection to get our mock unit tests up and running. Instead we use the setMock method available on all of the inner factory classes in [the fflib\_Application class](/application/fflib-application/) to set up our mock class for our unit test. It makes things a bit easier in the long run.
 
-Now that we've seen how to setup a mock class with or without Apex Common, let's figure out all the cool things Apex Mocks has to allow you to assert your logic operated in the way you anticipated it would! We'll start with a section on what stubbing is below!
+Now that we've seen how to set up a mock class with or without Apex Common, let's figure out all the cool things Apex Mocks has to allow you to assert your logic operated in the way you anticipated it would! We'll start with a section on what stubbing is below!
 
 ---
-## What is Stubbing and how to Stub
+
+## Structuring and Naming a Mock Test
+
+Before diving into the mechanics, two conventions worth adopting deliberately, because mock tests get dense fast and structure is what keeps them readable.
+
+**Structure: Given / When / Then.** Martin Fowler's classic test anatomy maps perfectly onto mock tests, and a few comment lines make even a heavyweight test scannable:
+
+```apex
+@IsTest
+private static void createTasks_CasesSuccess_UnitTest(){
+    //GIVEN a case exists and our dependencies are mocked
+    // ...mock + stub setup here...
+
+    //WHEN the service method under test is called
+    // ...Test.startTest() / the real call / Test.stopTest()...
+
+    //THEN the domain should have been asked to create the tasks exactly once
+    // ...verify calls here...
+}
+```
+
+**Naming: make the method name state the behavior.** This guide's examples use a `methodUnderTest_scenario_testType` convention (`createTasks_CasesSuccess_UnitTest`). Another popular convention names the whole behavior sentence-style: `callingServiceShouldCallSelectorApplyDiscountInDomainAndCommit`. Either works - the point is that a failing test's *name alone* should tell you what behavior broke. Pick one convention as a team and stay consistent; a test suite that mixes naming styles loses its documentation value.
+
+---
+## What is Stubbing, and How Do You Stub?
 
 Soooooo, what exactly is stubbing? Basically it's the act of providing fake return responses for a mocked class's methods and it's super extra important when setting up your unit tests because without them, well frankly nothing is gonna work. So let's check out how to do stubbing below:
 
@@ -252,15 +276,19 @@ Task_Service.createTasks(caseIds, Case.SObjectType);
 Test.stopTest();
 ```
 
-Alright, let's go over this a bit (and if you didn't read the comments in the code outlined above please do!). The first thing you should know is that you should only be creating stubbed methods for methods that are actually called by the real method you are actually testing (in our case, the Task_Service.createTasks method). Now that we've clarified that, let's break down one of our stubs that we built out for the methods in our mocked class. Take this stub `mocks.when(mockCaseSelector.selectRecordsForTasks()).thenReturn(caseList);`, what we are efficitively saying here is, when our mockCaseSelector's selectRecordsForTasks method is called, let's always return the caseList value. Not too complicated but maybe confusing if you've never seen the syntax before. 
+Alright, let's go over this a bit (and if you didn't read the comments in the code outlined above please do!). The first thing you should know is that you should only be creating stubbed methods for methods that are actually called by the real method you are actually testing (in our case, the Task_Service.createTasks method). Now that we've clarified that, let's break down one of our stubs that we built out for the methods in our mocked class. Take this stub `mocks.when(mockCaseSelector.selectRecordsForTasks()).thenReturn(caseList);`, what we are effectively saying here is, when our mockCaseSelector's selectRecordsForTasks method is called, let's always return the caseList value. Not too complicated but maybe confusing if you've never seen the syntax before. 
 
-Hopefully this has helped explain the basic concept of stubbing alright, there's more we can do with stubbing in regards to throwing fake errors, so be sure to check out the, "How to mock exceptions being thrown" section below for more information on that subject.
+:::warning Always stub sObjectType() on mocked selectors and domains - here's why
+That first stub in the example, `mocks.when(mockCaseSelector.sObjectType()).thenReturn(Case.SObjectType);`, looks like boilerplate but is load-bearing. The Application factories route by `SObjectType`: when your production code calls `Application.selector.newInstance(Case.SObjectType)`, the factory asks each registered mock for its `sObjectType()` to decide whether it's the one to hand back. An unstubbed `sObjectType()` returns `null`, the factory never matches your mock, and your test fails in deeply confusing ways - usually with the *real* class being instantiated or a null pointer far from the actual mistake. This is probably the number one "why isn't my fflib mock working" gotcha. Domain mocks need it for exactly the same reason.
+:::
+
+Hopefully this has helped explain the basic concept of stubbing. There's more we can do with stubbing in regard to throwing fake errors, so be sure to check out the "How to mock exceptions being thrown" section below for more information on that subject.
 
 ---
 
 ## How to verify the class you're actually testing appropriately called your mock class methods
 
-If you've never done mocking before this might seem super weird, instead of using asserts, we need another way to verify that our code functioned as anticipated with our fake classes and return values. So what exactly do you verify/assert in your test? What we're gonna end up doing is verify that we did indeed call the fake methods with the parameters we anticipated (or that we didn't call them at all). So let's take a look at how to use the [verify method in the fflib_ApexMocks class](https://github.com/apex-enterprise-patterns/fflib-apex-mocks/blob/master/sfdx-source/apex-mocks/main/classes/fflib_ApexMocks.cls#L121) to verify a method we intended to call, did indeed get called:
+If you've never done mocking before, this might seem super weird: instead of using asserts, we need another way to verify that our code functioned as anticipated with our fake classes and return values. So what exactly do you verify/assert in your test? What we're gonna end up doing is verify that we did indeed call the fake methods with the parameters we anticipated (or that we didn't call them at all). So let's take a look at how to use the [verify method in the fflib_ApexMocks class](https://github.com/apex-enterprise-patterns/fflib-apex-mocks/blob/master/sfdx-source/apex-mocks/main/classes/fflib_ApexMocks.cls#L121) to verify a method we intended to call, did indeed get called:
 
 ```apex
 Id mockCaseId = fflib_IDGenerator.generate(Case.SObjectType);
@@ -291,12 +319,12 @@ Test.stopTest();
 ((Cases)mocks.verify(mockCaseDomain, 1)).createTasks(caseList, mockUOW);
 ``` 
 
-On the very last line of the above code we are using the verify method to ensure that the createTasks method in the Cases class was called exactly one time with the caseList and mockUOW values passed to it. You might be looking at this and thinking, "But why Matt? Why would I actually care to this?". The answer is pretty simple. Even though your code in those classes isn't running, you still want to (really need to) verify that your code still decided to call it (or not call it), that you code didn't call the method more times than you were anticipating, etc. Remember, the major purpose of a unit test is to test that the logic in your class is working how you anticipate it to. Verifying that methods were called correctly is extremely important. If your class calls the wrong methods at the wrong time, super ultra terrible consequences could end up taking place.
+On the very last line of the above code we are using the verify method to ensure that the createTasks method in the Cases class was called exactly one time with the caseList and mockUOW values passed to it. You might be looking at this and thinking, "But why Matt? Why would I actually care about this?". The answer is pretty simple. Even though your code in those classes isn't running, you still want to (really need to) verify that your code still decided to call it (or not call it), that your code didn't call the method more times than you were anticipating, etc. Remember, the major purpose of a unit test is to test that the logic in your class is working how you anticipate it to. Verifying that methods were called correctly is extremely important. If your class calls the wrong methods at the wrong time, super ultra terrible consequences could end up taking place.
 
 ---
 ## How to verify your data was altered by your class when it was sent to a mocked class (Matchers)
 
-Whoooo that's a long title, lol. Here's the dealio, at least half the time the data you pass into the class you are actually testing (the one class we aren't mocking) it will altered and then sent in to another mocked class's method to be further processed. Chances are you'd like to verify that data was altered prior to sending it to your mocked classes method. Never fear my good ole pals, the [fflib_Match class](https://github.com/apex-enterprise-patterns/fflib-apex-mocks/blob/master/sfdx-source/apex-mocks/main/classes/fflib_Match.cls) is here to help you do just that! Let's take a look at how we can use matchers to identify what exactly was passed into our mocked class's methods!
+Whoooo that's a long title, lol. Here's the dealio, at least half the time the data you pass into the class you are actually testing (the one class we aren't mocking) will be altered and then sent into another mocked class's method to be further processed. Chances are you'd like to verify that data was altered prior to sending it to your mocked class's method. Never fear my good ole pals, the [fflib_Match class](https://github.com/apex-enterprise-patterns/fflib-apex-mocks/blob/master/sfdx-source/apex-mocks/main/classes/fflib_Match.cls) is here to help you do just that! Let's take a look at how we can use matchers to identify what exactly was passed into our mocked class's methods!
 
 ```apex
 Id mockCaseId = fflib_IDGenerator.generate(Case.SObjectType);
@@ -330,11 +358,11 @@ List<Case> caseMatchingList = (List<Case>)fflib_Match.sObjectsWith(new List<Map<
 ((fflib_ISObjectUnitOfWork)mocks.verify(mockUOW,1)).registerDirty(caseList);
 ```
 
-Alright alright alright, you might be looking at this and being like, "But bruh why make a matcher at all to get this done? Why not just keep it simple and make another list of cases to represent the changes". Fair enough question hombre, here's the simple answer... it's not gonna work, trust me, lol. Basically ApexMocks needs a way to internally check these events actually occurred and that matcher we setup is the key to doing that. If you wanna dive deep into how it works feel free, but that is a whole different subject we're not gonna get into the weeds of. 
+Alright alright alright, you might be looking at this and being like, "But bruh why make a matcher at all to get this done? Why not just keep it simple and make another list of cases to represent the changes". Fair enough question hombre, here's the simple answer... it's not gonna work, trust me, lol. Basically Apex Mocks needs a way to internally check these events actually occurred and that matcher we set up is the key to doing that. If you wanna dive deep into how it works feel free, but that is a whole different subject we're not gonna get into the weeds of. 
 
 So we can see, I think, that this is extremely useful in terms of verifying our logic occurred in the right order and updated our data as anticipated before calling the method in one of our mocked classes. Pretty cool, makes our unit testing that much more accurate.
 
-There are a ton more methods in the fflib_Match class that you can leverage to do virtually whatever you can think of, there's a list of those near the bottom of this page. Definitely check them out.
+There are a ton more methods in the fflib_Match class that you can leverage to do virtually whatever you can think of; there's a list of those near the bottom of this page. Definitely check them out.
 
 ---
 ## How to mock exceptions being thrown (this is THA BEST!!)
@@ -400,19 +428,19 @@ catch(Exception e){
 }
 ```
 
-You can see that there's a small difference between the two. For the method that actually returns data the chain of events is a bit easier to follow `mocks.when(mockCaseSelector.selectRecordsForTasks()).thenThrow(new DmlException());`. This basically is just saying, when we call the mock selector class's selectRecordsForTasks class then we need to throw a new DMLException.
+You can see that there's a small difference between the two. For the method that actually returns data the chain of events is a bit easier to follow `mocks.when(mockCaseSelector.selectRecordsForTasks()).thenThrow(new DmlException());`. This basically is just saying, when we call the mock selector class's selectRecordsForTasks method then we need to throw a new DMLException.
 
-For the method that doesn't return any data (a void method) the syntax is a little different `((fflib_SObjectUnitOfWork)mocks.doThrowWhen(new DmlException(), mockUOW)).commitWork()`. You can see that instead of using the `mocks.when(method).thenThrow(exception)` setup we are now using the doThrowWhen method, which kinda combines the `when(method).thenThrow(exception)` into a single statement. You can also see it takes two parameters, the first is the exception you want to throw and the second is the mocked class you are attaching this exception throwing event to. Then you have to cast this `mocks.doThrowWhen(exception, mockedClass)` to the class type it will end up representing, wrap it in parenthesis and call the method you intend it to throw an error on. Weird setup, awesomely simple exception testing though. 
+For the method that doesn't return any data (a void method) the syntax is a little different `((fflib_SObjectUnitOfWork)mocks.doThrowWhen(new DmlException(), mockUOW)).commitWork()`. You can see that instead of using the `mocks.when(method).thenThrow(exception)` setup we are now using the doThrowWhen method, which kinda combines the `when(method).thenThrow(exception)` into a single statement. You can also see it takes two parameters, the first is the exception you want to throw and the second is the mocked class you are attaching this exception throwing event to. Then you have to cast this `mocks.doThrowWhen(exception, mockedClass)` to the class type it will end up representing, wrap it in parentheses and call the method you intend it to throw an error on. Weird setup, awesomely simple exception testing though. 
 
-Also worth noting, don't forget to wrap methods you are truly testing (that will now throw an error) in a try catch in your test and in the catch block, assert that you are getting your exceptions throw. 
-
----
-## How to test important method side-effects truly occured (Answering)
-
-It is not at all uncommon to have parameters passed into a method by reference and for that method to update those parameters but not pass them back. Some people refer to this as method side effects. To truly do good unit tests however we should mock those side effects as well. That is where the [fflib_Answer interface](https://github.com/apex-enterprise-patterns/fflib-apex-mocks/blob/master/sfdx-source/apex-mocks/main/classes/fflib_Answer.cls) comes into play! Now, unlike most things I've written about in this series, there is a blog post by Eric Kintzer that already exists for this apex mocks topic that is excellent and well... frankly I don't need to re-invent the wheel here. Please go check out how to do [Answering with Apex Mocks here.](https://cropredysfdc.com/2019/05/03/apexmocks-answers-and-void-no-argument-domain-methods/) .
+Also worth noting, don't forget to wrap methods you are truly testing (that will now throw an error) in a try catch in your test and in the catch block, assert that you are getting your exceptions thrown. 
 
 ---
-## How to check method call order 
+## How to test important method side-effects truly occurred (Answering)
+
+It is not at all uncommon to have parameters passed into a method by reference and for that method to update those parameters but not pass them back. Some people refer to this as method side effects. To truly do good unit tests however we should mock those side effects as well. That is where the [fflib_Answer interface](https://github.com/apex-enterprise-patterns/fflib-apex-mocks/blob/master/sfdx-source/apex-mocks/main/classes/fflib_Answer.cls) comes into play! Now, unlike most things I've written about in this series, there is a blog post by Eric Kintzer that already exists for this apex mocks topic that is excellent and well... frankly I don't need to re-invent the wheel here. Please go check out how to do [Answering with Apex Mocks here](https://cropredysfdc.com/2019/05/03/apexmocks-answers-and-void-no-argument-domain-methods/).
+
+---
+## How to check method call order
 
 Sometimes when you are doing unit tests it's extremely important to verify the order in which your methods were called. Maybe, depending on what data your method receives your mock class's methods could be called in varying orders. It's best to check that the code is actually doing that! If you do need to check for that in your code, no worries, that is why the [fflib_InOrder class](https://github.com/apex-enterprise-patterns/fflib-apex-mocks/blob/master/sfdx-source/apex-mocks/main/classes/fflib_InOrder.cls) exists! Thankfully this is yet another area I really don't need to cover again in this guide as a good blog post exists covering this topic as well! If you need to check method ordering in your unit testing, [please check out the blog post here!](https://xonoxforce.wordpress.com/2017/03/26/inorder-verify/)
 
@@ -420,13 +448,13 @@ Sometimes when you are doing unit tests it's extremely important to verify the o
 
 ## Apex Mocks Counters (Counting method calls and adding descriptions)
 
-Counters counters counters... they're one of the simplest things to learn thankfully and also very useful! Basically you might want to know how many times a method in a mock class was called by the class you are currently unit testing. It helps to verify the logic in your code is only calling classes in the way you intended for it to call it. The syntax is pretty simple so lets get to learninnnnnnnn.
+Counters counters counters... they're one of the simplest things to learn thankfully and also very useful! Basically you might want to know how many times a method in a mock class was called by the class you are currently unit testing. It helps to verify the logic in your code is only calling classes in the way you intended for it to call it. There's a subtle bonus here too: call-count verification is a lightweight form of **performance testing** - a test that asserts your selector method was called exactly once will fail the moment someone refactors a query into a loop. The syntax is pretty simple so lets get to learninnnnnnnn.
 
 When we are verifying method calls (as discussed in one of the above sections) we do the following:
 
 `((fflib_ISObjectUnitOfWork)mocks.verify(mockUOW)).registerDirty(caseMatchingList);`
 
-What if we wanna check whether the code operated only once though? We can check pretty easy by passing a second parameter to the verify method like so:
+What if we wanna check whether the code operated only once though? We can check pretty easily by passing a second parameter to the verify method like so:
 
 `((fflib_ISObjectUnitOfWork)mocks.verify(mockUOW, mocks.times(1))).registerDirty(caseMatchingList);`
 
@@ -440,19 +468,19 @@ How to verify a method was called at most x times:
 
 `((fflib_ISObjectUnitOfWork)mocks.verify(mockUOW, mocks.atMost(3))).registerDirty(caseMatchingList);`
 
-How to verify a method was called never:
+How to verify a method was never called:
 
 `((fflib_ISObjectUnitOfWork)mocks.verify(mockUOW, mocks.never())).registerDirty(caseMatchingList);`
 
-How to verify a method was called between x amount of times:
+How to verify a method was called between x and y times:
 
 `((fflib_ISObjectUnitOfWork)mocks.verify(mockUOW, mocks.between(1,5))).registerDirty(caseMatchingList);`
 
-Wow wow wow, so many options for so many scenarios, however I would be remiss if I didn't also should you the description method call you can chain to basically give you useful verification failure statements. Let's check that out right quick:
+Wow wow wow, so many options for so many scenarios, however I would be remiss if I didn't also show you the description method call you can chain to basically give you useful verification failure statements. Let's check that out right quick:
 
 `((fflib_ISObjectUnitOfWork)mocks.verify(mockUOW, mocks.times(2).description('Whoa champ, you didnt call this dirty method twice, try again broseph'))).registerDirty(caseMatchingList);`
 
-If your verification fails (and in turn your test class fails) you will now get that wonderful description to help you pinpoint the cause of your test failure a bit easier. That's pretty awesome opposum.
+If your verification fails (and in turn your test class fails) you will now get that wonderful description to help you pinpoint the cause of your test failure a bit easier. That's pretty awesome, possum.
 
 [Additional Info on Counters](https://xonoxforce.wordpress.com/2017/04/01/counters-in-apex-mocks-verifications/)
 
@@ -470,9 +498,12 @@ _**Example method call to get a fake (but legal) Id:**_
 
 That will return to you a legal caseId! Pretty useful.
 
-**The next class on our list to cover here is the [fflib_ApexMocksUtils class](https://github.com/apex-enterprise-patterns/fflib-apex-mocks/blob/master/sfdx-source/apex-mocks/main/classes/fflib_ApexMocksUtils.cls)**. This class has three accessible methods and they allow you to make in memory relationships between fake records and to setup formula field values for a fake record. Let's take a look at some examples below.
+**The next class on our list to cover here is the [fflib_ApexMocksUtils class](https://github.com/apex-enterprise-patterns/fflib-apex-mocks/blob/master/sfdx-source/apex-mocks/main/classes/fflib_ApexMocksUtils.cls)**. This class has three accessible methods and they allow you to make in-memory relationships between fake records and to set up formula field values for a fake record. Let's take a look at some examples below.
 
 **[makeRelationship(Type parentsType, List&lt;SObject> parents, SObjectField relationshipField, List&lt;List&lt;SObject>> children)](https://github.com/apex-enterprise-patterns/fflib-apex-mocks/blob/master/sfdx-source/apex-mocks/main/classes/fflib_ApexMocksUtils.cls#L67) Example method call**:
+
+This method is the answer to a question that stumps almost everyone eventually: **"how do I mock the result of a sub-select query?"** When a selector method returns parents with children queried in a sub-select (`SELECT Id, (SELECT Id FROM OpportunityLineItems) FROM Opportunity`), you can't just assign the child list to the parent record in Apex - relationship fields are read-only. `makeRelationship` builds that parent-with-children shape in memory for you:
+
 ```apex
 //Example from: https://salesforce.stackexchange.com/questions/315832/mocking-related-objects-using-fflib
 Opportunity opportunityMock1 = new Opportunity(Id = fflib_IDGenerator.generate(Opportunity.SObjectType));
@@ -533,10 +564,10 @@ acc = (Account)fflib_ApexMocksUtils.setReadOnlyFields(
 
 ## Example Apex Mocks Classes
 
-[Task_Service_Impl_Test](https://github.com/Coding-With-The-Force/Salesforce-Separation-Of-Concerns-And-The-Apex-Common-Library/blob/main/src/classes/Apex_Common_Abstract_Task_Factory_Pattern_Example/Task_Service_Impl_Test.cls) - Apex Mocks test class example that uses the Apex Common library.
+[Task_Service_Impl_Test](https://github.com/Coding-With-The-Force/Salesforce-Separation-Of-Concerns-And-The-Apex-Common-Library/blob/main/src/classes/Apex_Common_Abstract_Task_Factory_Pattern_Example/Task_Service_Impl_Test.cls) - Apex Mocks test class example that uses the Apex Common Library.
 
 ---
 
-## You've reached the end!
+## Where to next?
 
-That's it! You're done! Thank god... I'm tired of writing this thing. You can go back to the [home page here.](/)
+You've finished the Apex Common and Apex Mocks core of the guide! There's one more part if you're still hungry: [Dependency Injection with Force DI](/force-di/pattern/), which generalizes the factory-injection ideas from this chapter into a whole library - including a third mocking seam ([`Bindings.set`](/force-di/testing/)) to sit alongside the constructor injection and `setMock` approaches you just learned. Otherwise, you can go back to the [home page here.](/)

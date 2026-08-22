@@ -6,7 +6,7 @@ import {CHAPTERS} from './src/data/chapters';
 /**
  * apex-enterprise-patterns.dev
  *
- * Content lives in ../docs so the seventeen chapter files keep their git
+ * Content lives in ../docs so the twenty chapter files keep their git
  * history and stay where they have always been. Only the build changes.
  *
  * routeBasePath is '/' so chapter slugs land at the top level
@@ -122,14 +122,14 @@ const config: Config = {
       disableSwitch: false,
       /**
        * False on purpose. With this on, Docusaurus makes the toggle a THREE
-       * state cycle — system → light → dark → system — and one of those
+       * state cycle - system → light → dark → system - and one of those
        * steps is always a visual no-op, because "system" resolves to
        * whichever of light or dark the OS already asked for. On a machine
        * set to light that meant the first click did nothing and the second
        * one finally moved: the reported "have to click it twice".
        *
        * Off, it is a plain two-value toggle, one click per change, and dark
-       * is the brand default regardless of the OS setting — which is what
+       * is the brand default regardless of the OS setting - which is what
        * CWTF is anyway.
        */
       respectPrefersColorScheme: false,
@@ -149,15 +149,15 @@ const config: Config = {
            * Deliberately no `to`.
            *
            * DropdownNavbarItem/Mobile decides whether tapping the parent
-           * navigates by asking whether `to` was set — `const href =
-           * props.to ? undefined : '#'` — and its onClick only calls
+           * navigates by asking whether `to` was set - `const href =
+           * props.to ? undefined : '#'` - and its onClick only calls
            * preventDefault for the '#' case. With a `to`, tapping "Guide"
            * on a phone both expanded the list AND navigated to chapter 01,
            * and the navigation closed the drawer before you could pick
            * anything. Without it, the parent is purely a disclosure and
            * chapter 01 is simply the first item in the list.
            *
-           * All seventeen are built from the chapter table so the menu can
+           * All twenty are built from the chapter table so the menu can
            * never drift from the ruler, the homepage index or the pager.
            * The number prefix is part of the label rather than a separate
            * column because Infima dropdown items are a single link.
@@ -181,14 +181,14 @@ const config: Config = {
       ],
     },
     footer: {
-      // deliberately not style:'dark' — that Infima variant hardcodes
+      // deliberately not style:'dark' - that Infima variant hardcodes
       // #303846, which is not in the CWTF palette. See src/css/base.css.
       links: [
         {
           title: 'The guide',
           items: [
             {label: 'Start at chapter 01', to: '/separation-of-concerns/'},
-            {label: 'All seventeen chapters', to: '/'},
+            {label: 'All twenty chapters', to: '/'},
             {label: 'The videos', to: '/videos/'},
           ],
         },

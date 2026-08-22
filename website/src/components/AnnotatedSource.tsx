@@ -3,7 +3,7 @@ import {Highlight} from 'prism-react-renderer';
 import {cwtfPrismDark} from '@site/src/theme/prismTheme';
 
 /**
- * Literate-programming layout for the two long chapters — 04 (412 lines) and
+ * Literate-programming layout for the two long chapters - 04 (412 lines) and
  * 17 (541). Both are really one long walk through one long file, so the file
  * stays pinned on the right and the notes walk down it, lighting the lines
  * each note is about.

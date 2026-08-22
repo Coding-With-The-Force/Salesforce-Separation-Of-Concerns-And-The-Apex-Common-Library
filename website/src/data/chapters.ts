@@ -6,7 +6,7 @@
  */
 
 export type TemplateKey = 'standard' | 'pattern' | 'implementation' | 'annotated';
-export type PartKey = 'intro' | 'application' | 'uow' | 'service' | 'domain' | 'selector' | 'mocks';
+export type PartKey = 'intro' | 'application' | 'uow' | 'service' | 'domain' | 'selector' | 'mocks' | 'di';
 
 export interface Chapter {
   n: number;
@@ -16,7 +16,7 @@ export interface Chapter {
   short: string;
   /** New canonical path. */
   slug: string;
-  /** The MkDocs URL this replaces — used to generate the redirect. */
+  /** The MkDocs URL this replaces - used to generate the redirect. */
   legacy: string;
   /** Source file in docs/. */
   file: string;
@@ -44,6 +44,7 @@ export const PARTS: Part[] = [
   {key: 'domain', title: 'The Domain layer', layer: 'domain'},
   {key: 'selector', title: 'The Selector layer', layer: 'selector'},
   {key: 'mocks', title: 'The Apex Mocks library'},
+  {key: 'di', title: 'Dependency Injection with Force DI'},
 ];
 
 export const TEMPLATE_LABEL: Record<TemplateKey, string> = {
@@ -147,7 +148,7 @@ export const CHAPTERS: Chapter[] = [
     slug: '/service-layer/',
     legacy: '/07-The-Service-Layer',
     file: '07-The-Service-Layer.md',
-    blurb: "The layer where your business logic lives",
+    blurb: "The layer where your business logic lives.",
     video: '5tM_MHV1ypY',
     duration: '24:08',
     read: '10 min',
@@ -190,7 +191,7 @@ export const CHAPTERS: Chapter[] = [
     slug: '/domain-layer/',
     legacy: '/10-The-Domain-Layer',
     file: '10-The-Domain-Layer.md',
-    blurb: 'A representation of an object/database table that incorporates both its behaviour and data.',
+    blurb: 'A representation of an object/database table that incorporates both its behavior and data.',
     video: 'ZUDwBW2PftA',
     duration: '21:04',
     read: '8 min',
@@ -204,7 +205,7 @@ export const CHAPTERS: Chapter[] = [
     slug: '/domain-layer/implementing/',
     legacy: '/11-Implementing-The-Domain-Layer-with-the-Apex-Common-Library',
     file: '11-Implementing-The-Domain-Layer-with-the-Apex-Common-Library.md',
-    blurb: 'How to implement the Domain Layer with the assistance of the Apex Common Library',
+    blurb: 'How to implement the Domain Layer with the assistance of the Apex Common Library.',
     video: '9kbUvY1uMIE',
     duration: '38:50',
     read: '13 min',
@@ -218,7 +219,7 @@ export const CHAPTERS: Chapter[] = [
     slug: '/selector-layer/builder-pattern/',
     legacy: '/12-The-Builder-Pattern',
     file: '12-The-Builder-Pattern.md',
-    blurb: 'A creational design pattern that allows for the step-by-step construction of complex objects',
+    blurb: 'A creational design pattern that allows for the step-by-step construction of complex objects.',
     video: 'frke3NN0F90',
     duration: '17:29',
     read: '9 min',
@@ -232,7 +233,7 @@ export const CHAPTERS: Chapter[] = [
     slug: '/selector-layer/',
     legacy: '/13-The-Selector-Layer',
     file: '13-The-Selector-Layer.md',
-    blurb: 'Your org\'s SOQL transactions live here',
+    blurb: 'Your org\'s SOQL queries live here.',
     video: 'cPU6D-TpLvs',
     duration: '27:31',
     read: '7 min',
@@ -246,7 +247,7 @@ export const CHAPTERS: Chapter[] = [
     slug: '/selector-layer/implementing/',
     legacy: '/14-Implementing-the-Selector-Layer-with-the-Apex-Common-Library',
     file: '14-Implementing-the-Selector-Layer-with-the-Apex-Common-Library.md',
-    blurb: 'How to implement the seleector layer using the Apex Common Library',
+    blurb: 'How to implement the Selector Layer using the Apex Common Library.',
     video: '-ZZbRA2-Gew',
     duration: '36:14',
     read: '16 min',
@@ -296,6 +297,50 @@ export const CHAPTERS: Chapter[] = [
     read: '33 min',
     template: 'implementation',
     part: 'mocks',
+  },
+  {
+    n: 18,
+    title: 'Dependency Injection and Inversion of Control',
+    short: 'Dependency Injection & IoC',
+    slug: '/force-di/pattern/',
+    legacy: '/18-Dependency-Injection-and-Inversion-of-Control',
+    file: '18-Dependency-Injection-and-Inversion-of-Control.md',
+    blurb: 'Ask for the interface, let configuration decide the class.',
+    video: 'oce2QO-E_3k',
+    duration: '21:07',
+    read: '8 min',
+    template: 'pattern',
+    part: 'di',
+  },
+  {
+    n: 19,
+    title: 'Implementing Force DI Bindings, Modules and Providers',
+    short: 'Implementing Force DI',
+    slug: '/force-di/implementing/',
+    legacy: '/19-Implementing-Force-DI-Bindings-Modules-and-Providers',
+    file: '19-Implementing-Force-DI-Bindings-Modules-and-Providers.md',
+    blurb:
+      'Wiring up di_Binding__mdt records, modules and providers to resolve dependencies at runtime.',
+    video: 'YzaI5Ddfwkg',
+    duration: '64:42',
+    read: '15 min',
+    template: 'implementation',
+    part: 'di',
+  },
+  {
+    n: 20,
+    title: 'TDD and Mocking with Force DI',
+    short: 'TDD & Mocking with Force DI',
+    slug: '/force-di/testing/',
+    legacy: '/20-TDD-and-Mocking-with-Force-DI',
+    file: '20-TDD-and-Mocking-with-Force-DI.md',
+    blurb:
+      'True unit tests with Test.createStub and runtime binding overrides.',
+    video: '-esf8Q_Vp7U',
+    duration: '31:36',
+    read: '11 min',
+    template: 'implementation',
+    part: 'di',
   },
 ];
 
