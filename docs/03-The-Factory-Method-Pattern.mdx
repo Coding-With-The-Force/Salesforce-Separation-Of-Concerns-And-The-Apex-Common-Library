@@ -30,7 +30,7 @@ public with sharing class Task_Service_Impl
             if(objectType == Account.getSObjectType()){
 
                 //Accounts (and the other object types below) is not the same as the regular Account object. 
-                //This is further explained in the domain layer section of this wiki. Basically you name your domain class
+                //This is further explained in the domain layer chapter of this guide. Basically you name your domain class
                 //the plural version of the object the domain represents
                 new Accounts().createTasks(recordIds);
             }
@@ -83,7 +83,7 @@ Basically it reduces your need to declare concrete class/object types in your co
 
 ---
 
-## Where is it used in the Apex Common Library
+## Where is it used in the Apex Common Library?
 
 It's leveraged heavily by the fflib_Application class, which you can [find out more about here.](/application/fflib-application/)
 

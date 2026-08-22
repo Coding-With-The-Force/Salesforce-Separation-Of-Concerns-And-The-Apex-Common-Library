@@ -19,7 +19,7 @@ To make this super simple, Apex Mocks is an excellent framework that allows you 
 
 ## Do you have to use the Apex Common Library to use Apex Mocks?
 
-While you don't have to use the Apex Common Library to use Apex Mocks, they are built to work extremely well together. Without the use of the Apex Common Library you will need to ensure that all of your classes utilize [dependency injection](https://en.wikipedia.org/wiki/Dependency_injection). While this isn't a massive feat, it's something you have to be cognizant of. If you decide to use the Apex Common library and leverage [the fflib\_Application class factory](/application/fflib-application/) you can leverage the [setMock methods](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_Application.cls#L114) to avoid needing to set up all your classes using dependency injection. It's pretty convenient and makes the whole situation a bit easier. We'll take a look at both methods below: 
+While you don't have to use the Apex Common Library to use Apex Mocks, they are built to work extremely well together. Without the use of the Apex Common Library you will need to ensure that all of your classes utilize [dependency injection](https://en.wikipedia.org/wiki/Dependency_injection). While this isn't a massive feat, it's something you have to be cognizant of. If you decide to use the Apex Common Library and leverage [the fflib\_Application class factory](/application/fflib-application/) you can leverage the [setMock methods](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_Application.cls#L114) to avoid needing to set up all your classes using dependency injection. It's pretty convenient and makes the whole situation a bit easier. We'll take a look at both methods below: 
 
 _**Using Apex Mocks without Apex Common Example**_
 
@@ -219,7 +219,7 @@ As you can see, in this example we no longer leverage dependency injection to ge
 Now that we've seen how to set up a mock class with or without Apex Common, let's figure out all the cool things Apex Mocks has to allow you to assert your logic operated in the way you anticipated it would! We'll start with a section on what stubbing is below!
 
 ---
-## What is Stubbing and how to Stub
+## What is Stubbing, and How Do You Stub?
 
 Soooooo, what exactly is stubbing? Basically it's the act of providing fake return responses for a mocked class's methods and it's super extra important when setting up your unit tests because without them, well frankly nothing is gonna work. So let's check out how to do stubbing below:
 
@@ -330,7 +330,7 @@ List<Case> caseMatchingList = (List<Case>)fflib_Match.sObjectsWith(new List<Map<
 ((fflib_ISObjectUnitOfWork)mocks.verify(mockUOW,1)).registerDirty(caseList);
 ```
 
-Alright alright alright, you might be looking at this and being like, "But bruh why make a matcher at all to get this done? Why not just keep it simple and make another list of cases to represent the changes". Fair enough question hombre, here's the simple answer... it's not gonna work, trust me, lol. Basically ApexMocks needs a way to internally check these events actually occurred and that matcher we set up is the key to doing that. If you wanna dive deep into how it works feel free, but that is a whole different subject we're not gonna get into the weeds of. 
+Alright alright alright, you might be looking at this and being like, "But bruh why make a matcher at all to get this done? Why not just keep it simple and make another list of cases to represent the changes". Fair enough question hombre, here's the simple answer... it's not gonna work, trust me, lol. Basically Apex Mocks needs a way to internally check these events actually occurred and that matcher we set up is the key to doing that. If you wanna dive deep into how it works feel free, but that is a whole different subject we're not gonna get into the weeds of. 
 
 So we can see, I think, that this is extremely useful in terms of verifying our logic occurred in the right order and updated our data as anticipated before calling the method in one of our mocked classes. Pretty cool, makes our unit testing that much more accurate.
 
@@ -409,10 +409,10 @@ Also worth noting, don't forget to wrap methods you are truly testing (that will
 ---
 ## How to test important method side-effects truly occurred (Answering)
 
-It is not at all uncommon to have parameters passed into a method by reference and for that method to update those parameters but not pass them back. Some people refer to this as method side effects. To truly do good unit tests however we should mock those side effects as well. That is where the [fflib_Answer interface](https://github.com/apex-enterprise-patterns/fflib-apex-mocks/blob/master/sfdx-source/apex-mocks/main/classes/fflib_Answer.cls) comes into play! Now, unlike most things I've written about in this series, there is a blog post by Eric Kintzer that already exists for this apex mocks topic that is excellent and well... frankly I don't need to re-invent the wheel here. Please go check out how to do [Answering with Apex Mocks here.](https://cropredysfdc.com/2019/05/03/apexmocks-answers-and-void-no-argument-domain-methods/) .
+It is not at all uncommon to have parameters passed into a method by reference and for that method to update those parameters but not pass them back. Some people refer to this as method side effects. To truly do good unit tests however we should mock those side effects as well. That is where the [fflib_Answer interface](https://github.com/apex-enterprise-patterns/fflib-apex-mocks/blob/master/sfdx-source/apex-mocks/main/classes/fflib_Answer.cls) comes into play! Now, unlike most things I've written about in this series, there is a blog post by Eric Kintzer that already exists for this apex mocks topic that is excellent and well... frankly I don't need to re-invent the wheel here. Please go check out how to do [Answering with Apex Mocks here](https://cropredysfdc.com/2019/05/03/apexmocks-answers-and-void-no-argument-domain-methods/).
 
 ---
-## How to check method call order 
+## How to check method call order
 
 Sometimes when you are doing unit tests it's extremely important to verify the order in which your methods were called. Maybe, depending on what data your method receives your mock class's methods could be called in varying orders. It's best to check that the code is actually doing that! If you do need to check for that in your code, no worries, that is why the [fflib_InOrder class](https://github.com/apex-enterprise-patterns/fflib-apex-mocks/blob/master/sfdx-source/apex-mocks/main/classes/fflib_InOrder.cls) exists! Thankfully this is yet another area I really don't need to cover again in this guide as a good blog post exists covering this topic as well! If you need to check method ordering in your unit testing, [please check out the blog post here!](https://xonoxforce.wordpress.com/2017/03/26/inorder-verify/)
 
@@ -533,7 +533,7 @@ acc = (Account)fflib_ApexMocksUtils.setReadOnlyFields(
 
 ## Example Apex Mocks Classes
 
-[Task_Service_Impl_Test](https://github.com/Coding-With-The-Force/Salesforce-Separation-Of-Concerns-And-The-Apex-Common-Library/blob/main/src/classes/Apex_Common_Abstract_Task_Factory_Pattern_Example/Task_Service_Impl_Test.cls) - Apex Mocks test class example that uses the Apex Common library.
+[Task_Service_Impl_Test](https://github.com/Coding-With-The-Force/Salesforce-Separation-Of-Concerns-And-The-Apex-Common-Library/blob/main/src/classes/Apex_Common_Abstract_Task_Factory_Pattern_Example/Task_Service_Impl_Test.cls) - Apex Mocks test class example that uses the Apex Common Library.
 
 ---
 

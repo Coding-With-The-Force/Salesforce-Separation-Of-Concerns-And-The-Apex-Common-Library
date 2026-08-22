@@ -14,7 +14,7 @@ import {APPLICATION_CLS} from '@site/src/snippets/application';
 
 Quality question... I mean honestly wtf is this thing? Lol, sorry, let's figure it out together. The fflib_Application class is around for two primary purposes. The first is to allow you an extremely abstract way of creating new instances of your [unit of work](/unit-of-work/pattern/), [service layer](/service-layer/implementing/), [domain layer](/domain-layer/implementing/) and [selector layer](/selector-layer/implementing/) in the [Apex Common Library](/apex-common-library/) through the use of [the factory pattern](/application/factory-method-pattern/). The second is that implementing this application class is imperative if you want to leverage the Apex Mocks unit testing library. It depends on this Application Factory being implemented.
 
-Most importantly though, if you understand how interfaces, inheritance and polymorphism work implementing this class allows you to write extremely abstract Salesforce implementations, which we'll discuss more in sections below
+Most importantly though, if you understand how interfaces, inheritance and polymorphism work implementing this class allows you to write extremely abstract Salesforce implementations, which we'll discuss more in the sections below.
 
 ---
 
@@ -26,7 +26,7 @@ Say for instance I have a decent-sized Salesforce instance and our business has 
 
 No matter what, we should probably place the task creation logic in our domain layer because it's relevant to each individual object, but pretend for a second that we have like 20 different objects we need this kind of functionality on. Maybe we need the executed logic in an abstract "task creator" button that can be placed on any lightning app builder page and maybe some overnight batch jobs need to execute the logic too. 
 
-Well... what do we do? Let's just take the abstract "Task Creator" button we might want to place on any object in our system. We could call each individual domain layer class's task creation logic in the code based on the object we were on (code example below), but that logic tree could get massive and it's not super ideal. 
+Well... what do we do? Let's just take the abstract "Task Creator" button we might want to place on any object in our system. We could call each individual domain layer class's task creation logic in the codebased on the object we were on (code example below), but that logic tree could get massive and it's not super ideal. 
 
 _Task Service example with object logic tree_
 ```apex
@@ -477,4 +477,4 @@ Application.domain.newInstance(accountList, Account.SObjectType);
 
 ## The setMock Methods
 
-In every factory class inside the fflib_Application class there is a [setMock method](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_Application.cls#L114). These methods are used to pass in mock/fake versions of your classes for [unit testing purposes](/apex-mocks/unit-vs-integration-tests/). Make sure to leverage this method if you are planning to do unit testing. Leveraging this method eliminates the need to use [dependency injection](https://en.wikipedia.org/wiki/Dependency_injection) in your classes to allow for mocking. There are examples of how to leverage this method in the [Implementing Mock Unit Testing with Apex Mocks](/apex-mocks/implementing/) section of this wiki.
+In every factory class inside the fflib_Application class there is a [setMock method](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_Application.cls#L114). These methods are used to pass in mock/fake versions of your classes for [unit testing purposes](/apex-mocks/unit-vs-integration-tests/). Make sure to leverage this method if you are planning to do unit testing. Leveraging this method eliminates the need to use [dependency injection](https://en.wikipedia.org/wiki/Dependency_injection) in your classes to allow for mocking. There are examples of how to leverage this method in the [Implementing Mock Unit Tests with the Apex Mocks Library](/apex-mocks/implementing/) chapter of this guide.

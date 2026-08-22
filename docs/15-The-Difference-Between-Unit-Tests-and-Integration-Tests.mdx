@@ -23,7 +23,7 @@ You might be thinking, "How is that possible? We need those queries and those DM
 
 ---
 
-## When Should I use Unit Testing?
+## When Should I Use Unit Testing?
 
 Just because you are leveraging unit testing doesn't mean there still isn't a need for integration tests (more on that below), so when should you do Unit Tests in favor of Integration tests? It's a pretty simple answer. The logic in your class's code could have 40+ paths it could take... maybe even 100... The code in your class could have logic that runs when your code fails, logic that runs when your code is successful, logic that runs when someone creates a $200,000,000 opportunity as opposed to a $2,000 opportunity. There could be so many paths. We DO NOT need an integration test for every single one of those paths. It could take 20+ minutes to run integration tests for all those paths whereas unit testing them could take just seconds. As your codebase grows, if you didn't make these unit tests your test class runs to deploy to prod could take hours... maybe days... we don't want that homie. So when do you unit test? You unit test to test the bajillions of permutations of your class's logic. When do we choose integration tests?? Keep reading. You'll find out below.
 
@@ -37,6 +37,6 @@ Integration testing is when you test your code from point A all the way to point
 
 ---
 
-## When Should I use Integration Testing?
+## When Should I Use Integration Testing?
 
 All Apex classes should have some level of integration testing. I like to write somewhere around 20% of my tests as integration tests and 80% of my tests for a class as unit tests. Typically I will, for each class that has dependencies (classes that the class I'm currently testing calls) write two integration tests for each dependency. One integration test that tests a successful path through my class's code and its dependencies and another that tests failures. This may be, in some people’s opinion, overkill, but I personally feel that it's not an enormous amount of overhead (typically) and it gives me some peace of mind that all of the classes my class I'm testing depends on still operate well with it. So, when to use integration testing? In my opinion, in every test class, but use them sparingly, use them to check that your transactions between classes still work, don't use them to test every logical path in your class's code. That will spiral out of control.

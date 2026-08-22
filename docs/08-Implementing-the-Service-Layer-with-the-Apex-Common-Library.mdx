@@ -36,7 +36,7 @@ This class is where things get a little confusing in my opinion, but here's the 
 
 ```apex
 //This class is what every calling class will actually call to. For more information on the Application class check out the fflib_Application class
-//part of this wiki.
+//part of this guide.
 public with sharing class Task_Service
 {
 	//This literally just calls the Task_Service_Impl class's createTasks method
@@ -56,7 +56,7 @@ public with sharing class Task_Service
 
 ## The Service Implementation Class
 
-This is the concrete business logic implementation. This is effectively the code that isn't super abstract, but is the more custom-built business logic specific to the specific business (or business unit) that needs it to be executed. Basically, this is where your actual business logic should reside. Now, again, you may be asking, but Matt... why not just create a new instance of this class and just use it? Why create some silly interface and some middle man class to call this class. This isn't gonna be superrrrrrr simple to wrap your head around, but bear with me. In the next section we tie all these classes together and paint the bigger picture. An example of a Service Implementation class is below.
+This is the concrete business logic implementation. This is effectively the code that isn't super abstract, but is the more custom-built business logic specific to the specific business (or business unit) that needs it to be executed. Basically, this is where your actual business logic should reside. Now, again, you may be asking, but Matt... why not just create a new instance of this class and just use it? Why create some silly interface and some middleman class to call this class? This isn't gonna be superrrrrrr simple to wrap your head around, but bear with me. In the next section we tie all these classes together and paint the bigger picture. An example of a Service Implementation class is below.
 
 ```apex
 /**
@@ -119,7 +119,7 @@ public with sharing class Task_Service_Impl implements Task_Service_Interface
 
 ## The fflib_Application.ServiceFactory class
 
-The fflib_Application.ServiceFactory class... what is it and how does it fit in here. Well, if you read through all of [Part 4: The fflib\_Application Class](/application/fflib-application/) then you hopefully have some solid background on what it's used for and why, but it's a little trickier to conceptualize for the service class so let's go over it a bit again. Basically it leverages [The Factory Pattern](/application/factory-method-pattern/) to dynamically generate the correct code implementations at run time (when your code is actually running).  
+The fflib_Application.ServiceFactory class... what is it and how does it fit in here. Well, if you read through all of [Chapter 04: The fflib\_Application Class](/application/fflib-application/) then you hopefully have some solid background on what it's used for and why, but it's a little trickier to conceptualize for the service class so let's go over it a bit again. Basically it leverages [The Factory Pattern](/application/factory-method-pattern/) to dynamically generate the correct code implementations at run time (when your code is actually running).  
 
 This is awesome for tons of stuff, but it's especially awesome for the service layer. Why? You'll notice that as your Salesforce instance grows, so does the number of interested parties. All of a sudden you've gone from one or two business units to 25 different business units and what happens when those businesses need the same type of functionality with differing logic? You could make tons of if else statements determining what the user type is and then calling different methods based on that user's type... but maybe there's an easier way. If you are an ISV (a managed package provider) what I'm about to show you is likely 1000 times more important for you. If your product grows and people start adopting it, you absolutely need a way to allow flexibility in your application's business logic, maybe even allow them to write their own logic and have a way for your code to execute it??
 
@@ -212,7 +212,7 @@ public with sharing class Abstract_Task_Creator_Controller
 
 ```
 
-Now you might be wracking your brain right now and being like... ok, so what... but look closer Simba. This controller will literally never grow, neither will your Application class or your ServiceFactory class we've built above (well the Application class might, but very little). This Task_Service middle man layer is so abstract you can swap out service implementations on the fly whenever you want and this controller will NEVER NEED TO BE UPDATED (at least not for task service logic)! Basically the only thing that will change at this point is your custom metadata type (object), the custom permissions you map to users and you'll add more variations of the Task Service Implementation classes throughout time for your various business units that get onboarded and want to use it. However, your controllers (and other places in the code that call the service) will never know the difference. Wyld right. If you're lost right now, let's follow the chain of events step by step in order to clarify some things:
+Now you might be wracking your brain right now and being like... ok, so what... but look closer Simba. This controller will literally never grow, neither will your Application class or your ServiceFactory class we've built above (well the Application class might, but very little). This Task_Service middleman layer is so abstract you can swap out service implementations on the fly whenever you want and this controller will NEVER NEED TO BE UPDATED (at least not for task service logic)! Basically the only thing that will change at this point is your custom metadata type (object), the custom permissions you map to users and you'll add more variations of the Task Service Implementation classes throughout time for your various business units that get onboarded and want to use it. However, your controllers (and other places in the code that call the service) will never know the difference. Wyld right. If you're lost right now, let's follow the chain of events step by step in order to clarify some things:
 
 1) Controller calls the Task_Service class's (the middleman) createTasks() method.
 2) Task_Service's createTasks() method calls its service() method.

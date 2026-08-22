@@ -138,7 +138,7 @@ public override String getOrderBy(){
 
 ## The fflib_QueryFactory class and Custom Queries
 
-Chances are you're gonna wanna query something that's not immediately available via the fflib_SObjectSelector class, well, lucky for you, the fflib_QueryFactory class is here just for that! Here is an example of a custom query via the use of the fflib_QueryFactory class (a list of all available query factory methods is at the bottom of this wiki article).
+Chances are you're gonna wanna query something that's not immediately available via the fflib_SObjectSelector class, well, lucky for you, the fflib_QueryFactory class is here just for that! Here is an example of a custom query via the use of the fflib_QueryFactory class (a list of all available query factory methods is at the bottom of this chapter).
 
 ```apex
 //This allows us to select all new cases in the system using the QueryFactory in fflib_SObjectSelector
@@ -173,9 +173,9 @@ public List<Case> innerQueryExample(){
 }
 ```
 
-For more information on the [QueryFactory method you can take a look at the code here](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_SObjectSelector.cls#L367)
+For more information, take a look at the code for the [QueryFactory method](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_SObjectSelector.cls#L367).
 
-For more information on the [addQueryFactorySubselect method you can take a look at the code here](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_SObjectSelector.cls)
+For more information, take a look at the code for the [addQueryFactorySubselect method](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_SObjectSelector.cls).
 
 ---
 
@@ -196,7 +196,7 @@ public List<AggregateResult> selectAverageTacosPerTacoBell(){
 
 ---
  
-## The fflib_SObjectSelector Class methods Cheat Sheet
+## The fflib_SObjectSelector Class Methods Cheat Sheet
 
 While there are many other methods within the [fflib_SObjectSelector class](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_SObjectSelector.cls) below are the methods most commonly utilized in implementations.
 
@@ -216,12 +216,12 @@ While there are many other methods within the [fflib_SObjectSelector class](http
 
 8) **_[newQueryFactory](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_SObjectSelector.cls#L350)_** - This method returns a new instance of the fflib_QueryFactory class and uses your selector class's fields listed in the getSObjectFieldList method and orders them by whatever you set the default orderby to in your selector class.
 
-9) **_[addQueryFactorySubselect(fflib_QueryFactory parentQueryFactory)](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_SObjectSelector.cls#L393)_** - This method basically just creates a subselect query (an inner query) for the "parentQueryFactory" and then returns the parent query with a subselect query that represents the query for your object's selector class (more info on how this method works in the sub-select query section in this wiki article).
+9) **_[addQueryFactorySubselect(fflib_QueryFactory parentQueryFactory)](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_SObjectSelector.cls#L393)_** - This method basically just creates a subselect query (an inner query) for the "parentQueryFactory" and then returns the parent query with a subselect query that represents the query for your object's selector class (more info on how this method works in the sub-select query section of this chapter).
 
 
 ---
 
-## The fflib_QueryFactory Class methods Cheat Sheet
+## The fflib_QueryFactory Class Methods Cheat Sheet
 
 While there are many other methods within the [fflib_QueryFactory class](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_QueryFactory.cls) below are the methods most commonly utilized in implementations.
 

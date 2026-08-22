@@ -11,7 +11,7 @@ hide_title: true
 
 ## What is the Domain Layer?
 
-The Domain Layer is, ["An object model of the domain that incorporates both behavior and data"](https://martinfowler.com/eaaCatalog/domainModel.html). - Martin Fowler  
+The Domain Layer is ["an object model of the domain that incorporates both behavior and data"](https://martinfowler.com/eaaCatalog/domainModel.html). — Martin Fowler  
 
 In most coding languages you need to connect to the database, query for the data and then you create wrapper classes to represent each underlying table in your database(s) to allow you to define how that particular table (object) should behave. Salesforce, however, already does a lot of this for you. For instance, there is no need to connect to a database; declarative behavior for your tables (objects) is already represented and your tables (objects) already have wrapper classes pre-defined for them (Ex: `Contact cont = new Contact()`).  
 
@@ -228,7 +228,7 @@ In the event you are actually performing DML operations in your Domain class, yo
 
 ## Implementing the Domain Layer
 
-To find out how to implement the Domain Layer using Apex Common, continue reading here: [Implementing the Domain Layer with the Apex Common Library](/domain-layer/implementing/). If you're not interested in utilizing the Apex Common library for this layer you can implement really any trigger framework and the core of the domain layer will be covered.
+To find out how to implement the Domain Layer using Apex Common, continue reading here: [Implementing the Domain Layer with the Apex Common Library](/domain-layer/implementing/). If you're not interested in utilizing the Apex Common Library for this layer you can implement really any trigger framework and the core of the domain layer will be covered.
 
 **_Libraries That Could Be Used for the Domain Layer_**
 

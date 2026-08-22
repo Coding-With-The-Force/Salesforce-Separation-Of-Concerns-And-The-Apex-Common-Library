@@ -9,9 +9,9 @@ hide_title: true
 
 ---
 
-## What is the Unit of Work Pattern (UOW) 
+## What is the Unit of Work Pattern (UOW)?
 
-A [Unit of Work](https://martinfowler.com/eaaCatalog/unitOfWork.html), "Maintains a list of objects affected by a business transaction and coordinates the writing out of changes and the resolution of concurrency problems".
+A [Unit of Work](https://martinfowler.com/eaaCatalog/unitOfWork.html) "maintains a list of objects affected by a business transaction and coordinates the writing out of changes and the resolution of concurrency problems". — Martin Fowler
 
 The goal of the unit of work pattern is to simplify DML in your code and only commit changes to the database/objects when it's truly time to commit. Considering the many limits around DML in Salesforce, it's important to employ this pattern in your org in some way. It's also important to note that it "maintains a list of objects affected by a business transaction", which indicates that the UOW pattern should be prevalent in your service layer (The service layer houses business logic). 
 
@@ -20,7 +20,7 @@ The UOW pattern also ensures we don't have data inconsistencies in our Salesforc
 
 ---
 
-## Benefits of the using the Unit of Work Pattern in Salesforce
+## Benefits of Using the Unit of Work Pattern in Salesforce
 
 There are several, but here are the biggest of them all... massive amounts of code reduction, having consistency with your DML transactions, doing the minimal DML statements feasible (bulkification) and DML mocking in unit tests. Let's figure out how we reduce the code and make it more consistent first.
 
@@ -35,4 +35,4 @@ The unit of work pattern also helps a great deal with code bulkification. It enc
 
 **_DML Mocking for Unit Tests_**
 
-If you're not sure what mocking and unit test are, then definitely check out [my section on that in the wiki here](/apex-mocks/unit-vs-integration-tests/). Basically, in an ideal scenario you would like to do unit testing, but unit testing depends on you having the ability to mock classes for your tests (basically creating fake versions of your class you have complete control over in your tests). Creating this layer that handles your dml transactions allows you to mock that layer in your classes when doing unit tests... If this is confusing, no worries, we'll discuss it a bunch more later in the last three sections of this wiki.
+If you're not sure what mocking and unit tests are, then definitely check out [my chapter on that here](/apex-mocks/unit-vs-integration-tests/). Basically, in an ideal scenario you would like to do unit testing, but unit testing depends on you having the ability to mock classes for your tests (basically creating fake versions of your class that you have complete control over in your tests). Creating this layer that handles your DML transactions allows you to mock that layer in your classes when doing unit tests... If this is confusing, no worries, we'll discuss it a bunch more later in the last three chapters of this guide.
