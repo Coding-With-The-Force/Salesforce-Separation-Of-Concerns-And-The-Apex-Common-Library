@@ -53,7 +53,7 @@ public inherited sharing class Cases extends fflib_SObjectDomain{
     }
 }
 ```
-To understand why the Constructor inner class is necessary in these classes check out the triggerHandler method in the fflib_SObjectDomain class here: [fflib_SObjectDomain triggerHandler method](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_SObjectDomain.cls#L421)
+To understand why the Constructor inner class is necessary in these classes check out the triggerHandler method in the fflib_SObjectDomain class here: [fflib_SObjectDomain triggerHandler method](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_SObjectDomain.cls#L376)
 
 ---
 ## Trigger Implementations using the Apex Common Library's Domain Layer
@@ -78,9 +78,9 @@ Technically, you could leverage trigger.new, trigger.oldMap and so on in your do
 
 Now you might be wondering, "This Domain class is supposed to be able to run in trigger context... I need to access those variables!!". No worries, you can still access them when you need them. If you've worked in SF long enough, with time you start to learn the only trigger context variables you need access to are trigger.new and trigger.oldMap. The rest typically really shouldn't be used. Trust me... you don't need them.
 
-So how do you actually get access to trigger.oldMap and trigger.new? Well that requires us to take a closer look at [the triggerHandler method](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_SObjectDomain.cls#L392) in the fflib_SObjectDomain class that our actual triggers call (example just above this section).
+So how do you actually get access to trigger.oldMap and trigger.new? Well that requires us to take a closer look at [the triggerHandler method](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_SObjectDomain.cls#L376) in the fflib_SObjectDomain class that our actual triggers call (example just above this section).
 
-Basically when our trigger calls that triggerHandler method, it eventually runs the code below ([source code here](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_SObjectDomain.cls#L430)):
+Basically when our trigger calls that triggerHandler method, it eventually runs the code below ([source code here](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_SObjectDomain.cls#L414)):
 
 ```apex
  if(isInsert) domainObject = domainConstructor.construct(newRecords);
@@ -89,7 +89,7 @@ Basically when our trigger calls that triggerHandler method, it eventually runs 
  else if(isUndelete) domainObject = domainConstructor.construct(newRecords);
 ```
 
-The code above essentially passes trigger.new to the [Records variable](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_SObjectDomain.cls#L47) in the fflib_SObjectDomain class your Domain class extends when you are doing an insert, update or undelete operation; and it passes in trigger.oldMap.values to the Records variable if you are doing a delete operation.
+The code above essentially passes trigger.new to the [Records variable](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_SObjectDomain.cls#L48) in the fflib_SObjectDomain class your Domain class extends when you are doing an insert, update or undelete operation; and it passes in trigger.oldMap.values to the Records variable if you are doing a delete operation.
 
 Ok that's cool, but how do you access trigger.oldMap when you need it?? Well, the only time you need trigger.oldMap is in update operations, so that's the only time it's accessible. When you set up your onBeforeUpdate or onAfterUpdate methods in your Domain class you'll set them up like what you see below:
 
@@ -126,8 +126,8 @@ While there are many other accessible methods in the [fflib_SObjectDomain class]
 15)  **[handleAfterUpdate()](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_SObjectDomain.cls#L241) -** This method is called in the triggerHandler method when an afterUpdate is happening in the trigger. By default it calls the onValidate and onAfterUpdate methods but it can be overridden and implemented in a different way if desired.
 16)  **[handleAfterDelete()](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_SObjectDomain.cls#L257) -** This method is called in the triggerHandler method when an afterDelete is happening in the trigger. By default it calls the onAfterDelete method but it can be overridden and implemented in a different way if desired.
 17)  **[handleAfterUndelete()](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_SObjectDomain.cls#L270) -** This method is called in the triggerHandler method when an afterUndelete is happening in the trigger. By default it calls the onAfterUndelete method but it can be overridden and implemented in a different way if desired.  
-18) **[getChangedRecords(Set&lt;String> fieldNames)](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_SObjectDomain.cls#L306) -** This method will return a list of records that have had their fields changed (the fields specified in the method parameter passed in).  
-19) **[`getChangedRecords(Set<Schema.SObjectField> fieldTokens)`](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_SObjectDomain.cls#L334) -** This method will return a list of records that have had their fields changed (the fields specified in the method parameter passed in). I would suggest using this method over the one above. Strongly typed field names are a better choice in my opinion so the system knows your code depends on that field.
+18) **[getChangedRecords(Set&lt;String> fieldNames)](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_SObjectDomain.cls#L290) -** This method will return a list of records that have had their fields changed (the fields specified in the method parameter passed in).  
+19) **[`getChangedRecords(Set<Schema.SObjectField> fieldTokens)`](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_SObjectDomain.cls#L318) -** This method will return a list of records that have had their fields changed (the fields specified in the method parameter passed in). I would suggest using this method over the one above. Strongly typed field names are a better choice in my opinion so the system knows your code depends on that field.
 
 ### Only run your logic against records that actually changed
 
@@ -213,7 +213,7 @@ This harness is complementary to, not a replacement for, the mocking you'll lear
 ---
 ## The Configuration Inner Class for fflib_SObjectDomain (Setting trigger state and trigger security)
 
-Inside the fflib_SObjectDomain class you'll find an inner class called [Configuration](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_SObjectDomain.cls#L586). This inner class allows you to enable and disable Trigger State as well as enable and disable CRUD security in your trigger. By default trigger state is disabled and CRUD security is enforced.
+Inside the fflib_SObjectDomain class you'll find an inner class called [Configuration](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_SObjectDomain.cls#L571). This inner class allows you to enable and disable Trigger State as well as enable and disable CRUD security in your trigger. By default trigger state is disabled and CRUD security is enforced.
 
 The `Configuration` calls belong in your domain class's own constructor, right after the `super(records)` call - that way the configuration applies every time the class is constructed, no matter which trigger phase (or test) constructed it:
 
@@ -311,7 +311,7 @@ public override void onAfterInsert(){
 
 Small and inconspicuous - but every domain class ends up with its own copy, each with its own slightly different flag names, and there's no control over where those flags get flipped from. The code base drifts into inconsistency one boolean at a time. The `TriggerEvent` inner class replaces all of that with a single fluent API, one line, that every developer on the team can use and find the same way.
 
-Inside the fflib_SObjectDomain class is an inner class called [TriggerEvent](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_SObjectDomain.cls#L497) that allows you to turn on and off the various trigger events at will. By default all trigger events are turned on.
+Inside the fflib_SObjectDomain class is an inner class called [TriggerEvent](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_SObjectDomain.cls#L482) that allows you to turn on and off the various trigger events at will. By default all trigger events are turned on.
 
 **_Example Code for shutting down and re-enabling a portion of a domain trigger_**
 ```apex
@@ -324,45 +324,45 @@ fflib_SObjectDomain.getTriggerEvent(Cases.class).enableBeforeInsert();
 
 The following is a list of trigger event methods and what they do:
 
-1) **[TriggerEvent.enableBeforeInsert()](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_SObjectDomain.cls#L514) -** This method enables the before insert portion of the trigger.  
+1) **[TriggerEvent.enableBeforeInsert()](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_SObjectDomain.cls#L499) -** This method enables the before insert portion of the trigger.  
 
-2) **[TriggerEvent.enableBeforeUpdate()](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_SObjectDomain.cls#L515) -** This method enables the before update portion of the trigger.
+2) **[TriggerEvent.enableBeforeUpdate()](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_SObjectDomain.cls#L500) -** This method enables the before update portion of the trigger.
 
-3) **[TriggerEvent.enableBeforeDelete()](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_SObjectDomain.cls#L516) -** This method enables the before delete portion of the trigger.
+3) **[TriggerEvent.enableBeforeDelete()](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_SObjectDomain.cls#L501) -** This method enables the before delete portion of the trigger.
 
-4) **[TriggerEvent.disableBeforeInsert()](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_SObjectDomain.cls#L518) -** This method disables the before insert portion of the trigger.
+4) **[TriggerEvent.disableBeforeInsert()](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_SObjectDomain.cls#L503) -** This method disables the before insert portion of the trigger.
 
-5) **[TriggerEvent.disableBeforeUpdate()](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_SObjectDomain.cls#L519) -** This method disables the before update portion of the trigger.
+5) **[TriggerEvent.disableBeforeUpdate()](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_SObjectDomain.cls#L504) -** This method disables the before update portion of the trigger.
 
-6) **[TriggerEvent.disableBeforeDelete()](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_SObjectDomain.cls#L520) -** This method disables the before delete portion of the trigger.
+6) **[TriggerEvent.disableBeforeDelete()](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_SObjectDomain.cls#L505) -** This method disables the before delete portion of the trigger.
 
-7) **[TriggerEvent.enableAfterInsert()](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_SObjectDomain.cls#L523) -** This method enables the after insert portion of the trigger.  
+7) **[TriggerEvent.enableAfterInsert()](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_SObjectDomain.cls#L508) -** This method enables the after insert portion of the trigger.  
 
-8) **[TriggerEvent.enableAfterUpdate()](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_SObjectDomain.cls#L524) -** This method enables the after update portion of the trigger.
+8) **[TriggerEvent.enableAfterUpdate()](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_SObjectDomain.cls#L509) -** This method enables the after update portion of the trigger.
 
-9) **[TriggerEvent.enableAfterDelete()](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_SObjectDomain.cls#L525) -** This method enables the after delete portion of the trigger.
+9) **[TriggerEvent.enableAfterDelete()](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_SObjectDomain.cls#L510) -** This method enables the after delete portion of the trigger.
 
-10) **[TriggerEvent.enableAfterUndelete()](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_SObjectDomain.cls#L526) -** This method enables the after undelete portion of the trigger.
+10) **[TriggerEvent.enableAfterUndelete()](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_SObjectDomain.cls#L511) -** This method enables the after undelete portion of the trigger.
 
-11) **[TriggerEvent.disableAfterInsert()](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_SObjectDomain.cls#L529) -** This method disables the after insert portion of the trigger.
+11) **[TriggerEvent.disableAfterInsert()](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_SObjectDomain.cls#L514) -** This method disables the after insert portion of the trigger.
 
-12) **[TriggerEvent.disableAfterUpdate()](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_SObjectDomain.cls#L530) -** This method disables the after update portion of the trigger.
+12) **[TriggerEvent.disableAfterUpdate()](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_SObjectDomain.cls#L515) -** This method disables the after update portion of the trigger.
 
-13) **[TriggerEvent.disableAfterDelete()](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_SObjectDomain.cls#L531) -** This method disables the after delete portion of the trigger.
+13) **[TriggerEvent.disableAfterDelete()](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_SObjectDomain.cls#L516) -** This method disables the after delete portion of the trigger.
 
-14) **[TriggerEvent.disableAfterUndelete()](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_SObjectDomain.cls#L532) -** This method disables the after undelete portion of the trigger.
+14) **[TriggerEvent.disableAfterUndelete()](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_SObjectDomain.cls#L517) -** This method disables the after undelete portion of the trigger.
 
-15) **[TriggerEvent.enableAll()](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_SObjectDomain.cls#L534) -** This method enables all portions of the trigger.
+15) **[TriggerEvent.enableAll()](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_SObjectDomain.cls#L519) -** This method enables all portions of the trigger.
 
-16) **[TriggerEvent.disableAll()](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_SObjectDomain.cls#L539) -** This method disables all portions of the trigger.
+16) **[TriggerEvent.disableAll()](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_SObjectDomain.cls#L524) -** This method disables all portions of the trigger.
 
-17) **[TriggerEvent.enableAllBefore()](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_SObjectDomain.cls#L544) -** This method enables all before portions of the trigger.
+17) **[TriggerEvent.enableAllBefore()](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_SObjectDomain.cls#L529) -** This method enables all before portions of the trigger.
 
-18) **[TriggerEvent.disableAllBefore()](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_SObjectDomain.cls#L549) -** This method disables all before portions of the trigger.
+18) **[TriggerEvent.disableAllBefore()](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_SObjectDomain.cls#L534) -** This method disables all before portions of the trigger.
 
-19) **[TriggerEvent.enableAllAfter()](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_SObjectDomain.cls#L554) -** This method enables all after portions of the trigger.
+19) **[TriggerEvent.enableAllAfter()](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_SObjectDomain.cls#L539) -** This method enables all after portions of the trigger.
 
-20) **[TriggerEvent.disableAllAfter()](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_SObjectDomain.cls#L559) -** This method disables all after portions of the trigger.
+20) **[TriggerEvent.disableAllAfter()](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_SObjectDomain.cls#L544) -** This method disables all after portions of the trigger.
 
 
 ---

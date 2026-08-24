@@ -22,16 +22,21 @@ The UOW pattern also ensures we don't have data inconsistencies in our Salesforc
 
 ## Benefits of Using the Unit of Work Pattern in Salesforce
 
-There are several, but here are the biggest of them all... massive amounts of code reduction, having consistency with your DML transactions, doing the minimal DML statements feasible (bulkification) and DML mocking in unit tests. Let's figure out how we reduce the code and make it more consistent first.
+There are several, but here are the biggest of them all:   
+
+1) Having consistency with your DML transactions   
+2) Doing the fewest DML statements feasible (bulkification)   
+3) DML mocking in unit tests.   
+4) Code reduction   
 
 
 **_The Code Reduction and Consistency_**
 
-Think about all the places in your codebase where you insert records, error handle the inserting of your records and manage the transactional state of your records (Savepoints). Maybe if your org is new there's not a ton happening yet, but as it grows the amount of code dealing with that can become enormous and, even worse, inconsistent. I've worked in 12-year-old orgs that had 8000+ lines of code just dedicated to inserting records throughout the system and with every dev who wrote the code a new variety of transaction management took place, different error handling (or none at all), etc. 
+Think about all the places in your codebase where you insert records, error handle the inserting of your records and manage the transactional state of your records (Savepoints). Maybe if your org is new there's not a ton happening yet, but as it grows the amount of code dealing with that can become enormous and, even worse, inconsistent. Think about all of those 12-year-old orgs out there that have 8000+ lines of code just dedicated to inserting records throughout the system and with every dev who wrote the code a new variety of transaction management took place, different error handling (or none at all), etc. 
 
 **_Code Bulkification_**
 
-The unit of work pattern also helps a great deal with code bulkification. It encourages you to finish creating and modifying 100% of your records in your transaction prior to actually committing them (doing the dml transactions) to the database (objects). It makes sure that you are doing that absolute minimal transactions necessary to be successful. For instance, maybe for some reason in your code you are updating cases in one method, and when you're done you call another method and it updates those same cases... why do that? You could register all those updates and update all those cases at once with one DML statement. Whether you realize it at the time or not, every DML statement counts... use them sparingly.
+The unit of work pattern also helps a great deal with code bulkification. It encourages you to finish creating and modifying 100% of your records in your transaction prior to actually committing them (doing the dml transactions) to the database (objects). It makes sure that you are doing that absolute minimal transactions necessary to be successful. For instance, maybe for some reason in your code you are updating cases in one method, and when you're done you call another method and it updates those same cases... why do that? You could register all those updates and update all those cases at once with one Unit of Work commitwork() method call. Whether you realize it at the time or not, every DML statement counts... use them sparingly.
 
 **_DML Mocking for Unit Tests_**
 
@@ -193,7 +198,7 @@ private static List<Schema.SObjectType> MY_SOBJECTS =
 
 ## Why you can't just rely on Apex rolling back for you
 
-"But wait," I hear you say, "Salesforce already rolls back my transaction when something fails. Why do I need a savepoint at all?" Here's the trap: **the platform's automatic rollback only happens when the request fails - and the moment you write a try/catch, you're preventing the request from failing.**
+"But wait," I hear you say, "Salesforce already rolls back my transaction when something fails. Why do I need a savepoint at all?" Here's where it gets weird: **the platform's automatic rollback only happens when the request fails - and the moment you write a try/catch, you're preventing the request from failing.**
 
 Look at this method. It has a deliberate bug in the middle, and a perfectly reasonable-looking catch block that returns a friendly error to the Lightning component that called it:
 
