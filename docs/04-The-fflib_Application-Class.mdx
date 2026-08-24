@@ -198,7 +198,7 @@ public static final fflib_Application.UnitOfWorkFactory UOW =
 After creating this unit of work variable above ^ in your Application class [example here](https://github.com/Coding-With-The-Force/Salesforce-Separation-Of-Concerns-And-The-Apex-Common-Library/blob/main/src/classes/Apex_Common_Abstract_Task_Factory_Pattern_Example/Application.cls) there are four important new instance methods you can leverage to generate a new unit of work:
  
 
-1) _**[newInstance()](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_Application.cls#L57)**_ - This creates a new instance of the unit of work using the SObjectType list passed in the constructor.
+1) _**[newInstance()](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_Application.cls#L62)**_ - This creates a new instance of the unit of work using the SObjectType list passed in the constructor.
 
 _**newInstance() Example Method Call**_
 ```apex
@@ -221,7 +221,7 @@ public with sharing class SomeClass{
 }
 ```
 ---
-2) [newInstance(fflib_SObjectUnitOfWork.IDML dml)](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_Application.cls#L71) - This creates a new instance of the unit of work using the SObjectType list passed in the constructor and a new IDML implementation to do custom DML work not inherently supported by the [fflib_SObjectUnitOfWork class](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_SObjectUnitOfWork.cls). More info on the [IDML interface here](/unit-of-work/fflib-sobjectunitofwork/)
+2) [newInstance(fflib_SObjectUnitOfWork.IDML dml)](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_Application.cls#L75) - This creates a new instance of the unit of work using the SObjectType list passed in the constructor and a new IDML implementation to do custom DML work not inherently supported by the [fflib_SObjectUnitOfWork class](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_SObjectUnitOfWork.cls). More info on the [IDML interface here](/unit-of-work/fflib-sobjectunitofwork/)
 
 _**newInstance(fflib_SObjectUnitOfWork.IDML dml) Example Method Call**_
 ```apex
@@ -264,7 +264,7 @@ public with sharing class SomeClass{
 }
 ```
 ---
-3) **_[newInstance(List&lt;SObjectType> objectTypes)](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_Application.cls#L88)_** - This creates a new instance of the unit of work and overwrites the SObject type list passed in the constructor so you can have a custom order if you need it.
+3) **_[newInstance(List&lt;SObjectType> objectTypes)](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_Application.cls#L91)_** - This creates a new instance of the unit of work and overwrites the SObject type list passed in the constructor so you can have a custom order if you need it.
 
 _**newInstance(List &lt;SObjectType> objectTypes) Example Method Call**_
 ```apex
@@ -292,7 +292,7 @@ public with sharing class SomeClass{
 }
 ```
 ---
-4) **_[newInstance(List &lt;SObjectType> objectTypes, fflib_SObjectUnitOfWork.IDML dml)](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_Application.cls#L104)_** - This creates a new instance of the unit of work and overwrites the SObject type list passed in the constructor so you can have a custom order if you need it and a new IDML implementation to do custom DML work not inherently supported by the [fflib_SObjectUnitOfWork class](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_SObjectUnitOfWork.cls). More info on the [IDML interface here](/unit-of-work/fflib-sobjectunitofwork/)
+4) **_[newInstance(List &lt;SObjectType> objectTypes, fflib_SObjectUnitOfWork.IDML dml)](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_Application.cls#L107)_** - This creates a new instance of the unit of work and overwrites the SObject type list passed in the constructor so you can have a custom order if you need it and a new IDML implementation to do custom DML work not inherently supported by the [fflib_SObjectUnitOfWork class](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_SObjectUnitOfWork.cls). More info on the [IDML interface here](/unit-of-work/fflib-sobjectunitofwork/)
 
 _**newInstance(List&lt;SObjectType> objectTypes, fflib_SObjectUnitOfWork.IDML dml) Example Method Call**_
 ```apex
@@ -343,7 +343,7 @@ public with sharing class SomeClass{
 
 **_The Service Factory_**
 
-Inside the [fflib_Application](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_Application.cls) class there is the [ServiceFactory class](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_Application.cls#L123). Let's first figure out how to instantiate this class:
+Inside the [fflib_Application](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_Application.cls) class there is the [ServiceFactory class](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_Application.cls#L125). Let's first figure out how to instantiate this class:
 
 ```apex
 //This allows us to create a factory for instantiating service classes. You send it the interface for your service class
@@ -359,7 +359,7 @@ public static final fflib_Application.ServiceFactory service =
 
 After creating this service variable above ^ in your Application class [example here](https://github.com/Coding-With-The-Force/Salesforce-Separation-Of-Concerns-And-The-Apex-Common-Library/blob/main/src/classes/Apex_Common_Abstract_Task_Factory_Pattern_Example/Application.cls) there is one important new instance method you can leverage to generate a new service class instance:
 
-1) _**[newInstance(Type serviceClassType)](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_Application.cls#L151)**_ - This method sends back an instance of your service implementation class based on the interface you send in to it.
+1) _**[newInstance(Type serviceClassType)](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_Application.cls#L158)**_ - This method sends back an instance of your service implementation class based on the interface you send in to it.
 
 _**newInstance(Type serviceClassType) Example method call:**_
 ```apex
@@ -371,7 +371,7 @@ Application.service.newInstance(Task_Service_Interface.class);
 
 **_The Selector Factory_**  
 
-Inside the [fflib_Application](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_Application.cls) class there is the [SelectorFactory class](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_Application.cls#L174). Let's first figure out how to instantiate this class:
+Inside the [fflib_Application](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_Application.cls) class there is the [SelectorFactory class](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_Application.cls#L181). Let's first figure out how to instantiate this class:
 
 ```apex
 //This allows us to create a factory for instantiating selector classes. You send it an object type and it sends
@@ -389,7 +389,7 @@ public static final fflib_Application.SelectorFactory selector =
 
 After creating this selector variable above ^ in your Application class [example here](https://github.com/Coding-With-The-Force/Salesforce-Separation-Of-Concerns-And-The-Apex-Common-Library/blob/main/src/classes/Apex_Common_Abstract_Task_Factory_Pattern_Example/Application.cls) there are three important methods you can leverage to generate a new selector class instance:
 
-1) _**[newInstance(SObjectType sObjectType)](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_Application.cls#L198)**_ - This method will generate a new instance of the selector based on the object type passed to it. So for instance if you have an Opportunity_Selector class and pass Opportunity.SObjectType to the newInstance method you will get back your Opportunity_Selector class (provided you have configured it that way in the Application class map passed to the class).
+1) _**[newInstance(SObjectType sObjectType)](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_Application.cls#L210)**_ - This method will generate a new instance of the selector based on the object type passed to it. So for instance if you have an Opportunity_Selector class and pass Opportunity.SObjectType to the newInstance method you will get back your Opportunity_Selector class (provided you have configured it that way in the Application class map passed to the class).
 
 _**newInstance(SObjectType sObjectType) Example method call:**_ 
 
@@ -400,7 +400,7 @@ Application.selector.newInstance(Case.SObjectType);
 
 ---
 
-2) _**[selectById(Set&lt;Id> recordIds)](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_Application.cls#L221)**_ - This method, based on the ids you pass will automatically call your registered selector layer class for the object type of the set of ids. It will then call the selectSObjectById method that all Selector classes must implement and return a list of sObjects to you.
+2) _**[selectById(Set&lt;Id> recordIds)](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_Application.cls#L233)**_ - This method, based on the ids you pass will automatically call your registered selector layer class for the object type of the set of ids. It will then call the selectSObjectById method that all Selector classes must implement and return a list of sObjects to you.
 
 _**selectById(Set&lt;Id> recordIds) Example method call:**_
 
@@ -411,7 +411,7 @@ Application.selector.selectById(accountIdSet);
 
 ---
 
-3) _**[selectByRelationship(List&lt;SObject> relatedRecords, SObjectField relationshipField)](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_Application.cls#L249)**_ - This method, based on the relatedRecords and the relationship field passed to it will generate a selector layer class for the object type in the relationship field. So say you were querying the Contact object and you wanted an Account Selector class, you could call this method, pass the list of contacts you queried for and the AccountId field to have an Account Selector returned to you (provided that selector was configured in the Application shown above in this chapter).
+3) _**[selectByRelationship(List&lt;SObject> relatedRecords, SObjectField relationshipField)](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_Application.cls#L261)**_ - This method, based on the relatedRecords and the relationship field passed to it will generate a selector layer class for the object type in the relationship field. So say you were querying the Contact object and you wanted an Account Selector class, you could call this method, pass the list of contacts you queried for and the AccountId field to have an Account Selector returned to you (provided that selector was configured in the Application shown above in this chapter).
 
 _**selectByRelationship(List&lt;SObject> relatedRecords, SObjectField relationshipField) Example method call:**_
 
@@ -424,7 +424,7 @@ Application.selector.selectByRelationship(contactList, Contact.AccountId);
 
 **_The Domain Factory_**  
 
-Inside the [fflib_Application](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_Application.cls) class there is the [DomainFactory class](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_Application.cls#L271). Let's first figure out how to instantiate this class:
+Inside the [fflib_Application](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_Application.cls) class there is the [DomainFactory class](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_Application.cls#L290). Let's first figure out how to instantiate this class:
 
 ```apex
 //This allows you to create a factory for instantiating domain classes. You can send it a set of record ids and
@@ -441,7 +441,7 @@ public static final fflib_Application.DomainFactory domain =
 
 After creating this domain variable above ^ in your Application class [example here](https://github.com/Coding-With-The-Force/Salesforce-Separation-Of-Concerns-And-The-Apex-Common-Library/blob/main/src/classes/Apex_Common_Abstract_Task_Factory_Pattern_Example/Application.cls) there are three important methods you can leverage to generate a new domain class instance:
 
-1) _**[newInstance(Set&lt;Id> recordIds)](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_Application.cls#L304)**_ - This method creates a new instance of your domain class based off the object type in the set of ids you pass it.
+1) _**[newInstance(Set&lt;Id> recordIds)](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_Application.cls#L345)**_ - This method creates a new instance of your domain class based off the object type in the set of ids you pass it.
 
 _**newInstance(Set&lt;Id> recordIds) Example method call:**_
 
@@ -452,7 +452,7 @@ Application.domain.newInstance(accountIdSet);
 
 ---
 
-2) _**[newInstance(List&lt;SObject> records)](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_Application.cls#L318)**_ - This method creates a new instance of your domain class based off the object type in the list of records you pass it.
+2) _**[newInstance(List&lt;SObject> records)](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_Application.cls#L359)**_ - This method creates a new instance of your domain class based off the object type in the list of records you pass it.
 
 _**newInstance(List&lt;SObject> records) Example method call:**_
 
@@ -463,7 +463,7 @@ Application.domain.newInstance(accountList);
 
 ---
 
-3) _**[newInstance(List&lt;SObject> records, SObjectType domainSObjectType)](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_Application.cls#L350)**_ - This method will create a newInstance of the domain class based on the object type and record list passed to it.
+3) _**[newInstance(List&lt;SObject> records, SObjectType domainSObjectType)](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_Application.cls#L411)**_ - This method will create a newInstance of the domain class based on the object type and record list passed to it.
 
 _**newInstance(List&lt;SObject> records, SObjectType domainSObjectType) Example method call:**_
 
@@ -517,6 +517,6 @@ Critically, these helpers still route through the Application factories - so `se
 
 ## The setMock Methods
 
-In every factory class inside the fflib_Application class there is a [setMock method](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_Application.cls#L114). These methods are used to pass in mock/fake versions of your classes for [unit testing purposes](/apex-mocks/unit-vs-integration-tests/). Make sure to leverage this method if you are planning to do unit testing.
+In every factory class inside the fflib_Application class there is a [setMock method](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_Application.cls#L116). These methods are used to pass in mock/fake versions of your classes for [unit testing purposes](/apex-mocks/unit-vs-integration-tests/). Make sure to leverage this method if you are planning to do unit testing.
 
 A point of precision worth making here: you'll sometimes hear that the factory approach "eliminates the need for [dependency injection](https://en.wikipedia.org/wiki/Dependency_injection)". It's more accurate to say the Application class **is** your dependency injection mechanism - it's *factory* injection rather than the *constructor* injection you may know from other languages. Your classes ask the factory for their dependencies instead of receiving them through constructor parameters, and `setMock` is the seam through which tests swap in fakes. The trade-off versus constructor injection: the factories are well-known and shared across the whole codebase (no constructor-parameter plumbing on every class), and the factory can do polymorphic instantiation tricks (like the domain factory routing by SObjectType) that constructors can't. There are examples of how to leverage this method in the [Implementing Mock Unit Tests with the Apex Mocks Library](/apex-mocks/implementing/) chapter of this guide. And if the "the Application class is really a DI container" framing intrigues you, [chapter 18](/force-di/pattern/) takes that idea to its logical conclusion with the force-di library.

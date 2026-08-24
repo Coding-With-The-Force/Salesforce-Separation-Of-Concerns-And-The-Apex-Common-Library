@@ -167,6 +167,21 @@ main {
   scroll-margin-top: calc(var(--cw-navbar-h) + var(--cw-ruler-h) + 1.5rem);
 }
 
+/**
+ * Docusaurus hangs a "#" permalink off every prose heading - opacity 0
+ * until you hover the heading, with the glyph coming from a ::before. It
+ * is redundant here: the left rail already links every h2 and h3 on the
+ * page and writes the hash into the URL when you use it, so the anchor
+ * was only ever adding a flicker on hover.
+ *
+ * display:none rather than opacity:0 so it also leaves the tab order and
+ * the accessibility tree. The headings keep their ids, so existing deep
+ * links into a chapter still resolve.
+ */
+.markdown .hash-link {
+  display: none;
+}
+
 .markdown h3,
 .markdown h4 {
   font-weight: 350;

@@ -4,6 +4,40 @@
    ═══════════════════════════════════════════════════════════════════════ */
 
 /* ── <YouTube /> · replaces the raw iframe height="400" ───────── */
+/**
+ * The player and its Subscribe / Newsletter row, as one unit.
+ *
+ * The block owns the measure and the bottom margin now, so the buttons sit
+ * tight under the frame instead of a whole --cw-sp-gap away from it.
+ */
+.cw-videoblock {
+  width: 100%;
+  max-width: min(100%, var(--cw-read));
+  margin: 0 0 var(--cw-sp-gap);
+}
+.cw-videoblock .cw-video {
+  max-width: none;
+  margin-bottom: 0;
+}
+
+/* Mirrors .cwtf-head__actions on codingwiththeforce.com: the ghost pill
+   first, the primary one to its right, half a rem apart. */
+.cw-cta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.85rem;
+}
+/* The same call the source theme makes in its own drawer: once there is no
+   room to sit them side by side at their natural width, share the row. */
+@media (max-width: 30rem) {
+  .cw-cta .cw-pill {
+    flex: 1;
+    justify-content: center;
+  }
+}
+
 .cw-video {
   position: relative;
   aspect-ratio: 16 / 9;

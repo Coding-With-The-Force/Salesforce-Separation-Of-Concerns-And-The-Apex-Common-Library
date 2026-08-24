@@ -169,7 +169,9 @@ const config: Config = {
         },
         {to: '/videos/', label: 'Videos', position: 'left'},
         {
-          href: 'https://github.com/Coding-With-The-Force/Salesforce-Separation-Of-Concerns-And-The-Apex-Common-Library',
+          // The library's own org, not this repo. The repo is still linked
+          // from the footer under "This site".
+          href: 'https://github.com/apex-enterprise-patterns',
           label: 'GitHub',
           position: 'right',
         },
@@ -196,6 +198,7 @@ const config: Config = {
           title: 'Coding With The Force',
           items: [
             {label: 'YouTube', href: 'https://www.youtube.com/@CodingWithTheForce'},
+            {label: 'Newsletter', href: 'https://codingwiththeforce.com/newsletter/'},
             {label: 'codingwiththeforce.com', href: 'https://codingwiththeforce.com'},
           ],
         },

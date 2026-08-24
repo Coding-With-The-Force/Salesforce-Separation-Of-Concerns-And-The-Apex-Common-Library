@@ -19,7 +19,7 @@ To make this super simple, Apex Mocks is an excellent framework that allows you 
 
 ## Do you have to use the Apex Common Library to use Apex Mocks?
 
-While you don't have to use the Apex Common Library to use Apex Mocks, they are built to work extremely well together. What you're really choosing between here is two flavors of [dependency injection](https://en.wikipedia.org/wiki/Dependency_injection). Without the Apex Common Library, every class needs **constructor injection** - a `@TestVisible` constructor accepting its dependencies, on every single class. With the library, the [fflib\_Application factory](/application/fflib-application/) *is* your injection mechanism - **factory injection** - and its [setMock methods](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_Application.cls#L114) are the seam tests use to swap in fakes. The trade-off: constructor injection makes each class's dependencies explicit in its signature, but you pay the constructor-plumbing tax everywhere; the factory is shared knowledge across the whole codebase, adds polymorphic-instantiation tricks constructors can't do, and means one `setMock` call replaces a class everywhere it's resolved. We'll take a look at both methods below: 
+While you don't have to use the Apex Common Library to use Apex Mocks, they are built to work extremely well together. What you're really choosing between here is two flavors of [dependency injection](https://en.wikipedia.org/wiki/Dependency_injection). Without the Apex Common Library, every class needs **constructor injection** - a `@TestVisible` constructor accepting its dependencies, on every single class. With the library, the [fflib\_Application factory](/application/fflib-application/) *is* your injection mechanism - **factory injection** - and its [setMock methods](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_Application.cls#L116) are the seam tests use to swap in fakes. The trade-off: constructor injection makes each class's dependencies explicit in its signature, but you pay the constructor-plumbing tax everywhere; the factory is shared knowledge across the whole codebase, adds polymorphic-instantiation tricks constructors can't do, and means one `setMock` call replaces a class everywhere it's resolved. We'll take a look at both methods below: 
 
 _**Using Apex Mocks without Apex Common Example**_
 
@@ -288,7 +288,7 @@ Hopefully this has helped explain the basic concept of stubbing. There's more we
 
 ## How to verify the class you're actually testing appropriately called your mock class methods
 
-If you've never done mocking before, this might seem super weird: instead of using asserts, we need another way to verify that our code functioned as anticipated with our fake classes and return values. So what exactly do you verify/assert in your test? What we're gonna end up doing is verify that we did indeed call the fake methods with the parameters we anticipated (or that we didn't call them at all). So let's take a look at how to use the [verify method in the fflib_ApexMocks class](https://github.com/apex-enterprise-patterns/fflib-apex-mocks/blob/master/sfdx-source/apex-mocks/main/classes/fflib_ApexMocks.cls#L121) to verify a method we intended to call, did indeed get called:
+If you've never done mocking before, this might seem super weird: instead of using asserts, we need another way to verify that our code functioned as anticipated with our fake classes and return values. So what exactly do you verify/assert in your test? What we're gonna end up doing is verify that we did indeed call the fake methods with the parameters we anticipated (or that we didn't call them at all). So let's take a look at how to use the [verify method in the fflib_ApexMocks class](https://github.com/apex-enterprise-patterns/fflib-apex-mocks/blob/master/sfdx-source/apex-mocks/main/classes/fflib_ApexMocks.cls#L103) to verify a method we intended to call, did indeed get called:
 
 ```apex
 Id mockCaseId = fflib_IDGenerator.generate(Case.SObjectType);
@@ -490,7 +490,7 @@ If your verification fails (and in turn your test class fails) you will now get 
 
 If we couldn't produce fake records to pass to our mocked class methods to handle, honestly this whole setup would only be kinda good because we'd always be forced to do real DML transactions in our tests to create data, and if you didn't know the reason tests can take sooooooooooooo long is because of DML transactions. They take a crazy amount of time in comparison to everything else in your code (unless you've got quadruple inner for loops in your codebase somewhere... which you should address like right now, please stop reading this and fix it). So let's figure out how to make fake data using the Apex Mocks Library.
 
-**The first class on our list in the Apex Mocks library to check out is the [fflib_IDGenerator class](https://github.com/apex-enterprise-patterns/fflib-apex-mocks/blob/master/sfdx-source/apex-mocks/main/classes/fflib_IDGenerator.cls)**. Inside this class there is a single method, [generate(Schema.SObjectType sobjectType)](https://github.com/apex-enterprise-patterns/fflib-apex-mocks/blob/master/sfdx-source/apex-mocks/main/classes/fflib_IDGenerator.cls#L34) and its purpose is to take an SObjectType and return an appropriate Id for it. This is super useful because if you need to fake that a record already exists in the system, or that a record is parented to another record, you need an Id. You'll likely use this method a ton.
+**The first class on our list in the Apex Mocks library to check out is the [fflib_IDGenerator class](https://github.com/apex-enterprise-patterns/fflib-apex-mocks/blob/master/sfdx-source/apex-mocks/main/classes/fflib_IDGenerator.cls)**. Inside this class there is a single method, [generate(Schema.SObjectType sobjectType)](https://github.com/apex-enterprise-patterns/fflib-apex-mocks/blob/master/sfdx-source/apex-mocks/main/classes/fflib_IDGenerator.cls#L37) and its purpose is to take an SObjectType and return an appropriate Id for it. This is super useful because if you need to fake that a record already exists in the system, or that a record is parented to another record, you need an Id. You'll likely use this method a ton.
 
 _**Example method call to get a fake (but legal) Id:**_
 
@@ -500,7 +500,7 @@ That will return to you a legal caseId! Pretty useful.
 
 **The next class on our list to cover here is the [fflib_ApexMocksUtils class](https://github.com/apex-enterprise-patterns/fflib-apex-mocks/blob/master/sfdx-source/apex-mocks/main/classes/fflib_ApexMocksUtils.cls)**. This class has three accessible methods and they allow you to make in-memory relationships between fake records and to set up formula field values for a fake record. Let's take a look at some examples below.
 
-**[makeRelationship(Type parentsType, List&lt;SObject> parents, SObjectField relationshipField, List&lt;List&lt;SObject>> children)](https://github.com/apex-enterprise-patterns/fflib-apex-mocks/blob/master/sfdx-source/apex-mocks/main/classes/fflib_ApexMocksUtils.cls#L67) Example method call**:
+**[makeRelationship(Type parentsType, List&lt;SObject> parents, SObjectField relationshipField, List&lt;List&lt;SObject>> children)](https://github.com/apex-enterprise-patterns/fflib-apex-mocks/blob/master/sfdx-source/apex-mocks/main/classes/fflib_ApexMocksUtils.cls#L69) Example method call**:
 
 This method is the answer to a question that stumps almost everyone eventually: **"how do I mock the result of a sub-select query?"** When a selector method returns parents with children queried in a sub-select (`SELECT Id, (SELECT Id FROM OpportunityLineItems) FROM Opportunity`), you can't just assign the child list to the parent record in Apex - relationship fields are read-only. `makeRelationship` builds that parent-with-children shape in memory for you:
 
@@ -525,7 +525,7 @@ List<Opportunity> opportunitiesWithProductsMock = (List<Opportunity>) fflib_Apex
 
 ```
 
-**[makeRelationship(String parentTypeName, String childTypeName, List&lt;SObject> parents, String relationshipFieldName, List&lt;List&lt;SObject>> children)](https://github.com/apex-enterprise-patterns/fflib-apex-mocks/blob/master/sfdx-source/apex-mocks/main/classes/fflib_ApexMocksUtils.cls#L79) Example method call**:
+**[makeRelationship(String parentTypeName, String childTypeName, List&lt;SObject> parents, String relationshipFieldName, List&lt;List&lt;SObject>> children)](https://github.com/apex-enterprise-patterns/fflib-apex-mocks/blob/master/sfdx-source/apex-mocks/main/classes/fflib_ApexMocksUtils.cls#L82) Example method call**:
 
 ```apex
 //This is basically the same method as above, but you can pass in String to determine the object and relationship instead of types. I would
@@ -546,7 +546,7 @@ List<Opportunity> opportunitiesWithProductsMock = (List<Opportunity>) fflib_Apex
 );
 ```
 
-**[`setReadOnlyFields(SObject objInstance, Type deserializeType, Map<SObjectField, Object> properties)`](https://github.com/apex-enterprise-patterns/fflib-apex-mocks/blob/master/sfdx-source/apex-mocks/main/classes/fflib_ApexMocksUtils.cls#L98) Example method call**:
+**[`setReadOnlyFields(SObject objInstance, Type deserializeType, Map<SObjectField, Object> properties)`](https://github.com/apex-enterprise-patterns/fflib-apex-mocks/blob/master/sfdx-source/apex-mocks/main/classes/fflib_ApexMocksUtils.cls#L102) Example method call**:
 
 ```apex
 //Code from: https://github.com/apex-enterprise-patterns/fflib-apex-mocks

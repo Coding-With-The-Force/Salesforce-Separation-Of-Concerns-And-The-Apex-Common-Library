@@ -24,7 +24,7 @@ _Difference between the Service Layer and Domain Layer -_ People seem to often c
 
 **_Class Names -_**  Your service classes should be named after the area of the application your services represent. Typically services classes are created for important objects or applications within your org.
 
-_Service Class Name Examples (Note that I prefer underscores in class names, this is just personal preference):_
+_Service Class Name Examples (Note that the writer of this guide prefers underscores in class names, this is just personal preference):_
 
 ```apex
 Account_Service 
@@ -45,7 +45,7 @@ public static void generateWordDocument(Map<String, SObject> sObjectByName)
 
 ## Service Layer Security
 
-First, a piece of context that surprises most developers new to the platform (and plenty of seasoned ones from other stacks): "sharing" is an end-user-friendly name for what an engineer would call **row-level security**, and it applies both inside and outside of code (reports respect it too). More importantly, **Apex does not run `with sharing` by default** - outside of Anonymous Apex, sharing enforcement is something the developer opts into by annotating classes at design time. It's not a runtime setting someone can flip later. If nobody wrote the keyword, nobody is enforcing record access. That's exactly why it has to be a deliberate part of your layer design rather than an afterthought.
+First, a piece of context that surprises most developers new to the platform (and plenty of seasoned ones from other stacks): "sharing" is an end-user-friendly name for what an engineer would call **row-level security**, and it applies both inside and outside of code (reports respect it too). More importantly, **Apex runs `with sharing` by default** - sharing enforcement is something the developer can set/alter by annotating classes at design time. It's not a runtime setting someone can flip later. By default (as of Salesforce API v67.0) with sharing is on by default and record access is respected unless you alter that in the class's declaration. That said sharing still needs to be a deliberate part of your layer design rather than an afterthought.
 
 **_Service Layer Security Enforcement -_** Service layers hold business logic so by default they should at minimum use `inherited sharing` when declaring the classes, however I would suggest always using `with sharing` and allowing developers to elevate the code to run `without sharing` when necessary by using a private inner class. Declaring it on the service does double duty: because the service is the entry point into your business logic, it sets the sharing context for all the domain and selector code executed downstream of it.
 
@@ -93,7 +93,7 @@ Instead you could pass in a set of Account Ids, have the service method query fo
 
 Your service layer method should handle transaction management (either with the unit of work pattern or otherwise) by making sure to leverage Database.setSavePoint() and using try catch blocks to rollback when the execution fails. If you're wondering why the savepoint is necessary at all when Salesforce "rolls back failed transactions automatically" - it's because a try/catch quietly disables that automatic rollback. [Chapter 5 walks through the trap in detail](/unit-of-work/pattern/), and it's precisely the boilerplate that `commitWork()` exists to standardize.
 
-_Transaction management example_
+_Transaction management example (without the use of a unit of work as discussed in the prior chapter)_
 ```apex
 public static void calculateOpportunityProfits(Set<Id> accountIdsToCalculate){
         List<Account> accountsToCalculate = [SELECT Id FROM Account WHERE Id IN : accountIdsToCalculate];
@@ -157,14 +157,14 @@ public with sharing class Task_Service{
 
 That exact same method is callable, without modification, from every door into your org:
 
-- An **LWC** (or Aura component), via a thin `@AuraEnabled` wrapper
-- **Flow**, via a thin `@InvocableMethod` wrapper
-- A **REST or SOAP API** exposure, via a thin `@RestResource` wrapper
+- An **LWC** (or Aura component), via a `@AuraEnabled` wrapper
+- **Flow**, via a `@InvocableMethod` wrapper
+- A **REST or SOAP API** exposure, via a `@RestResource` wrapper
 - **Batch Apex, Queueable, or Scheduled Apex**, calling it directly
 - A **trigger/domain class** that needs the business operation
 - An **Agentforce agent action**, via that same invocable wrapper
 
-The wrappers are one-liners; the business logic never moves. Now run the platform's history through that lens: the original Apex Enterprise Patterns articles were written when Visualforce was the only UI framework Salesforce had. Aura didn't exist yet. Neither did Lightning Experience, LWC, Flow as we know it, or Agentforce. Every one of those arrived - and Visualforce effectively left - and code organized this way didn't need its business logic rewritten for any of them. Each new front door was just another thin wrapper. Meanwhile, every org that buried its business logic in Visualforce controller action methods got to rewrite it, once per platform generation.
+The wrappers are one-liners; the business logic never moves. Now run the platform's history through that lens: the original Apex Enterprise Patterns articles were written when Visualforce was the only UI framework Salesforce had. Aura didn't exist yet. Neither did Lightning Experience, LWC, Flow as we know it, or Agentforce. Every one of those arrived - and Visualforce effectively left - and code organized this way didn't need its business logic rewritten for any of them. Each new front door was just another wrapper. Meanwhile, every org that buried its business logic in Visualforce controller action methods got to rewrite it, once per platform generation.
 
 That's the durability argument in one sentence: **you can't predict the next UI framework, but you can make it cost one wrapper class instead of a rewrite.**
 
@@ -172,11 +172,7 @@ That's the durability argument in one sentence: **you can't predict the next UI 
 
 ## Implementing the Service Layer
 
-To find out how to implement the Service Layer using the Apex Common Library, continue reading here: [Implementing the Service Layer with the Apex Common Library](/service-layer/implementing/). If you're not interested in utilizing the Apex Common Library, no worries, there are really no frameworks to implement a Service Layer (to my knowledge) because this is literally just a business logic layer so every single org's service layer will be different. The only thing Apex Common assists with here is abstracting the service layer to assist with Unit Test mocking and to make your service class instantiations more dynamic.
-
-**_Libraries That Could Be Used for the Service Layer_**
-
-None to my knowledge although the [Apex Common Library](https://github.com/apex-enterprise-patterns/fflib-apex-common) provides a good foundation for abstracting your service layers to assist with mocking and more dynamic class instantiations.
+To find out how to implement the Service Layer using the Apex Common Library, continue reading here: [Implementing the Service Layer with the Apex Common Library](/service-layer/implementing/). If you're not interested in utilizing the Apex Common Library, no worries, there are really no frameworks to implement a Service Layer because this is literally just a business logic layer so every single org's service layer will be different. The only thing Apex Common assists with here is abstracting the service layer to assist with Unit Test mocking and to make your service class instantiations more dynamic.
 
 ---
 
