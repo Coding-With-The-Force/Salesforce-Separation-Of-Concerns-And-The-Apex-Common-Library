@@ -13,13 +13,68 @@ hide_title: true
 
 There is NO FRAMEWORK that can be made for service layer classes. This is a business logic layer and it will differ everywhere. No two businesses are identical. That being said, if you would like to leverage all of the other benefits of the Apex Common Library (primarily Apex Mocks) and you would like your service classes to be able to leverage the fflib_Application class to allow for dynamic runtime logic generation, you'll need to structure your classes as outlined below. If you don't want to leverage these things, then don't worry about doing what is listed below, however in the long run it will likely be worth it as your org grows in size. 
 
+---    
+
+## How to register your service class with your application class   
+
+Below is an example of a simple service class:   
+
+```apex
+//A simplistic service class you might find in many orgs to distribute tasks
+public with sharing class Task_Service
+{
+	//A method to create tasks regardless of object type
+	public void createTasks(Set<Id> recordIds, Schema.SObjectType objectType){
+		//task creation logic goes here
+	}
+}
+```   
+
+And here is how you would register that simple service class in your Application class (which we discussed in earlier chapters):
+
+```apex
+public with sharing class Application
+{
+    //Domain, Selector and UOW factories have been omitted for brevity, but would likely be added to this class
+
+	//This allows us to create a factory for instantiating service classes. You can just keep it simple and map your service class
+	//to itself, and this will allow you to do unit tests/mocking appropriately still.   
+	public static final fflib_Application.ServiceFactory service =
+			new fflib_Application.ServiceFactory(new Map<Type, Type>{Task_Service.class => Task_Service.class});
+
+}
+```   
+
+
+Then after you have registered this service class in your application class, you can call it from other classes by doing the following:   
+
+```apex
+
+public with sharing class ExampleCallingClass{
+
+	public void exampleCallingMethod(){
+		Task_Service taskService = (Task_Service)Application.service.newInstance(Task_Service.class);
+	}
+
+}
+
+```
+
+And that's it! That's all you absolutely must do to leverage the Apex Common Library and the Apex Mocks Library with your service classes. This will allow you to do unit testing and mocking whenever you need to, and it's just a couple lines of quick and easy code. Below we will cover a more advanced scenario, but what we covered above should suffice in most situations.  
+
 ---
 
-## The Service Interface
+:::warning Important note about the below information
+The documentation below represents a way you COULD implement your Service layer logic. It is NOT the only way. You DO NOT need to implement an interface or a service class with static methods. Your service method can just be a normal Apex class that you create and map in your application class (as outlined above). The below example just shows a powerful way to potentially setup service classes that need a ton of flexibility.   
+:::
 
-For every service layer class you create you will create an interface (or potentially a virtual class you can extend) that your service layer implementation class will implement (more on that below). This interface will have every method in your class represented in it. An example of a service interface is below. Some people like to prefix their interfaces with the letter I (example: ICaseService), however I prefer to postfix it with _I or _Interface as it's a bit clearer in my opinion.
+## Setup for a more complex dynamic service class (the interface setup)
 
-The methods in this interface should represent all of the public methods you plan to create for this service class. Private methods should not be represented here.
+For this more complex example we're gonna make a task creation service that has to greatly differ at runtime based on the object that is having tasks created for it.   
+
+First we're going to setup an interface. This interface will have every public method in your hub service class represented in it (more on the hub service in just a moment). An example of a service interface is below. Some people like to prefix their interfaces with the letter I (example: ICaseService), however the writer of this guide prefers to postfix it with _I or _Interface. This is just personal preference.   
+
+The methods in this interface should represent all of the public methods you plan to create for this hub service class. Private methods should not be represented here.
 
 ```apex
 public interface Task_Service_Interface
@@ -30,9 +85,9 @@ public interface Task_Service_Interface
 
 ---
 
-## The Service Layer Class
+## The Hub Service Layer Class
 
-This class is where things get a little confusing in my opinion, but here's the gist of it. This is the class you will actually call in your Apex controllers (or occasionally domain classes) to actually execute the code... however there are no real implementation details in it (that exists in the implementation class outlined below). The reason this class acts as a kind of middleman is that we want, no matter what business logic is actually called at run time, for our controller classes, batch classes, domain classes, etc to not need to alter the class they call to get the work done. In the Service Factory section below we'll see how that becomes a huge factor. There's also a language-level reason this stub class has to exist at all: **you can't put an interface on static methods in Apex.** Callers want the ergonomic static call style (`Task_Service.createTasks(...)`), interfaces are what make implementations swappable and mockable - the static stub delegating to a factory-resolved interface is how you get both at once. Below is an example of the Service Layer class setup.
+This class is where things may get a little confusing, but here's the gist of it. This is the class you will actually call in your Apex controllers (or occasionally domain classes) to actually execute the code... however there are no real implementation details in it (that exists in the implementation class outlined below). The reason this class acts as a kind of middleman/hub is that we want, no matter what business logic is actually called at run time, for our controller classes, batch classes, domain classes, etc to not need to alter the class they call to get the work done. In the Service Factory section below we'll see how that becomes a huge factor. There's also a language-level reason this stub class has to exist at all: **you can't put an interface on static methods in Apex.** Callers want the ergonomic static call style (`Task_Service.createTasks(...)`), interfaces are what make implementations swappable and mockable - the static hub class delegating to a factory-resolved interface is how you get both at once. Below is an example of the Service Layer class setup.
 
 ```apex
 //This class is what every calling class will actually call to. For more information on the Application class check out the fflib_Application class
@@ -60,7 +115,7 @@ The `global` modifier on `createTasks` above only belongs in a managed package t
 
 ## The Service Implementation Class
 
-This is the concrete business logic implementation. This is effectively the code that isn't super abstract, but is the more custom-built business logic specific to the specific business (or business unit) that needs it to be executed. Basically, this is where your actual business logic should reside. Now, again, you may be asking, but Matt... why not just create a new instance of this class and just use it? Why create some silly interface and some middleman class to call this class? This isn't gonna be superrrrrrr simple to wrap your head around, but bear with me. In the next section we tie all these classes together and paint the bigger picture. An example of a Service Implementation class is below.
+This is the concrete business logic implementation. This is effectively the code that isn't abstract, but is the more custom-built business logic specific to the specific business (or business unit) that needs it to be executed. Basically, this is where your actual business logic should reside. Now, again, you may be asking, why not just create a new instance of this class and just use it? Why create some silly interface and some middleman class to call this class? This is likely not gonna be super simple to wrap your head around, but bear with me. In the next section we tie all these classes together and paint the bigger picture. An example of a Service Implementation class is below.
 
 ```apex
 /**
@@ -127,13 +182,17 @@ The fflib_Application.ServiceFactory class... what is it and how does it fit in 
 
 This is awesome for tons of stuff, but it's especially awesome for the service layer. Why? You'll notice that as your Salesforce instance grows, so does the number of interested parties. All of a sudden you've gone from one or two business units to 25 different business units and what happens when those businesses need the same type of functionality with differing logic? You could make tons of if else statements determining what the user type is and then calling different methods based on that user's type... but maybe there's an easier way. If you are an ISV (a managed package provider) what I'm about to show you is likely 1000 times more important for you. If your product grows and people start adopting it, you absolutely need a way to allow flexibility in your application's business logic, maybe even allow them to write their own logic and have a way for your code to execute it?? This idea has a name, by the way - **"your application as platform"**: designing customization and integration surfaces into your app from the start, so that consumers can extend it the same way you extend Salesforce itself.
 
-Let's check out how allllllllllll these pieces come together below. 
+Let's check out how all these pieces come together below. 
 
 ---
 
 ## Tying all the classes together
 
 Alright, let's tie everything together piece by piece. Pretend we've got a custom metadata type that maps our service interfaces to a service class implementation and a custom user permission (or if you don't wanna pretend you can [check it out here](https://github.com/Coding-With-The-Force/Salesforce-Separation-Of-Concerns-And-The-Apex-Common-Library/blob/main/src/objects/Service_By_User_Type__mdt.object)). Let's first start by creating our new class that extends the [fflib_Application.ServiceFactory class](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_Application.cls) and overrides its [newInstance method](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_Application.cls). 
+
+:::warning Important note about the below information
+The step below is technically optional, but it acts as a way to show you how to properly create your own service factory if you need custom logic in it, instead of writing custom code in the fflib_Application class, which would likely make it complicated for you to upgrade when newer versions of the Apex Common Library are released)
+:::
 
 ```apex
 /*
@@ -178,7 +237,7 @@ public with sharing class ServiceFactory extends fflib_Application.ServiceFactor
 
 ```
 
-Cool kewl cool, now that we have our custom ServiceFactory built to manage our overrides based on the running user's custom permissions, we can leverage it in the Application Factory class we've hopefully built by now like so:
+Now that we have our custom ServiceFactory built to manage our overrides based on the running user's custom permissions, we can leverage it in the Application Factory class we've hopefully built by now like so:
 
 ```apex
 public with sharing class Application
@@ -216,15 +275,15 @@ public with sharing class Abstract_Task_Creator_Controller
 
 ```
 
-Now you might be wracking your brain right now and being like... ok, so what... but look closer Simba. This controller will literally never grow, neither will your Application class or your ServiceFactory class we've built above (well the Application class might, but very little). This Task_Service middleman layer is so abstract you can swap out service implementations on the fly whenever you want and this controller will NEVER NEED TO BE UPDATED (at least not for task service logic)! Basically the only thing that will change at this point is your custom metadata type (object), the custom permissions you map to users and you'll add more variations of the Task Service Implementation classes throughout time for your various business units that get onboarded and want to use it. However, your controllers (and other places in the code that call the service) will never know the difference. Wyld right. If you're lost right now, let's follow the chain of events step by step in order to clarify some things:
+Now you might be wracking your brain right now and thinking, why would I do this? Here's why, this controller will literally never grow, neither will your Application class or your ServiceFactory class we've built above (well the Application class might, but very little). This Task_Service middleman/hub layer is so abstract you can swap out service implementations on the fly whenever you want and this controller will NEVER NEED TO BE UPDATED (at least not for task service logic)! Basically the only thing that will change at this point is your custom metadata type (object), the custom permissions you map to users and you'll add more variations of the Task Service Implementation classes throughout time for your various business units that get onboarded and want to use it. However, your controllers (and other places in the code that call the service) will never know the difference. Wyld right. If you're lost right now, let's follow the chain of events step by step in order to clarify some things:
 
-1) Controller calls the Task_Service class's (the middleman) createTasks() method.
+1) Controller calls the Task_Service class's (the hub) createTasks() method.
 2) Task_Service's createTasks() method calls its service() method.
 3) The service() method uses the Application class's "service" variable, which is an instance of our custom ServiceFactory class (shown above) to create a new instance of our whatever Task Implementation class (which inherits from the Task_Service_Interface class making it of type Task_Service_Interface) is relevant for our user's assigned custom permissions by using the newInstance() method the ServiceFactory class overrode.
 4) The service variable returns the correct Task Service Implementation for the running user.
 5) The createTasks() method is called for whatever Task Service Implementation was determined to be correct for the running user.
 6) Tasks are created!
 
-If you're still shook by all this, please, watch the video where we build all this together step by step and walk through everything. I promise, even if it's a bit confusing, it's worth the time to learn.
+If you're still confused by all this, please, watch the video where we build all this together step by step and walk through everything. It'll be a bit confusing, but it's worth the time to learn.
 
 One last breadcrumb: what you just built - custom metadata mapping an interface to an implementation, resolved dynamically at runtime - is a hand-rolled dependency injection container scoped to the service layer. There's a whole library in the apex-enterprise-patterns family that generalizes this exact idea to any class (plus Aura, Visualforce and Flow): [force-di, covered in chapter 18](/force-di/pattern/).
