@@ -1,4 +1,5 @@
 import React, {useState} from 'react';
+import ChannelCTA from '@site/src/components/ChannelCTA';
 
 /**
  * Replaces the raw <iframe width="100%" height="400"> the MkDocs site used.
@@ -7,6 +8,9 @@ import React, {useState} from 'react';
  * it carries the real YouTube thumbnail, and it is a click-to-load facade so
  * twenty chapters no longer each ship a player's worth of script on first
  * paint.
+ *
+ * The Subscribe / Newsletter pair sits under the player rather than in each
+ * chapter file, so every video carries it and no .mdx has to remember to.
  *
  * maxresdefault only exists for videos uploaded above 720p, so it falls back
  * to hqdefault, which always exists. Both are cropped with object-fit rather
@@ -28,57 +32,63 @@ export default function YouTube({
 
   if (live) {
     return (
-      <div className="cw-video cw-video--live">
-        <iframe
-          src={`https://www.youtube-nocookie.com/embed/${id}?autoplay=1`}
-          title={title ?? 'Companion video'}
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-          allowFullScreen
-        />
+      <div className="cw-videoblock">
+        <div className="cw-video cw-video--live">
+          <iframe
+            src={`https://www.youtube-nocookie.com/embed/${id}?autoplay=1`}
+            title={title ?? 'Companion video'}
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowFullScreen
+          />
+        </div>
+        <ChannelCTA />
       </div>
     );
   }
 
   return (
-    <div className="cw-video">
-      <button
-        type="button"
-        className="cw-video__poster"
-        onClick={() => setLive(true)}
-        aria-label={`Play: ${title ?? 'companion video'}`}>
-        <img
-          className="cw-video__img"
-          src={poster}
-          alt=""
-          loading="lazy"
-          decoding="async"
-          onLoad={(e) => {
-            // A missing maxresdefault is served as a *decodable* 120x90
-            // placeholder JPEG on a 404 status, so onError never fires.
-            // Real thumbnails are 480px (hqdefault) or wider; anything
-            // smaller is the placeholder and means fall back.
-            if (
-              e.currentTarget.naturalWidth < 320 &&
-              !poster.includes('hqdefault')
-            ) {
-              setPoster(`https://i.ytimg.com/vi/${id}/hqdefault.jpg`);
-            }
-          }}
-          onError={() => {
-            if (!poster.includes('hqdefault')) {
-              setPoster(`https://i.ytimg.com/vi/${id}/hqdefault.jpg`);
-            }
-          }}
-        />
-        <span className="cw-video__scrim" aria-hidden="true" />
-        <span className="cw-video__btn" aria-hidden="true">
-          <span className="cw-video__play" />
-        </span>
-        <span className="cw-video__lab">
-          {title ? `Watch · ${title}` : 'Watch the walkthrough'}
-        </span>
-        {duration && <span className="cw-video__dur">{duration}</span>}
-      </button>
+    <div className="cw-videoblock">
+      <div className="cw-video">
+        <button
+          type="button"
+          className="cw-video__poster"
+          onClick={() => setLive(true)}
+          aria-label={`Play: ${title ?? 'companion video'}`}>
+          <img
+            className="cw-video__img"
+            src={poster}
+            alt=""
+            loading="lazy"
+            decoding="async"
+            onLoad={(e) => {
+              // A missing maxresdefault is served as a *decodable* 120x90
+              // placeholder JPEG on a 404 status, so onError never fires.
+              // Real thumbnails are 480px (hqdefault) or wider; anything
+              // smaller is the placeholder and means fall back.
+              if (
+                e.currentTarget.naturalWidth < 320 &&
+                !poster.includes('hqdefault')
+              ) {
+                setPoster(`https://i.ytimg.com/vi/${id}/hqdefault.jpg`);
+              }
+            }}
+            onError={() => {
+              if (!poster.includes('hqdefault')) {
+                setPoster(`https://i.ytimg.com/vi/${id}/hqdefault.jpg`);
+              }
+            }}
+          />
+          <span className="cw-video__scrim" aria-hidden="true" />
+          <span className="cw-video__btn" aria-hidden="true">
+            <span className="cw-video__play" />
+          </span>
+          <span className="cw-video__lab">
+            {title ? `Watch · ${title}` : 'Watch the walkthrough'}
+          </span>
+          {duration && <span className="cw-video__dur">{duration}</span>}
+        </button>
+      </div>
+      <ChannelCTA />
     </div>
   );
 }
