@@ -12,15 +12,22 @@ import {APPLICATION_CLS} from '@site/src/snippets/application';
 ---
 ## What is the fflib_Application class?
 
-The fflib_Application class is around for two primary purposes. The first is to allow you an abstract/flexible way of creating new instances of your [unit of work](/unit-of-work/pattern/), [service layer](/service-layer/implementing/), [domain layer](/domain-layer/implementing/) and [selector layer](/selector-layer/implementing/) in the [Apex Common Library](/apex-common-library/) through the use of [the factory pattern](/application/factory-method-pattern/). The second is that implementing this application class is imperative if you want to leverage the Apex Mocks unit testing library. It depends on this Application Factory being implemented.
+The fflib_Application class is around to allow you an abstract/flexible way of creating new instances of your [unit of work](/unit-of-work/pattern/), [service layer](/service-layer/implementing/), [domain layer](/domain-layer/implementing/) and [selector layer](/selector-layer/implementing/) in the [Apex Common Library](/apex-common-library/) through the use of [the factory pattern](/application/factory-method-pattern/).   
 
 Most importantly though, if you understand how interfaces, inheritance and polymorphism work implementing this class allows you to write very flexible Salesforce implementations, which we'll discuss more in the sections below.
 
 ---
 
+:::note The creation of Application classes is not mandatory! 
+In earlier versions of this guide it was stated that the use of an Application class was mandatory to take advantage of these libraries. It is not. If you want to purely leverage these libraries for unit tests/mocking, for instance, the creation of an application class is entirely optional. 
+If you would prefer to not create and utilize Application classes that is totally fine, however, it is a very powerful tool and there are lots of advantages to leveraging it, so this guide will commonly reference them and examples will utilize them. For even more in depth information on when you might want to use 
+an application class and when you might not, please take a look at this [blog post elaborating on it](https://andyinthecloud.com/2026/04/13/apex-enterprise-patterns-recent-updates-and-thoughts-on-the-application-class/)    
+:::
+
+
 ## Why is this class used?
 
-Ok, if we ignore the fact that this is required for us to use the Apex Mocks library, understanding the power behind this class requires us to take a step back and formulate a real-world Salesforce use case for implementing it... hopefully the following one will be easy for everyone to understand.
+Ok, understanding the power behind the use of an application class requires us to take a step back and formulate a real-world Salesforce use case for implementing it... hopefully the following one will be easy for everyone to understand.
 
 Say for instance you have a decent-sized Salesforce instance and your business has a use case to create tasks across multiple objects and the logic for creating those tasks is unique to every single object. Maybe on the Account object we create three new tasks every single time we create an account and on the Contact object we create two tasks every single time a record is created or updated in a particular way and we ideally want to call this logic on the fly from anywhere in our system. 
 
