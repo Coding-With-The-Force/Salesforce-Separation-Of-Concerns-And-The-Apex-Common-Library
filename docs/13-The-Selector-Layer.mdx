@@ -21,7 +21,7 @@ Since Salesforce already does that work for you, the Data Mapper Layer, just tur
 
 ## When to make a new Selector Layer Class
 
-Whenever you need to create queries on an object you've never done queries on before, you would create a new Selector Layer Class. So for instance if you needed to create some queries for the Case object to use in your service or domain layer classes, you would create a Case Selector class. There should typically be one selector class per object you intend to query on. 
+Whenever you need to create queries on an object you've never done queries on before, you would create a new Selector Layer Class. So for instance if you needed to create some queries for the Case object to use in your service or domain layer classes, you would create a Case Selector class. There should typically be one selector class per object you intend to query on, however in larger orgs you might want to create an object selector per application as well. For instance you might have ```Opportunities_App_A_Selector``` and ```Opportunities_App_B_Selector```. When your org grows and your selectors get large, breaking them out by application type is very helpful to make them easier to maintain.       
 
 :::tip A selector that extends nothing is still worth having
 If you're migrating an existing org, don't let the `fflib_SObjectSelector` base class (covered in [chapter 14](/selector-layer/implementing/)) become the barrier to starting. Simply creating classes with the `Selector` suffix and re-homing your inline SOQL into them buys you reuse and encapsulation immediately - the consistency benefits of the base class can come later, and extending it for some selectors while others remain plain classes is perfectly fine during the transition.
@@ -33,7 +33,7 @@ If you're migrating an existing org, don't let the `fflib_SObjectSelector` base 
 
 **_Class Names_** - Your classes should ideally follow the naming conventions of the domain layer just with Selector appended to the end of them, unless you have common cross-object queries then it's a bit different.
 
-_Selector Class Naming Examples (Note that I prefer underscores in names, this is personal preference):_  
+_Selector Class Naming Examples (Note that that the writer prefer underscores in names, this is personal preference):_  
 
 ```apex
 Accounts_Selector
@@ -87,7 +87,7 @@ Notice the inner class receives the *outer selector* as a parameter. In this bar
 
 ## Implementing the Selector Layer
 
-To find out how to implement the Selector Layer using Apex Common, continue reading here: [Implementing the Selector Layer with the Apex Common Library](/selector-layer/implementing/). If you're not interested in utilizing the Apex Common Library for this layer there are pretty sparing options out there that are pre-built, the only other option I'm aware of at this time is Query.apex. Outside of that, you could certainly roll your own selector layer, but it is no small feat if done right.
+To find out how to implement the Selector Layer using Apex Common, continue reading here: [Implementing the Selector Layer with the Apex Common Library](/selector-layer/implementing/). If you're not interested in utilizing the Apex Common Library for this layer there are pretty sparing options out there that are pre-built, but there are others such as Query.apex. You could certainly roll your own selector layer, but it is no small feat if done right.
 
 **_Libraries That Could Be Used for the Selector Layer_**
 

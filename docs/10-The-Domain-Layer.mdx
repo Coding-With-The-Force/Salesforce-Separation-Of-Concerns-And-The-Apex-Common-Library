@@ -19,7 +19,7 @@ However, the logic represented in a trigger is an exception to this rule. Apex t
 
 The Domain Layer will allow you, on an object-by-object basis, to have an object-oriented approach to centralizing your logic. Basically, logic specific to a single object will be located in one place and only one place by using the domain layer. This ensures your logic specific to a single object isn't split into a ton of different places across your org.
 
-<Figure caption={<><b>Only the Selector and the Unit of Work touch the database.</b> The Domain never does - which is exactly why a domain class can be unit tested without a single line of DML or SOQL.</>}>
+<Figure caption={<><b>Only the Selector and the Unit of Work touch the database.</b> The Domain never does - which is exactly why a domain class can be unit tested without a single line of DML or SOQL. Also, while this diagram does not show it, and it's less common, Domain classes can directly call Unit of Work and Selector classes. It does not need to always be delegated through a service class.</>}>
   <LayerDiagram highlight="domain" />
 </Figure>
 
@@ -27,16 +27,15 @@ The Domain Layer will allow you, on an object-by-object basis, to have an object
 
 ## The one comparison that justifies the library
 
-Below is a real trigger of the kind that shows up in almost every org that has
-been live for more than two years. It works. It passed code review. It also
+Below is a real trigger of the kind that shows up in almost every org. It works. Somehow, it passed a code review. It also
 queries inside a loop, mixes validation with side effects, and cannot be unit
 tested without inserting records.
 
 <BeforeAfter label="Summarise contacts, then flag rating changes">
 
-<Without lines="418" files="1" testable="0%">
+<Without files="1" testable="0%" reusable="0%">
 
-<CodeFile name="AccountTrigger.trigger" lines="418">
+<CodeFile name="AccountTrigger.trigger">
 
 ```apex
 trigger AccountTrigger on Account (before insert, after update) {
@@ -82,9 +81,9 @@ trigger AccountTrigger on Account (before insert, after update) {
 
 </Without>
 
-<With lines="78" files="4" testable="100%">
+<With files="4" testable="100%" reusable="100%">
 
-<CodeFile name="AccountsServiceImpl.cls" lines="24">
+<CodeFile name="AccountsServiceImpl.cls">
 
 ```apex
 public with sharing class AccountsServiceImpl implements IAccountsService
@@ -107,7 +106,7 @@ public with sharing class AccountsServiceImpl implements IAccountsService
 
 </CodeFile>
 
-<CodeFile name="Accounts.cls" lines="34">
+<CodeFile name="Accounts.cls" >
 
 ```apex
 public with sharing class Accounts extends fflib_SObjectDomain
@@ -142,7 +141,7 @@ public with sharing class Accounts extends fflib_SObjectDomain
 
 </CodeFile>
 
-<CodeFile name="ContactsSelector.cls" lines="19">
+<CodeFile name="ContactsSelector.cls">
 
 ```apex
 public with sharing class ContactsSelector extends fflib_SObjectSelector
@@ -164,7 +163,7 @@ public with sharing class ContactsSelector extends fflib_SObjectSelector
 
 </CodeFile>
 
-<CodeFile name="AccountTrigger.trigger" lines="4">
+<CodeFile name="AccountTrigger.trigger">
 
 ```apex
 trigger AccountTrigger on Account (before insert, after update)
@@ -185,10 +184,9 @@ trigger AccountTrigger on Account (before insert, after update)
 
 </BeforeAfter>
 
-The right-hand version is four files instead of one, which feels like more work
-until the second requirement arrives. At that point the trigger never changes,
-the service gains a method, and the test suite runs in milliseconds because
-nothing touches the database.
+The right-hand version is four files instead of one, which feels like more work initially
+until you have to start updating your trigger and merge functionality from multiple apps within it. At that point things start to become difficult to manage, testing becomes challenging, and the need to structure in an easier to upkeep manner becomes more apparent.
+That's where the Apex Common Library comes in handy. Implement your domain class, never update the trigger itself again, and gain the flexibility of creating distinct methods that you can easily test and call from wherever you need them.   
 
 ---
 

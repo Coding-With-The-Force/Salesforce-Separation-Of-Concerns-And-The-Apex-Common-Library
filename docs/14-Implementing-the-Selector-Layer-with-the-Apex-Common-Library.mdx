@@ -219,7 +219,27 @@ public List<AggregateResult> selectAverageTacosPerTacoBell(){
     return tacoData;
 }
 
-``` 
+```  
+
+---
+
+## How to enforce user mode in Selector classes   
+
+If you would like to make sure that your queries run in user mode, you will just need to make sure you declare that in your selector class's constructor as the following code demonstrates below:   
+
+```apex
+
+public class AccountsSelector extends fflib_SObjectSelector{
+	public AccountsSelector()
+	{
+		super(false, fflib_SObjectSelector.DataAccess.USER_MODE);
+	}
+}
+
+```
+
+This small change (passing in ```fflib_SObjectSelector.DataAccess.USER_MODE``` to your super class's constructor (the super class is fflib_SObjectSelector)) will make it so your selectors always operate in user mode. If you are unfamiliar with what user mode is in apex, you can read more about it [here](https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_classes_enforce_usermode.htm). 
+
 
 ---
  
