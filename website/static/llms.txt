@@ -1,0 +1,58 @@
+# Apex Enterprise Patterns
+
+> The complete, free guide to Separation of Concerns on the Salesforce platform and the Apex Common Library (fflib). Twenty chapters covering the Application class, Unit of Work, Service, Domain and Selector layers, unit testing with Apex Mocks, and dependency injection with Force DI. Every chapter has a companion YouTube video by Coding With The Force.
+
+The guide is written for Salesforce developers. Chapters come in four flavors: Standard (concepts), Pattern (the underlying GoF design pattern), Implementation (step-by-step code with the library), and Annotated (line-by-line walkthrough of a library class). Code samples are in Apex. The canonical reading order is chapter 01 through 20.
+
+## Introduction
+
+- [Introduction to the Separation of Concerns Design Principle](https://apex-enterprise-patterns.dev/separation-of-concerns/): An explanation of the Separation of Concerns Design Principle and why it is valuable to implement in any codebase.
+- [Introduction to the Apex Common Library](https://apex-enterprise-patterns.dev/apex-common-library/): An overview of the tools available with the Apex Common Library.
+
+## The Application class
+
+- [The Factory Method Pattern](https://apex-enterprise-patterns.dev/application/factory-method-pattern/): Creating an object without naming the concrete class you get back.
+- [The fflib_Application Class](https://apex-enterprise-patterns.dev/application/fflib-application/): Annotated walkthrough of the abstract factory class that the other layers rely on.
+
+## The Unit of Work
+
+- [The Unit of Work Pattern](https://apex-enterprise-patterns.dev/unit-of-work/pattern/): Batching DML into one atomic, correctly ordered transaction.
+- [The fflib_SObjectUnitOfWork Class](https://apex-enterprise-patterns.dev/unit-of-work/fflib-sobjectunitofwork/): How to utilize the Unit of Work with the Apex Common Library.
+
+## The Service layer
+
+- [The Service Layer](https://apex-enterprise-patterns.dev/service-layer/): The layer where your business logic lives.
+- [Implementing the Service Layer with the Apex Common Library](https://apex-enterprise-patterns.dev/service-layer/implementing/): How to set up your service classes with the Apex Common Library in mind.
+
+## The Domain layer
+
+- [The Template Method Pattern](https://apex-enterprise-patterns.dev/domain-layer/template-method-pattern/): Define the skeleton up top and let the subclass fill in the steps.
+- [The Domain Layer](https://apex-enterprise-patterns.dev/domain-layer/): A representation of an object/database table that incorporates both its behavior and data.
+- [Implementing The Domain Layer with the Apex Common Library](https://apex-enterprise-patterns.dev/domain-layer/implementing/): How to implement the Domain Layer with the assistance of the Apex Common Library.
+
+## The Selector layer
+
+- [The Builder Pattern](https://apex-enterprise-patterns.dev/selector-layer/builder-pattern/): A creational design pattern that allows for the step-by-step construction of complex objects.
+- [The Selector Layer](https://apex-enterprise-patterns.dev/selector-layer/): Your org's SOQL queries live here.
+- [Implementing the Selector Layer with the Apex Common Library](https://apex-enterprise-patterns.dev/selector-layer/implementing/): How to implement the Selector Layer using the Apex Common Library.
+
+## The Apex Mocks library
+
+- [The Difference Between Unit Tests and Integration Tests](https://apex-enterprise-patterns.dev/apex-mocks/unit-vs-integration-tests/): Mocks are fast and isolated. Integration tests are slow and real. You need both.
+- [Unit Test Mocks with Separation of Concerns](https://apex-enterprise-patterns.dev/apex-mocks/mocks-with-separation-of-concerns/): Why SoC is the thing that makes true unit testing possible.
+- [Implementing Mock Unit Tests with the Apex Mocks Library](https://apex-enterprise-patterns.dev/apex-mocks/implementing/): How to implement unit tests using the Apex Mocks Library.
+
+## Dependency Injection with Force DI
+
+- [Dependency Injection and Inversion of Control](https://apex-enterprise-patterns.dev/force-di/pattern/): Ask for the interface, let configuration decide the class.
+- [Implementing Force DI Bindings, Modules and Providers](https://apex-enterprise-patterns.dev/force-di/implementing/): Wiring up di_Binding__mdt records, modules and providers to resolve dependencies at runtime.
+- [TDD and Mocking with Force DI](https://apex-enterprise-patterns.dev/force-di/testing/): True unit tests with Test.createStub and runtime binding overrides.
+
+## Optional
+
+- [Companion videos](https://apex-enterprise-patterns.dev/videos/): The full YouTube playlist, one video per chapter, roughly nine hours total.
+- [Guide source on GitHub](https://github.com/Coding-With-The-Force/Salesforce-Separation-Of-Concerns-And-The-Apex-Common-Library): The markdown source for every chapter lives in the docs/ directory of this repository.
+- [Apex Common Library](https://github.com/apex-enterprise-patterns/fflib-apex-common): The library this guide teaches.
+- [Apex Mocks Library](https://github.com/apex-enterprise-patterns/fflib-apex-mocks): The mocking framework covered in chapters 15-17.
+- [Force DI](https://github.com/apex-enterprise-patterns/force-di): The dependency injection library covered in chapters 18-20.
+- [Coding With The Force](https://codingwiththeforce.com): The author's site and newsletter.
