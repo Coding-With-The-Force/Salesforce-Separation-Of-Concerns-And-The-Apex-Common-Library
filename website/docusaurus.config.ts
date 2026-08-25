@@ -58,6 +58,24 @@ const config: Config = {
         href: 'https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500&display=swap',
       },
     },
+
+    /**
+     * The social card's dimensions. Docusaurus emits og:image but not its
+     * size, and X in particular decides between a large card and a small
+     * thumbnail from that - without it the first share of a URL often
+     * renders small, because the crawler has not measured the file yet.
+     * Kept in step with static/img/social-card.png (1200x630).
+     */
+    {tagName: 'meta', attributes: {property: 'og:image:width', content: '1200'}},
+    {tagName: 'meta', attributes: {property: 'og:image:height', content: '630'}},
+    {
+      tagName: 'meta',
+      attributes: {
+        property: 'og:image:alt',
+        content:
+          'Apex Enterprise Patterns - how to implement Apex Enterprise Patterns to scale your Salesforce org',
+      },
+    },
   ],
 
   markdown: {
