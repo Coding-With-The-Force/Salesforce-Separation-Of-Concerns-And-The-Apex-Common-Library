@@ -80,12 +80,11 @@ export function With({children}: SideProps) {
 (With as Tagged).cwSide = 'after';
 
 interface SideProps {
-  /** Lines of code this version costs. */
-  lines: string;
   /** How many files it spans. */
   files: string;
   /** Share of it that can be unit tested without DML. */
   testable: string;
+  reusable: string;
   children: React.ReactNode;
 }
 
@@ -161,16 +160,16 @@ export default function BeforeAfter({
 
         <div className="cw-stat">
           <div>
-            <div className={statClass}>{stats.lines}</div>
-            <div className="cw-stat__k">Lines</div>
-          </div>
-          <div>
             <div className={statClass}>{stats.files}</div>
             <div className="cw-stat__k">Files</div>
           </div>
           <div>
             <div className={statClass}>{stats.testable}</div>
             <div className="cw-stat__k">Unit testable</div>
+          </div>
+          <div>
+            <div className={statClass}>{stats.reusable}</div>
+            <div className="cw-stat__k">Reusable Code</div>
           </div>
         </div>
       </div>

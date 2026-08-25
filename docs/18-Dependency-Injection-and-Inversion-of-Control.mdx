@@ -105,7 +105,6 @@ Force DI is what you get when you take that exact move and generalize it: one li
 A few honest facts to calibrate expectations before you dive into implementation:
 
 - **There is no published package.** You deploy it from source into your org (chapter 19 covers this). 
-- **There is no LWC injector.** The declarative injection components are Aura and Visualforce; if your world is LWC-only, Force DI's value to you is on the Apex and Flow side.
 - **Missing bindings fail at runtime**, not compile time - `di_Injector` throws an `InjectorException` when nothing matches. That's the tax on all this flexibility, and it's why the mocking and testing story in [chapter 20](/force-di/testing/) matters so much.
 
 Ready to wire one up? On to [chapter 19](/force-di/implementing/).

@@ -46,20 +46,32 @@ That's the entire trick that makes the "no maps at all" comparison from [the pre
 
 ## How to utilize USER_MODE with a Unit of Work   
 
-If you would like your DML operations to always operate in user mode when using your Unit of Work, you would just declare that in your Application class (which we covered in detail [here](/application/fflib-application/)) using the new ```UserModeUnitOfWorkFactory``` as shown below.   
+If you would like your DML operations to always operate in user mode when using your Unit of Work, you would just declare that in your Application class (which we covered in detail [here](/application/fflib-application/)) and use a custom class extension of the ```fflib_Application.UnitOfWorkFactory``` like the one shown below ```UserModeUnitOfWorkFactory```.    
 
 ```apex
 
-public static final fflib_Application.UnitOfWorkFactory UnitOfWork =
-		new UserModeUnitOfWorkFactory(
-				new List<SObjectType> {
-					Account.SObjectType,
-					Opportunity.SObjectType,
-					Product2.SObjectType,
-					PricebookEntry.SObjectType,
-					OpportunityLineItem.SObjectType
-                });
+public class Application {
 
+    public static final fflib_Application.UnitOfWorkFactory UnitOfWork =
+            new UserModeUnitOfWorkFactory(
+                    new List<SObjectType> {
+                        Account.SObjectType,
+                        Opportunity.SObjectType,
+                        Product2.SObjectType,
+                        PricebookEntry.SObjectType,
+                        OpportunityLineItem.SObjectType
+                    });
+
+
+    // Custom UnitOfWork factory that uses UserModeDML for FLS enforcement
+    private class UserModeUnitOfWorkFactory extends fflib_Application.UnitOfWorkFactory {
+        public UserModeUnitOfWorkFactory(List<SObjectType> objectTypes) { super(objectTypes); }
+        public override fflib_ISObjectUnitOfWork newInstance() {
+            if (m_mockUow != null) return m_mockUow;
+            return new fflib_SObjectUnitOfWork(m_objectTypes, new fflib_SObjectUnitOfWork.UserModeDML());
+        }
+    }
+}
 ```   
 
 This will allow your DML transactions to operate in the same way that this line would operate in normal Apex ```Database.insert(new Account(name = 'foo'), AccessLevel.User_mode);```   
